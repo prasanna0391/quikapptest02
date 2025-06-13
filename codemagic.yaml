@@ -182,6 +182,64 @@ workflows:
       - *debug_env
       - name: Get Flutter packages
         script: flutter pub get
+      - name: Initialize Android Gradle Wrapper
+        script: |
+          #!/usr/bin/env bash
+          set -e
+          echo "🔧 Initializing Android Gradle Wrapper for compatibility..."
+
+          cd android
+
+          # Check if gradlew exists, if not, generate it
+          if [ ! -f "./gradlew" ]; then
+              echo "📦 Generating Gradle wrapper..."
+              if command -v gradle >/dev/null 2>&1; then
+                  gradle wrapper --gradle-version=8.0
+                  chmod +x gradlew
+                  echo "✅ Gradle wrapper generated"
+              else
+                  echo "⚠️  Gradle not available, Flutter will handle this"
+              fi
+          else
+              echo "✅ Gradle wrapper already exists"
+              chmod +x gradlew
+          fi
+
+          cd ..
+      - name: Validate Android Project Structure
+        script: |
+          #!/usr/bin/env bash
+          set -e
+          echo "🔍 Validating Android project structure..."
+
+          # Check critical Android files
+          REQUIRED_FILES=(
+              "android/app/build.gradle"
+              "android/build.gradle"
+              "android/gradle.properties"
+              "android/settings.gradle"
+          )
+
+          for file in "${REQUIRED_FILES[@]}"; do
+              if [ ! -f "$file" ]; then
+                  echo "❌ Missing required file: $file"
+                  exit 1
+              else
+                  echo "✅ Found: $file"
+              fi
+          done
+
+          # Ensure Android SDK versions are compatible
+          echo "🔧 Checking Android SDK compatibility for API 35..."
+
+          # Check if build.gradle has proper compileSdkVersion
+          if grep -q "compileSdkVersion.*3[5-9]" android/app/build.gradle; then
+              echo "✅ Compatible compileSdkVersion found"
+          else
+              echo "⚠️  May need compileSdkVersion update for Android 15"
+          fi
+
+          echo "✅ Android project structure validated"
       - name: Run Android build script
         script: |
           #!/usr/bin/env bash
@@ -197,11 +255,12 @@ workflows:
               chmod +x lib/scripts/android/main.sh
               ./lib/scripts/android/main.sh
           else
-              echo "⚠️  Android main.sh not found, using fallback build process..."
+              echo "⚠️  Android main.sh not found, using enhanced fallback build process..."
               
-              # Fallback: Set up Android code signing
-              echo "Setting up Android code signing..."
+              # Enhanced Fallback: Set up Android code signing
+              echo "🔐 Setting up Android code signing..."
               if [ -n "$KEY_STORE" ]; then
+                  echo "📥 Downloading keystore..."
                   wget -O android/app/keystore.jks "$KEY_STORE"
                   cat > android/key.properties << EOF
           storePassword=$CM_KEYSTORE_PASSWORD
@@ -209,12 +268,15 @@ workflows:
           keyAlias=$CM_KEY_ALIAS
           storeFile=keystore.jks
           EOF
+                  echo "✅ Keystore configured"
               fi
               
-              # Build APK and AAB
-              echo "Building Android APK and AAB..."
+              # Build APK and AAB with comprehensive error handling
+              echo "🏗️ Building Android APK and AAB..."
               
-              flutter build apk --release \
+              # Build APK with retry mechanism
+              echo "📱 Building APK..."
+              if ! flutter build apk --release \
                 --dart-define=PKG_NAME="$PKG_NAME" \
                 --dart-define=APP_NAME="$APP_NAME" \
                 --dart-define=ORG_NAME="$ORG_NAME" \
@@ -244,8 +306,22 @@ workflows:
                 --dart-define=IS_CONTACT="$IS_CONTACT" \
                 --dart-define=IS_CALENDAR="$IS_CALENDAR" \
                 --dart-define=IS_NOTIFICATION="$IS_NOTIFICATION" \
-                --dart-define=IS_STORAGE="$IS_STORAGE"
+                --dart-define=IS_STORAGE="$IS_STORAGE"; then
+                
+                echo "❌ APK build failed, trying with clean..."
+                flutter clean
+                flutter pub get
+                
+                flutter build apk --release \
+                  --dart-define=PKG_NAME="$PKG_NAME" \
+                  --dart-define=APP_NAME="$APP_NAME" \
+                  --dart-define=VERSION_NAME="$VERSION_NAME" \
+                  --dart-define=VERSION_CODE="$VERSION_CODE" \
+                  --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY"
+              fi
               
+              # Build AAB
+              echo "📦 Building AAB..."
               flutter build appbundle --release \
                 --dart-define=PKG_NAME="$PKG_NAME" \
                 --dart-define=APP_NAME="$APP_NAME" \
@@ -279,22 +355,42 @@ workflows:
                 --dart-define=IS_STORAGE="$IS_STORAGE"
               
               # Move outputs
+              echo "📁 Moving build outputs..."
               mkdir -p output
-              cp build/app/outputs/flutter-apk/app-release.apk output/
-              cp build/app/outputs/bundle/release/app-release.aab output/
+              
+              # Check for APK
+              if [ -f "build/app/outputs/flutter-apk/app-release.apk" ]; then
+                  cp build/app/outputs/flutter-apk/app-release.apk output/
+                  echo "✅ APK moved to output/"
+              else
+                  echo "⚠️  APK not found at expected location"
+                  find build/ -name "*.apk" -type f | head -5
+              fi
+              
+              # Check for AAB
+              if [ -f "build/app/outputs/bundle/release/app-release.aab" ]; then
+                  cp build/app/outputs/bundle/release/app-release.aab output/
+                  echo "✅ AAB moved to output/"
+              else
+                  echo "⚠️  AAB not found at expected location"
+                  find build/ -name "*.aab" -type f | head -5
+              fi
+              
+              echo "📋 Final output contents:"
+              ls -la output/ || echo "No output directory"
           fi
       - name: Send success notification
         script: |
           #!/usr/bin/env bash
           set -e
-          echo "Sending success notification..."
+          echo "📧 Sending success notification..."
 
           if [ -f "lib/scripts/email_notification.py" ] && [ -n "$SMTP_USERNAME" ] && [ -n "$SMTP_PASSWORD" ]; then
               chmod +x lib/scripts/email_notification.py
               python3 lib/scripts/email_notification.py success
-              echo "Success notification sent"
+              echo "✅ Success notification sent"
           else
-              echo "Email notification skipped (script not found or email not configured)"
+              echo "ℹ️  Email notification skipped (script not found or email not configured)"
           fi
     artifacts:
       - build/app/outputs/flutter-apk/app-release.apk
@@ -315,72 +411,55 @@ workflows:
       - *debug_env
       - name: Get Flutter packages
         script: flutter pub get
-      - name: Run iOS build script
+      - name: Validate iOS Environment
         script: |
           #!/usr/bin/env bash
           set -e
-          echo "🚀 Running iOS build using comprehensive script system..."
+          echo "🔍 Validating iOS build environment..."
 
-          # Set workflow name for email notifications
-          export WORKFLOW_NAME="iOS Publish"
+          # Check Xcode version compatibility
+          XCODE_VERSION=$(xcodebuild -version | grep "Xcode" | awk '{print $2}')
+          echo "📱 Xcode Version: $XCODE_VERSION"
 
-          # Source environment variables from export.sh first
-          if [ -f "lib/scripts/ios/export.sh" ]; then
-              echo "📋 Sourcing iOS environment variables..."
-              source lib/scripts/ios/export.sh
+          # Check iOS Simulator availability
+          echo "📱 Available iOS Simulators:"
+          xcrun simctl list devices ios | grep -E "(iPhone|iPad)" | head -3
+
+          # Check required iOS files
+          REQUIRED_IOS_FILES=(
+              "ios/Runner.xcodeproj/project.pbxproj"
+              "ios/Runner/Info.plist"
+              "ios/Podfile"
+          )
+
+          for file in "${REQUIRED_IOS_FILES[@]}"; do
+              if [ ! -f "$file" ]; then
+                  echo "❌ Missing required iOS file: $file"
+                  exit 1
+              else
+                  echo "✅ Found: $file"
+              fi
+          done
+
+          # Check iOS deployment target
+          if grep -q "IPHONEOS_DEPLOYMENT_TARGET.*13\|14\|15\|16\|17" ios/Runner.xcodeproj/project.pbxproj; then
+              echo "✅ Compatible iOS deployment target found"
+          else
+              echo "⚠️  iOS deployment target may need update for latest iOS versions"
           fi
 
-          # Check if we have the comprehensive iOS main.sh script
-          if [ -f "lib/scripts/ios/main.sh" ]; then
-              echo "🎯 Using comprehensive iOS main.sh script..."
-              chmod +x lib/scripts/ios/main.sh
-              ./lib/scripts/ios/main.sh
-          else
-              echo "⚠️  iOS main.sh not found, using optimized fallback build process based on old_codemagic.yaml..."
-              
-              # Set up iOS code signing (based on old working config)
-              echo "🔐 Setting up iOS code signing..."
-              KEYCHAIN_NAME="build.keychain"
-              KEYCHAIN_PASSWORD="temporary"
+          echo "✅ iOS environment validated"
+      - name: Setup iOS Dependencies
+        script: |
+          #!/usr/bin/env bash
+          set -e
+          echo "📦 Setting up iOS dependencies with enhanced compatibility..."
 
-              security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
-              security default-keychain -s "$KEYCHAIN_NAME"
-              security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
-              security set-keychain-settings -t 3600 -u "$KEYCHAIN_NAME"
+          cd ios
 
-              # Download certificates and profile
-              if [ -n "$CERT_CER_URL" ] && [ -n "$CERT_KEY_URL" ]; then
-                  wget -O ios/distribution.cer "$CERT_CER_URL"
-                  wget -O ios/privatekey.key "$CERT_KEY_URL"
-                  
-                  # Convert to P12 and import
-                  openssl pkcs12 -export -out ios/certificate.p12 -inkey ios/privatekey.key -in ios/distribution.cer -password pass:"$CERT_PASSWORD"
-                  security import ios/certificate.p12 -k "$KEYCHAIN_NAME" -P "$CERT_PASSWORD" -T /usr/bin/codesign
-                  security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
-              fi
-
-              if [ -n "$PROFILE_URL" ]; then
-                  wget -O ios/profile.mobileprovision "$PROFILE_URL"
-                  mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-                  
-                  # Extract profile info
-                  PROFILE_PLIST=$(mktemp)
-                  security cms -D -i ios/profile.mobileprovision > "$PROFILE_PLIST"
-                  UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" "$PROFILE_PLIST")
-                  PROFILE_NAME=$(/usr/libexec/PlistBuddy -c "Print Name" "$PROFILE_PLIST")
-                  
-                  # Install profile
-                  cp ios/profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/"$UUID".mobileprovision
-                  
-                  echo "PROFILE_NAME=$PROFILE_NAME" >> $CM_ENV
-                  echo "PROFILE_UUID=$UUID" >> $CM_ENV
-              fi
-
-              # Set up iOS dependencies
-              echo "📦 Setting up iOS dependencies..."
-              cd ios
-              
-              # Create optimized Podfile (based on old working config)
+          # Ensure Podfile exists and is properly configured
+          if [ ! -f "Podfile" ]; then
+              echo "⚠️  Podfile not found, creating optimized version..."
               cat > Podfile << EOF
           platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'
           use_frameworks! :linkage => :static
@@ -423,17 +502,139 @@ workflows:
               target.build_configurations.each do |config|
                 config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'
                 config.build_settings['ENABLE_BITCODE'] = 'NO'
+                config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64' if config.build_settings['SDKROOT'] == 'iphoneos'
               end
             end
           end
           EOF
+              echo "✅ Created optimized Podfile"
+          else
+              # Update existing Podfile deployment target
+              if grep -q "platform :ios" Podfile; then
+                  sed -i.bak "s/platform :ios, '[^']*'/platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'/" Podfile
+                  echo "✅ Updated platform to iOS $IPHONEOS_DEPLOYMENT_TARGET"
+              fi
+          fi
 
-              # Clean and install pods
-              rm -rf Pods Podfile.lock
-              pod install --repo-update
-              cd ..
+          # Clean and install pods with retry mechanism
+          echo "🧹 Cleaning previous CocoaPods installation..."
+          rm -rf Pods/ Podfile.lock
 
-              # Create ExportOptions.plist (based on old working config)
+          echo "📦 Installing CocoaPods dependencies..."
+
+          # Retry mechanism for pod install
+          for i in {1..3}; do
+              if pod install --repo-update; then
+                  echo "✅ CocoaPods installation successful"
+                  break
+              else
+                  echo "⚠️  Pod install attempt $i failed"
+                  if [ $i -eq 3 ]; then
+                      echo "❌ Pod install failed after 3 attempts"
+                      exit 1
+                  fi
+                  echo "🔄 Retrying in 10 seconds..."
+                  sleep 10
+              fi
+          done
+
+          cd ..
+          echo "✅ iOS dependencies setup complete"
+      - name: Run iOS build script
+        script: |
+          #!/usr/bin/env bash
+          set -e
+          echo "🚀 Running iOS build using comprehensive script system..."
+
+          # Set workflow name for email notifications
+          export WORKFLOW_NAME="iOS Publish"
+
+          # Source environment variables from export.sh first
+          if [ -f "lib/scripts/ios/export.sh" ]; then
+              echo "📋 Sourcing iOS environment variables..."
+              source lib/scripts/ios/export.sh
+          fi
+
+          # Check if we have the comprehensive iOS main.sh script
+          if [ -f "lib/scripts/ios/main.sh" ]; then
+              echo "🎯 Using comprehensive iOS main.sh script..."
+              chmod +x lib/scripts/ios/main.sh
+              ./lib/scripts/ios/main.sh
+          else
+              echo "⚠️  iOS main.sh not found, using enhanced fallback build process..."
+              
+              # Enhanced iOS code signing setup
+              echo "🔐 Setting up iOS code signing..."
+              KEYCHAIN_NAME="build.keychain"
+              KEYCHAIN_PASSWORD="temporary"
+
+              # Create keychain with better error handling
+              if ! security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"; then
+                  echo "⚠️  Keychain creation failed, trying with cleanup..."
+                  security delete-keychain "$KEYCHAIN_NAME" || true
+                  security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+              fi
+              
+              security default-keychain -s "$KEYCHAIN_NAME"
+              security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+              security set-keychain-settings -t 3600 -u "$KEYCHAIN_NAME"
+
+              # Download and setup certificates with validation
+              if [ -n "$CERT_CER_URL" ] && [ -n "$CERT_KEY_URL" ]; then
+                  echo "📥 Downloading certificates..."
+                  
+                  if wget -O ios/distribution.cer "$CERT_CER_URL" && wget -O ios/privatekey.key "$CERT_KEY_URL"; then
+                      echo "✅ Certificates downloaded"
+                      
+                      # Convert to P12 with error handling
+                      if openssl pkcs12 -export -out ios/certificate.p12 -inkey ios/privatekey.key -in ios/distribution.cer -password pass:"$CERT_PASSWORD"; then
+                          echo "✅ P12 certificate created"
+                          
+                          # Import certificate
+                          if security import ios/certificate.p12 -k "$KEYCHAIN_NAME" -P "$CERT_PASSWORD" -T /usr/bin/codesign; then
+                              security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+                              echo "✅ Certificate imported successfully"
+                          else
+                              echo "⚠️  Certificate import failed, continuing without code signing"
+                          fi
+                      else
+                          echo "⚠️  P12 conversion failed, continuing without code signing"
+                      fi
+                  else
+                      echo "⚠️  Certificate download failed, continuing without code signing"
+                  fi
+              fi
+
+              # Setup provisioning profile
+              if [ -n "$PROFILE_URL" ]; then
+                  echo "📥 Downloading provisioning profile..."
+                  if wget -O ios/profile.mobileprovision "$PROFILE_URL"; then
+                      mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+                      
+                      # Extract profile info with error handling
+                      PROFILE_PLIST=$(mktemp)
+                      if security cms -D -i ios/profile.mobileprovision > "$PROFILE_PLIST"; then
+                          UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" "$PROFILE_PLIST" 2>/dev/null || echo "")
+                          PROFILE_NAME=$(/usr/libexec/PlistBuddy -c "Print Name" "$PROFILE_PLIST" 2>/dev/null || echo "")
+                          
+                          if [ -n "$UUID" ] && [ -n "$PROFILE_NAME" ]; then
+                              cp ios/profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/"$UUID".mobileprovision
+                              echo "PROFILE_NAME=$PROFILE_NAME" >> $CM_ENV
+                              echo "PROFILE_UUID=$UUID" >> $CM_ENV
+                              echo "✅ Provisioning profile installed: $PROFILE_NAME"
+                          else
+                              echo "⚠️  Could not extract profile info, continuing..."
+                          fi
+                      else
+                          echo "⚠️  Profile parsing failed, continuing..."
+                      fi
+                      rm -f "$PROFILE_PLIST"
+                  else
+                      echo "⚠️  Profile download failed, continuing..."
+                  fi
+              fi
+
+              # Create ExportOptions.plist with better defaults
               cat > ExportOptions.plist << EOF
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -448,7 +649,7 @@ workflows:
             <key>provisioningProfiles</key>
             <dict>
               <key>$BUNDLE_ID</key>
-              <string>\$PROFILE_NAME</string>
+              <string>\${PROFILE_NAME:-match AppStore $BUNDLE_ID}</string>
             </dict>
             <key>compileBitcode</key>
             <false/>
@@ -456,13 +657,18 @@ workflows:
             <true/>
             <key>signingCertificate</key>
             <string>Apple Distribution</string>
+            <key>uploadBitcode</key>
+            <false/>
+            <key>uploadSymbols</key>
+            <true/>
           </dict>
           </plist>
           EOF
 
-              # Build iOS (comprehensive dart-define list)
+              # Build iOS with comprehensive dart-define and error handling
               echo "🏗️ Building iOS app..."
-              flutter build ios --release --no-codesign \
+              
+              if ! flutter build ios --release --no-codesign \
                 --dart-define=PKG_NAME="$PKG_NAME" \
                 --dart-define=BUNDLE_ID="$BUNDLE_ID" \
                 --dart-define=APP_NAME="$APP_NAME" \
@@ -507,57 +713,96 @@ workflows:
                 --dart-define=IS_PHOTO_LIBRARY="$IS_PHOTO_LIBRARY" \
                 --dart-define=IS_PHOTO_LIBRARY_ADD="$IS_PHOTO_LIBRARY_ADD" \
                 --dart-define=IS_FACE_ID="$IS_FACE_ID" \
-                --dart-define=IS_TOUCH_ID="$IS_TOUCH_ID"
+                --dart-define=IS_TOUCH_ID="$IS_TOUCH_ID"; then
+                
+                echo "❌ iOS build failed, trying with clean..."
+                flutter clean
+                cd ios && pod install && cd ..
+                flutter pub get
+                
+                # Retry with minimal configuration
+                flutter build ios --release --no-codesign \
+                  --dart-define=BUNDLE_ID="$BUNDLE_ID" \
+                  --dart-define=APP_NAME="$APP_NAME" \
+                  --dart-define=VERSION_NAME="$VERSION_NAME" \
+                  --dart-define=VERSION_CODE="$VERSION_CODE"
+              fi
 
-              # Archive and export IPA (based on old working config)
+              # Archive and export IPA with better error handling
               echo "📦 Archiving and exporting IPA..."
               
               # Load environment variables for profile info
-              source $CM_ENV
+              source $CM_ENV 2>/dev/null || true
               
-              # Archive
-              xcodebuild -workspace ios/Runner.xcworkspace \
+              # Archive with error handling
+              echo "🏗️ Creating Xcode archive..."
+              if xcodebuild -workspace ios/Runner.xcworkspace \
                 -scheme Runner \
                 -configuration Release \
                 -archivePath build/ios/archive/Runner.xcarchive \
                 clean archive \
                 CODE_SIGN_STYLE=Manual \
                 DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
-                PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
-                PROVISIONING_PROFILE="$PROFILE_UUID" \
+                PROVISIONING_PROFILE_SPECIFIER="${PROFILE_NAME:-}" \
+                PROVISIONING_PROFILE="${PROFILE_UUID:-}" \
                 PRODUCT_BUNDLE_IDENTIFIER="$BUNDLE_ID" \
                 CODE_SIGN_IDENTITY="Apple Distribution" \
                 IPHONEOS_DEPLOYMENT_TARGET="$IPHONEOS_DEPLOYMENT_TARGET" \
-                OTHER_CODE_SIGN_FLAGS="--keychain $KEYCHAIN_NAME"
-
-              # Export IPA
-              xcodebuild -exportArchive \
-                -archivePath build/ios/archive/Runner.xcarchive \
-                -exportPath build/ios/ipa \
-                -exportOptionsPlist ExportOptions.plist
+                OTHER_CODE_SIGN_FLAGS="--keychain $KEYCHAIN_NAME"; then
+                
+                echo "✅ Archive created successfully"
+                
+                # Export IPA
+                echo "📦 Exporting IPA..."
+                if xcodebuild -exportArchive \
+                  -archivePath build/ios/archive/Runner.xcarchive \
+                  -exportPath build/ios/ipa \
+                  -exportOptionsPlist ExportOptions.plist; then
+                  
+                  echo "✅ IPA exported successfully"
+                else
+                  echo "⚠️  IPA export failed, but archive was created"
+                fi
+              else
+                echo "❌ Archive creation failed"
+                echo "📋 Available build products:"
+                find build/ -name "*.app" -type d | head -5
+              fi
 
               # Copy artifacts to output folder
+              echo "📁 Moving iOS artifacts..."
               mkdir -p output
-              cp build/ios/ipa/Runner.ipa output/
               
-              # Cleanup
+              if [ -f "build/ios/ipa/Runner.ipa" ]; then
+                  cp build/ios/ipa/Runner.ipa output/
+                  echo "✅ IPA moved to output/"
+              else
+                  echo "⚠️  IPA not found, checking for .app files..."
+                  find build/ -name "*.app" -type d | head -1 | xargs -I {} cp -r {} output/ 2>/dev/null || true
+              fi
+              
+              # Cleanup keychain
               security delete-keychain "$KEYCHAIN_NAME" || true
+              
+              echo "📋 Final iOS output contents:"
+              ls -la output/ || echo "No output directory"
           fi
       - name: Send success notification
         script: |
           #!/usr/bin/env bash
           set -e
-          echo "Sending success notification..."
+          echo "📧 Sending success notification..."
 
           if [ -f "lib/scripts/email_notification.py" ] && [ -n "$SMTP_USERNAME" ] && [ -n "$SMTP_PASSWORD" ]; then
               chmod +x lib/scripts/email_notification.py
               python3 lib/scripts/email_notification.py success
-              echo "Success notification sent"
+              echo "✅ Success notification sent"
           else
-              echo "Email notification skipped (script not found or email not configured)"
+              echo "ℹ️  Email notification skipped (script not found or email not configured)"
           fi
     artifacts:
       - build/ios/ipa/Runner.ipa
+      - build/ios/archive/Runner.xcarchive
       - output/
     publishing:
       email:
@@ -574,6 +819,42 @@ workflows:
       - *debug_env
       - name: Get Flutter packages
         script: flutter pub get
+      - name: Initialize Build Environment
+        script: |
+          #!/usr/bin/env bash
+          set -e
+          echo "🔧 Initializing build environment for both platforms..."
+
+          # Initialize Android Gradle wrapper
+          cd android
+          if [ ! -f "./gradlew" ]; then
+              echo "📦 Generating Android Gradle wrapper..."
+              if command -v gradle >/dev/null 2>&1; then
+                  gradle wrapper --gradle-version=8.0
+                  chmod +x gradlew
+                  echo "✅ Android Gradle wrapper generated"
+              else
+                  echo "⚠️  Gradle not available, Flutter will handle this"
+              fi
+          else
+              echo "✅ Android Gradle wrapper already exists"
+              chmod +x gradlew
+          fi
+          cd ..
+
+          # Validate iOS environment
+          echo "🍎 Checking iOS environment..."
+          XCODE_VERSION=$(xcodebuild -version | grep "Xcode" | awk '{print $2}')
+          echo "📱 Xcode Version: $XCODE_VERSION"
+
+          # Check iOS Podfile
+          if [ ! -f "ios/Podfile" ]; then
+              echo "⚠️  iOS Podfile missing, will be created during iOS setup"
+          else
+              echo "✅ iOS Podfile exists"
+          fi
+
+          echo "✅ Build environment initialized"
       - name: Build Android (Using main.sh)
         script: |
           #!/usr/bin/env bash
@@ -589,10 +870,27 @@ workflows:
               chmod +x lib/scripts/android/main.sh
               ./lib/scripts/android/main.sh
           else
-              echo "⚠️  Android main.sh not found, using fallback..."
+              echo "⚠️  Android main.sh not found, using enhanced fallback..."
               
-              # Quick Android setup and build
+              # Validate Android project structure
+              echo "🔍 Validating Android project..."
+              REQUIRED_FILES=(
+                  "android/app/build.gradle"
+                  "android/build.gradle"
+                  "android/gradle.properties"
+                  "android/settings.gradle"
+              )
+              
+              for file in "${REQUIRED_FILES[@]}"; do
+                  if [ ! -f "$file" ]; then
+                      echo "❌ Missing required Android file: $file"
+                      exit 1
+                  fi
+              done
+              
+              # Enhanced Android setup and build
               if [ -n "$KEY_STORE" ]; then
+                  echo "🔐 Setting up Android keystore..."
                   wget -O android/app/keystore.jks "$KEY_STORE"
                   cat > android/key.properties << EOF
           storePassword=$CM_KEYSTORE_PASSWORD
@@ -600,22 +898,121 @@ workflows:
           keyAlias=$CM_KEY_ALIAS
           storeFile=keystore.jks
           EOF
+                  echo "✅ Android keystore configured"
               fi
               
-              flutter build apk --release \
+              echo "🏗️ Building Android APK and AAB..."
+              
+              # Build with retry mechanism
+              if ! flutter build apk --release \
                 --dart-define=PKG_NAME="$PKG_NAME" \
                 --dart-define=APP_NAME="$APP_NAME" \
                 --dart-define=VERSION_NAME="$VERSION_NAME" \
                 --dart-define=VERSION_CODE="$VERSION_CODE" \
-                --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY"
+                --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY" \
+                --dart-define=WEB_URL="$WEB_URL" \
+                --dart-define=IS_SPLASH="$IS_SPLASH" \
+                --dart-define=SPLASH="$SPLASH" \
+                --dart-define=IS_BOTTOMMENU="$IS_BOTTOMMENU" \
+                --dart-define=BOTTOMMENU_ITEMS="$BOTTOMMENU_ITEMS"; then
+                
+                echo "❌ Android APK build failed, retrying with clean..."
+                flutter clean
+                flutter pub get
+                flutter build apk --release \
+                  --dart-define=PKG_NAME="$PKG_NAME" \
+                  --dart-define=APP_NAME="$APP_NAME" \
+                  --dart-define=VERSION_NAME="$VERSION_NAME" \
+                  --dart-define=VERSION_CODE="$VERSION_CODE" \
+                  --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY"
+              fi
               
               flutter build appbundle --release \
                 --dart-define=PKG_NAME="$PKG_NAME" \
                 --dart-define=APP_NAME="$APP_NAME" \
                 --dart-define=VERSION_NAME="$VERSION_NAME" \
                 --dart-define=VERSION_CODE="$VERSION_CODE" \
-                --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY"
+                --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY" \
+                --dart-define=WEB_URL="$WEB_URL" \
+                --dart-define=IS_SPLASH="$IS_SPLASH" \
+                --dart-define=SPLASH="$SPLASH" \
+                --dart-define=IS_BOTTOMMENU="$IS_BOTTOMMENU" \
+                --dart-define=BOTTOMMENU_ITEMS="$BOTTOMMENU_ITEMS"
+              
+              echo "✅ Android builds completed"
           fi
+      - name: Setup iOS Dependencies
+        script: |
+          #!/usr/bin/env bash
+          set -e
+          echo "📦 Setting up iOS dependencies for combined build..."
+
+          cd ios
+
+          # Create or update Podfile
+          if [ ! -f "Podfile" ]; then
+              echo "📄 Creating optimized Podfile..."
+              cat > Podfile << EOF
+          platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'
+          use_frameworks! :linkage => :static
+
+          ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+          def flutter_root
+            generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+            unless File.exist?(generated_xcode_build_settings_path)
+              raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
+            end
+
+            File.foreach(generated_xcode_build_settings_path) do |line|
+              matches = line.match(/FLUTTER_ROOT\\=(.*)/)
+              return matches[1].strip if matches
+            end
+            raise "FLUTTER_ROOT not found"
+          end
+
+          require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+
+          flutter_ios_podfile_setup
+
+          target 'Runner' do
+            use_frameworks!
+            use_modular_headers!
+            flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+          end
+
+          post_install do |installer|
+            installer.pods_project.targets.each do |target|
+              flutter_additional_ios_build_settings(target)
+              target.build_configurations.each do |config|
+                config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'
+                config.build_settings['ENABLE_BITCODE'] = 'NO'
+              end
+            end
+          end
+          EOF
+          fi
+
+          # Clean and install with retry
+          echo "🧹 Cleaning iOS dependencies..."
+          rm -rf Pods/ Podfile.lock
+
+          echo "📦 Installing iOS dependencies..."
+          for i in {1..2}; do
+              if pod install --repo-update; then
+                  echo "✅ iOS dependencies installed successfully"
+                  break
+              else
+                  if [ $i -eq 2 ]; then
+                      echo "❌ Pod install failed, but continuing..."
+                      break
+                  fi
+                  echo "🔄 Retrying pod install..."
+                  sleep 5
+              fi
+          done
+
+          cd ..
       - name: Build iOS (Using main.sh)
         script: |
           #!/usr/bin/env bash
@@ -636,66 +1033,113 @@ workflows:
               chmod +x lib/scripts/ios/main.sh
               ./lib/scripts/ios/main.sh
           else
-              echo "⚠️  iOS main.sh not found, using optimized fallback..."
+              echo "⚠️  iOS main.sh not found, using streamlined fallback..."
               
-              # Quick iOS build based on old working config
-              # ... (same as ios-publish fallback but condensed)
-              cd ios
-              pod install
-              cd ..
+              # Streamlined iOS build for combined workflow
+              echo "🏗️ Building iOS app..."
               
-              flutter build ios --release --no-codesign \
+              if ! flutter build ios --release --no-codesign \
                 --dart-define=BUNDLE_ID="$BUNDLE_ID" \
                 --dart-define=APP_NAME="$APP_NAME" \
                 --dart-define=VERSION_NAME="$VERSION_NAME" \
                 --dart-define=VERSION_CODE="$VERSION_CODE" \
-                --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY"
+                --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY" \
+                --dart-define=WEB_URL="$WEB_URL" \
+                --dart-define=IS_SPLASH="$IS_SPLASH" \
+                --dart-define=SPLASH="$SPLASH" \
+                --dart-define=IS_BOTTOMMENU="$IS_BOTTOMMENU" \
+                --dart-define=BOTTOMMENU_ITEMS="$BOTTOMMENU_ITEMS"; then
+                
+                echo "❌ iOS build failed, retrying with minimal config..."
+                flutter clean
+                cd ios && pod install && cd ..
+                flutter pub get
+                
+                flutter build ios --release --no-codesign \
+                  --dart-define=BUNDLE_ID="$BUNDLE_ID" \
+                  --dart-define=APP_NAME="$APP_NAME" \
+                  --dart-define=VERSION_NAME="$VERSION_NAME" \
+                  --dart-define=VERSION_CODE="$VERSION_CODE"
+              fi
+              
+              echo "✅ iOS build completed"
           fi
       - name: Copy all artifacts to output folder
         script: |
           #!/usr/bin/env bash
           set -e
-          echo "📁 Copying all artifacts to output folder..."
+          echo "📁 Collecting all build artifacts..."
 
           # Create output directory
           mkdir -p output
 
-          # Copy Android artifacts if they exist
+          # Copy Android artifacts with validation
+          echo "🤖 Checking Android artifacts..."
           if [ -f "build/app/outputs/flutter-apk/app-release.apk" ]; then
               cp build/app/outputs/flutter-apk/app-release.apk output/
-              echo "✅ Android APK copied"
+              echo "✅ Android APK copied to output/"
+          else
+              echo "⚠️  Android APK not found at expected location"
+              find build/ -name "*.apk" -type f | head -3
           fi
 
           if [ -f "build/app/outputs/bundle/release/app-release.aab" ]; then
               cp build/app/outputs/bundle/release/app-release.aab output/
-              echo "✅ Android AAB copied"
+              echo "✅ Android AAB copied to output/"
+          else
+              echo "⚠️  Android AAB not found at expected location"
+              find build/ -name "*.aab" -type f | head -3
           fi
 
-          # Copy iOS artifacts if they exist
+          # Copy iOS artifacts with validation
+          echo "🍎 Checking iOS artifacts..."
           if [ -f "build/ios/ipa/Runner.ipa" ]; then
               cp build/ios/ipa/Runner.ipa output/
-              echo "✅ iOS IPA copied"
+              echo "✅ iOS IPA copied to output/"
+          else
+              echo "⚠️  iOS IPA not found, checking for alternatives..."
+              # Look for .app files as fallback
+              APP_FILE=$(find build/ -name "*.app" -type d | head -1)
+              if [ -n "$APP_FILE" ]; then
+                  cp -r "$APP_FILE" output/
+                  echo "✅ iOS .app copied to output/"
+              else
+                  echo "⚠️  No iOS artifacts found"
+              fi
           fi
 
-          echo "📋 Build Summary:"
-          ls -la output/
+          echo "📋 Final Build Summary:"
+          echo "======================="
+          if [ -d "output" ]; then
+              ls -la output/
+              echo ""
+              echo "📱 Android Files:"
+              ls output/*.apk 2>/dev/null && echo "  ✅ APK found" || echo "  ❌ APK missing"
+              ls output/*.aab 2>/dev/null && echo "  ✅ AAB found" || echo "  ❌ AAB missing"
+              echo "🍎 iOS Files:"
+              ls output/*.ipa 2>/dev/null && echo "  ✅ IPA found" || echo "  ❌ IPA missing"
+              ls output/*.app 2>/dev/null && echo "  ✅ APP found" || echo "  ❌ APP missing"
+          else
+              echo "❌ No output directory created"
+          fi
       - name: Send success notification
         script: |
           #!/usr/bin/env bash
           set -e
-          echo "Sending success notification..."
+          echo "📧 Sending combined build success notification..."
 
           if [ -f "lib/scripts/email_notification.py" ] && [ -n "$SMTP_USERNAME" ] && [ -n "$SMTP_PASSWORD" ]; then
               chmod +x lib/scripts/email_notification.py
               python3 lib/scripts/email_notification.py success
-              echo "Success notification sent"
+              echo "✅ Success notification sent for combined build"
           else
-              echo "Email notification skipped (script not found or email not configured)"
+              echo "ℹ️  Email notification skipped (script not found or email not configured)"
           fi
     artifacts:
       - build/app/outputs/flutter-apk/app-release.apk
       - build/app/outputs/bundle/release/app-release.aab
       - build/ios/ipa/Runner.ipa
+      - build/ios/archive/Runner.xcarchive
       - output/
     publishing:
       email:

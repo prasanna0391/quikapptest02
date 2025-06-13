@@ -232,8 +232,31 @@ fi
 echo -e "${BLUE}5. Cleaning build cache...${NC}"
 cd "$PROJECT_ROOT"
 flutter clean
+
+# Check if gradlew exists before trying to use it
 cd "$ANDROID_DIR"
-./gradlew clean
+if [ -f "./gradlew" ]; then
+    echo -e "${BLUE}🧹 Running Gradle clean...${NC}"
+    ./gradlew clean
+elif [ -f "../gradlew" ]; then
+    echo -e "${BLUE}🧹 Found gradlew in parent directory, running clean...${NC}"
+    ../gradlew clean
+else
+    echo -e "${YELLOW}⚠️  Gradle wrapper not found, generating it...${NC}"
+    # Generate gradlew wrapper if it doesn't exist
+    if command -v gradle >/dev/null 2>&1; then
+        gradle wrapper
+        if [ -f "./gradlew" ]; then
+            echo -e "${GREEN}✅ Generated gradlew wrapper, running clean...${NC}"
+            ./gradlew clean
+        else
+            echo -e "${YELLOW}⚠️  Could not generate gradlew, skipping Gradle clean (Flutter clean already done)${NC}"
+        fi
+    else
+        echo -e "${YELLOW}⚠️  Gradle not available, skipping Gradle clean (Flutter clean already done)${NC}"
+    fi
+fi
+
 cd "$PROJECT_ROOT"
 
 echo ""
