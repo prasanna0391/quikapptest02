@@ -25,7 +25,6 @@ environment: &default_env
     IS_BOTTOMMENU: "${IS_BOTTOMMENU}"
     IS_LOAD_IND: "${IS_LOAD_IND}"
 
-   
     # Assets - API configurable with empty defaults for optional fields
     LOGO_URL: "${LOGO_URL}"
     SPLASH: "${SPLASH}"
@@ -77,7 +76,7 @@ environment: &default_env
     MIN_SDK_VERSION: "21"
     TARGET_SDK_VERSION: "35"
 
- # Permissions - API configurable with secure defaults (all false unless specified)
+    # Permissions - API configurable with secure defaults (all false unless specified)
     IS_CAMERA: "${IS_CAMERA}"
     IS_LOCATION: "${IS_LOCATION}"
     IS_MIC: "${IS_MIC}"
@@ -904,15 +903,22 @@ workflows:
       java: 17
       groups:
         - google_credentials
-xx        - appstore_credentials
-      vars: *default_env
+        - appstore_credentials
+      vars:
+        <<: *default_env
     scripts:
+      - *debug_env
+      - name: Get Flutter packages
+        script: flutter pub get
       - name: Initialize Gradle Wrapper
         script: |
+          #!/usr/bin/env bash
+          set -e
           echo "🔧 Initializing Gradle wrapper..."
+          cd android
 
           # Create Gradle wrapper directory
-          mkdir -p android/gradle/wrapper
+          mkdir -p gradle/wrapper
 
           # Download the official Gradle distribution ZIP and extract the wrapper JAR
           curl -O https://services.gradle.org/distributions/gradle-8.12-bin.zip
@@ -976,6 +982,15 @@ xx        - appstore_credentials
           ./gradlew --version
 
           cd ..
+          echo "✅ Gradle wrapper initialized"
+      - name: Build Android (Using main.sh)
+        script: |
+          #!/usr/bin/env bash
+          set -e
+          echo "🤖 Building Android using comprehensive script system..."
+
+          # Set workflow name for email notifications
+          export WORKFLOW_NAME="Combined Android & iOS Build"
 
           # Check if we have the comprehensive Android main.sh script
           if [ -f "lib/scripts/android/main.sh" ]; then
@@ -1016,7 +1031,7 @@ xx        - appstore_credentials
               
               echo "🏗️ Building Android APK and AAB..."
               
-              # Build with retry mechanism
+              # Build APK with retry mechanism
               if ! flutter build apk --release \
                 --dart-define=PKG_NAME="$PKG_NAME" \
                 --dart-define=APP_NAME="$APP_NAME" \
@@ -1040,6 +1055,7 @@ xx        - appstore_credentials
                   --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY"
               fi
               
+              # Build AAB
               flutter build appbundle --release \
                 --dart-define=PKG_NAME="$PKG_NAME" \
                 --dart-define=APP_NAME="$APP_NAME" \
@@ -1111,12 +1127,12 @@ xx        - appstore_credentials
           rm -rf Pods/ Podfile.lock
 
           echo "📦 Installing iOS dependencies..."
-          for i in {1..2}; do
+          for i in {1..3}; do
               if pod install --repo-update; then
                   echo "✅ iOS dependencies installed successfully"
                   break
               else
-                  if [ $i -eq 2 ]; then
+                  if [ $i -eq 3 ]; then
                       echo "❌ Pod install failed, but continuing..."
                       break
                   fi
@@ -1132,11 +1148,8 @@ xx        - appstore_credentials
           set -e
           echo "🍎 Building iOS using comprehensive script system..."
 
-          # Source environment variables from export.sh first
-          if [ -f "lib/scripts/ios/export.sh" ]; then
-              echo "📋 Sourcing iOS environment variables..."
-              source lib/scripts/ios/export.sh
-          fi
+          # Set workflow name for email notifications
+          export WORKFLOW_NAME="Combined Android & iOS Build"
 
           # Check if we have the comprehensive iOS main.sh script
           if [ -f "lib/scripts/ios/main.sh" ]; then
@@ -1175,6 +1188,22 @@ xx        - appstore_credentials
                   --dart-define=VERSION_CODE="$VERSION_CODE"
               fi
               
+              # Create IPA from .app
+              echo "📦 Creating IPA from .app..."
+              cd ios
+              if [ -d "build/ios/iphoneos/Runner.app" ]; then
+                  mkdir -p build/ios/ipa/Payload
+                  cp -r build/ios/iphoneos/Runner.app build/ios/ipa/Payload/
+                  cd build/ios/ipa
+                  zip -r Runner.ipa Payload/
+                  cd ../../..
+                  echo "✅ IPA created successfully"
+              else
+                  echo "⚠️  Runner.app not found, checking alternatives..."
+                  find build/ -name "*.app" -type d | head -3
+              fi
+              cd ..
+              
               echo "✅ iOS build completed"
           fi
       - name: Copy all artifacts to output folder
@@ -1206,7 +1235,10 @@ xx        - appstore_credentials
 
           # Copy iOS artifacts with validation
           echo "🍎 Checking iOS artifacts..."
-          if [ -f "build/ios/ipa/Runner.ipa" ]; then
+          if [ -f "ios/build/ios/ipa/Runner.ipa" ]; then
+              cp ios/build/ios/ipa/Runner.ipa output/
+              echo "✅ iOS IPA copied to output/"
+          elif [ -f "build/ios/ipa/Runner.ipa" ]; then
               cp build/ios/ipa/Runner.ipa output/
               echo "✅ iOS IPA copied to output/"
           else
@@ -1241,9 +1273,8 @@ xx        - appstore_credentials
           set -e
           echo "📧 Sending combined build success notification..."
 
-          if [ -f "lib/scripts/email_notification.py" ] && [ -n "$SMTP_USERNAME" ] && [ -n "$SMTP_PASSWORD" ]; then
-              chmod +x lib/scripts/email_notification.py
-              python3 lib/scripts/email_notification.py success
+          if [ -f "lib/scripts/android/send_output_email.sh" ]; then
+              bash lib/scripts/android/send_output_email.sh 2>/dev/null || true
               echo "✅ Success notification sent for combined build"
           else
               echo "ℹ️  Email notification skipped (script not found or email not configured)"
@@ -1251,6 +1282,7 @@ xx        - appstore_credentials
     artifacts:
       - build/app/outputs/flutter-apk/app-release.apk
       - build/app/outputs/bundle/release/app-release.aab
+      - ios/build/ios/ipa/Runner.ipa
       - build/ios/ipa/Runner.ipa
       - build/ios/archive/Runner.xcarchive
       - output/
