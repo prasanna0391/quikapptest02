@@ -2,12 +2,52 @@ pluginManagement {
     def flutterSdkPath = {
         def properties = new Properties()
         def propertiesFile = new File(rootProject.projectDir.parentFile, 'local.properties')
+        
+        // First try to get from local.properties
         if (propertiesFile.exists()) {
             propertiesFile.withReader('UTF-8') { reader -> properties.load(reader) }
+            def localFlutterSdk = properties.getProperty('flutter.sdk')
+            if (localFlutterSdk != null && new File(localFlutterSdk).exists()) {
+                return localFlutterSdk
+            }
         }
-        def flutterSdkPath = properties.getProperty('flutter.sdk')
-        assert flutterSdkPath != null, "flutter.sdk not set in local.properties"
-        return flutterSdkPath
+        
+        // Fallback to environment variables (for CI/CD environments)
+        def envFlutterSdk = System.getenv('FLUTTER_ROOT')
+        if (envFlutterSdk != null && new File(envFlutterSdk).exists()) {
+            return envFlutterSdk
+        }
+        
+        // Try to find Flutter in PATH
+        def flutterCommand = System.getProperty('os.name').toLowerCase().contains('windows') ? 'flutter.bat' : 'flutter'
+        def process = ['which', flutterCommand].execute()
+        process.waitFor()
+        if (process.exitValue() == 0) {
+            def flutterPath = process.text.trim()
+            if (flutterPath) {
+                def flutterBin = new File(flutterPath).parentFile
+                def flutterRoot = flutterBin.parentFile
+                if (new File(flutterRoot, 'packages/flutter_tools/gradle').exists()) {
+                    return flutterRoot.absolutePath
+                }
+            }
+        }
+        
+        // Last resort: check common Flutter installation paths
+        def commonPaths = [
+            System.getProperty('user.home') + '/flutter',
+            System.getProperty('user.home') + '/development/flutter',
+            '/opt/flutter',
+            '/usr/local/flutter'
+        ]
+        
+        for (String path : commonPaths) {
+            if (new File(path, 'packages/flutter_tools/gradle').exists()) {
+                return path
+            }
+        }
+        
+        throw new GradleException("Flutter SDK not found. Please ensure Flutter is installed and either set flutter.sdk in local.properties or set FLUTTER_ROOT environment variable.")
     }()
 
     includeBuild("${flutterSdkPath}/packages/flutter_tools/gradle")
