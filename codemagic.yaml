@@ -102,77 +102,106 @@ scripts:
   - &debug_env
     name: Debug Environment Variables
     script: |
+      #!/usr/bin/env bash
+      set -e
+      echo "🔍 Debugging environment variables..."
+
+      # Function to safely print sensitive variables
+      print_var() {
+        local var_name=$1
+        local var_value=${!var_name}
+        if [[ $var_name == *"PASSWORD"* ]] || [[ $var_name == *"KEY"* ]]; then
+          echo "$var_name: [REDACTED]"
+        else
+          echo "$var_name: $var_value"
+        fi
+      }
+
       echo "*********** App Name & Version ***********"
-      echo "APP_NAME: $APP_NAME"
-      echo "ORG_NAME: $ORG_NAME"
-      echo "WEB_URL: $WEB_URL"
-      echo "VERSION_NAME: $VERSION_NAME"      
-      echo "VERSION_CODE: $VERSION_CODE" 
-      echo "PKG_NAME: $PKG_NAME"
-      echo "BUNDLE_ID: $BUNDLE_ID"
+      print_var "APP_NAME"
+      print_var "ORG_NAME"
+      print_var "WEB_URL"
+      print_var "VERSION_NAME"
+      print_var "VERSION_CODE"
+      print_var "PKG_NAME"
+      print_var "BUNDLE_ID"
 
       echo "*********** App Customization Configuration ***********"
-      echo "Splash screen: $IS_SPLASH"
-      echo "Pull to refresh: $IS_PULLDOWN"
-      echo "Loading indicators: $IS_LOAD_IND"
-      echo "Bottom navigation bar: $IS_BOTTOMMENU"
-      echo "Deep linking: $IS_DEEPLINK"
+      print_var "IS_SPLASH"
+      print_var "IS_PULLDOWN"
+      print_var "IS_LOAD_IND"
+      print_var "IS_BOTTOMMENU"
+      print_var "IS_DEEPLINK"
 
       echo "*********** Push Notification Configuration ***********"
-      echo "PUSH_NOTIFY: $PUSH_NOTIFY"
-      echo "IS_CHATBOT: $IS_CHATBOT"
+      print_var "PUSH_NOTIFY"
+      print_var "IS_CHATBOT"
 
-      echo "*********** Android Keystore ***********"
-      echo "KEY_STORE: $KEY_STORE"
-      echo "CM_KEYSTORE_PASSWORD: $CM_KEYSTORE_PASSWORD"
-      echo "CM_KEY_ALIAS: $CM_KEY_ALIAS"
-      echo "CM_KEY_PASSWORD: $CM_KEY_PASSWORD"
+      echo "*********** Android Configuration ***********"
+      print_var "KEY_STORE"
+      print_var "CM_KEYSTORE_PASSWORD"
+      print_var "CM_KEY_ALIAS"
+      print_var "CM_KEY_PASSWORD"
+      print_var "COMPILE_SDK_VERSION"
+      print_var "MIN_SDK_VERSION"
+      print_var "TARGET_SDK_VERSION"
 
-      echo "*********** IOS Keystore ***********"
-      echo "APP_STORE_CONNECT_KEY_IDENTIFIER: $APP_STORE_CONNECT_KEY_IDENTIFIER"
-      echo "APNS_KEY_ID: $APNS_KEY_ID"
-      echo "TEAM_ID: $APPLE_TEAM_ID"
-      echo "APNS_AUTH_KEY_URL: $APNS_AUTH_KEY_URL"
+      echo "*********** iOS Configuration ***********"
+      print_var "APP_STORE_CONNECT_KEY_IDENTIFIER"
+      print_var "APNS_KEY_ID"
+      print_var "APPLE_TEAM_ID"
+      print_var "APNS_AUTH_KEY_URL"
+      print_var "IPHONEOS_DEPLOYMENT_TARGET"
+      print_var "EXPORT_METHOD"
 
-      echo "*********** Firebase Android config file ***********"
-      echo "firebase_config_android: $firebase_config_android"
-
-      echo "*********** Firebase IOS config file ***********"
-      echo "firebase_config_ios: $firebase_config_ios"
+      echo "*********** Firebase Configuration ***********"
+      print_var "firebase_config_android"
+      print_var "firebase_config_ios"
 
       echo "*********** Splash Configuration ***********"
-      echo "SPLASH: $SPLASH"
-      echo "SPLASH_BG:$SPLASH_BG"
-      echo "SPLASH_BG_COLOR: $SPLASH_BG_COLOR"
-      echo "SPLASH_TAGLINE: $SPLASH_TAGLINE"
-      echo "SPLASH_TAGLINE_COLOR: $SPLASH_TAGLINE_COLOR"
-      echo "SPLASH_ANIMATION: $SPLASH_ANIMATION"
-      echo "SPLASH_DURATION: $SPLASH_DURATION"
+      print_var "SPLASH"
+      print_var "SPLASH_BG"
+      print_var "SPLASH_BG_COLOR"
+      print_var "SPLASH_TAGLINE"
+      print_var "SPLASH_TAGLINE_COLOR"
+      print_var "SPLASH_ANIMATION"
+      print_var "SPLASH_DURATION"
 
       echo "*********** Bottom Navigation Configuration ***********"
-      echo "BOTTOMMENU_ITEMS: $BOTTOMMENU_ITEMS"
-      echo "BOTTOMMENU_BG_COLOR: $BOTTOMMENU_BG_COLOR"  
-      echo "BOTTOMMENU_ICON_COLOR: $BOTTOMMENU_ICON_COLOR"
-      echo "BOTTOMMENU_TEXT_COLOR: $BOTTOMMENU_TEXT_COLOR"
-      echo "BOTTOMMENU_FONT: $BOTTOMMENU_FONT"
-      echo "BOTTOMMENU_FONT_SIZE: $BOTTOMMENU_FONT_SIZE"
-      echo "BOTTOMMENU_FONT_BOLD: $BOTTOMMENU_FONT_BOLD"
-      echo "BOTTOMMENU_FONT_ITALIC: $BOTTOMMENU_FONT_ITALIC"
-      echo "BOTTOMMENU_ACTIVE_TAB_COLOR: $BOTTOMMENU_ACTIVE_TAB_COLOR"
-      echo "BOTTOMMENU_ICON_POSITION: $BOTTOMMENU_ICON_POSITION"
-      echo "BOTTOMMENU_VISIBLE_ON: $BOTTOMMENU_VISIBLE_ON"
+      print_var "BOTTOMMENU_ITEMS"
+      print_var "BOTTOMMENU_BG_COLOR"
+      print_var "BOTTOMMENU_ICON_COLOR"
+      print_var "BOTTOMMENU_TEXT_COLOR"
+      print_var "BOTTOMMENU_FONT"
+      print_var "BOTTOMMENU_FONT_SIZE"
+      print_var "BOTTOMMENU_FONT_BOLD"
+      print_var "BOTTOMMENU_FONT_ITALIC"
+      print_var "BOTTOMMENU_ACTIVE_TAB_COLOR"
+      print_var "BOTTOMMENU_ICON_POSITION"
+      print_var "BOTTOMMENU_VISIBLE_ON"
 
       echo "*********** Permissions ***********"
-      echo "IS_CAMERA: $IS_CAMERA"
-      echo "IS_LOCATION: $IS_LOCATION"
-      echo "IS_MIC: $IS_MIC"
-      echo "IS_NOTIFICATION: $IS_NOTIFICATION"
-      echo "IS_CONTACT: $IS_CONTACT"
-      echo "IS_BIOMETRIC: $IS_BIOMETRIC"
-      echo "IS_CALENDAR: $IS_CALENDAR"
+      print_var "IS_CAMERA"
+      print_var "IS_LOCATION"
+      print_var "IS_MIC"
+      print_var "IS_NOTIFICATION"
+      print_var "IS_CONTACT"
+      print_var "IS_BIOMETRIC"
+      print_var "IS_CALENDAR"
+      print_var "IS_STORAGE"
+      print_var "IS_PHOTO_LIBRARY"
+      print_var "IS_PHOTO_LIBRARY_ADD"
+      print_var "IS_FACE_ID"
+      print_var "IS_TOUCH_ID"
 
-      echo "*********** Publish Configuration ***********" 
-      echo "EMAIL_ID: $EMAIL_ID"
+      echo "*********** Email Configuration ***********"
+      print_var "EMAIL_ID"
+      print_var "SMTP_SERVER"
+      print_var "SMTP_PORT"
+      print_var "SMTP_USERNAME"
+      print_var "SMTP_PASSWORD"
+
+      echo "✅ Environment variables debug complete"
 
 workflows:
   android-publish:
@@ -200,41 +229,44 @@ workflows:
 
           cd android
 
-          # Check current Gradle version in wrapper properties
-          CURRENT_GRADLE_VERSION=""
-          if [ -f "gradle/wrapper/gradle-wrapper.properties" ]; then
-              CURRENT_GRADLE_VERSION=$(grep "distributionUrl" gradle/wrapper/gradle-wrapper.properties | sed 's/.*gradle-\([0-9.]*\)-.*/\1/')
-              echo "📋 Current Gradle wrapper version: $CURRENT_GRADLE_VERSION"
-          fi
+          # Force update Gradle wrapper to 8.12
+          echo "📦 Updating Gradle wrapper to version 8.12..."
+          cat > gradle/wrapper/gradle-wrapper.properties <<EOF
+          distributionBase=GRADLE_USER_HOME
+          distributionPath=wrapper/dists
+          zipStoreBase=GRADLE_USER_HOME
+          zipStorePath=wrapper/dists
+          distributionUrl=https\://services.gradle.org/distributions/gradle-8.12-all.zip
+          EOF
 
-          # Check if gradlew exists and is executable
-          if [ ! -f "./gradlew" ] || [ ! -x "./gradlew" ]; then
-              echo "📦 Generating/fixing Gradle wrapper..."
-              if command -v gradle >/dev/null 2>&1; then
-                  gradle wrapper --gradle-version=8.12
-                  chmod +x gradlew
-                  echo "✅ Gradle wrapper generated with version 8.12"
-              else
-                  echo "⚠️  Gradle not available, Flutter will handle this"
-              fi
-          else
-              echo "✅ Gradle wrapper already exists and is executable"
-              # Ensure it's executable
-              chmod +x gradlew
+          # Clean Gradle cache and stop daemons
+          echo "🧹 Cleaning Gradle cache and stopping daemons..."
+          rm -rf ~/.gradle/caches/
+          ./gradlew --stop || true
 
-              # Verify the version is compatible (at least 8.9)
-              if [ -n "$CURRENT_GRADLE_VERSION" ]; then
-                  MAJOR_VERSION=$(echo $CURRENT_GRADLE_VERSION | cut -d. -f1)
-                  MINOR_VERSION=$(echo $CURRENT_GRADLE_VERSION | cut -d. -f2)
-                  if [ "$MAJOR_VERSION" -lt 8 ] || ([ "$MAJOR_VERSION" -eq 8 ] && [ "$MINOR_VERSION" -lt 9 ]); then
-                      echo "⚠️  Gradle version $CURRENT_GRADLE_VERSION is too old, upgrading to 8.12..."
-                      gradle wrapper --gradle-version=8.12
-                      chmod +x gradlew
-                  fi
-              fi
+          # Ensure gradlew exists and is executable
+          if [ ! -f "./gradlew" ]; then
+            echo "📦 Generating Gradle wrapper..."
+            if command -v gradle >/dev/null 2>&1; then
+              gradle wrapper --gradle-version=8.12
+            else
+              echo "❌ Gradle is not installed on the system."
+              exit 1
+            fi
           fi
+          chmod +x ./gradlew
+
+          # Verify Gradle version
+          echo "🔍 Verifying Gradle version..."
+          ./gradlew --version
+
+          # Clean project
+          echo "🧹 Cleaning project..."
+          ./gradlew clean
 
           cd ..
+
+          echo "✅ Android Gradle wrapper initialized successfully"
       - name: Validate Android Project Structure
         script: |
           #!/usr/bin/env bash
@@ -870,13 +902,30 @@ workflows:
         script: flutter pub get
       - name: Initialize Build Environment
         script: |
+          #!/usr/bin/env bash
           set -e
           echo "🔧 Initializing build environment for both platforms..."
 
           cd android
 
+          # Force update Gradle wrapper to 8.12
+          echo "📦 Updating Gradle wrapper to version 8.12..."
+          cat > gradle/wrapper/gradle-wrapper.properties <<EOF
+          distributionBase=GRADLE_USER_HOME
+          distributionPath=wrapper/dists
+          zipStoreBase=GRADLE_USER_HOME
+          zipStorePath=wrapper/dists
+          distributionUrl=https\://services.gradle.org/distributions/gradle-8.12-all.zip
+          EOF
+
+          # Clean Gradle cache and stop daemons
+          echo "🧹 Cleaning Gradle cache and stopping daemons..."
+          rm -rf ~/.gradle/caches/
+          ./gradlew --stop || true
+
           # Ensure gradlew exists and is executable
           if [ ! -f "./gradlew" ]; then
+            echo "📦 Generating Gradle wrapper..."
             if command -v gradle >/dev/null 2>&1; then
               gradle wrapper --gradle-version=8.12
             else
@@ -886,10 +935,17 @@ workflows:
           fi
           chmod +x ./gradlew
 
-          # Print gradle version for debug
+          # Verify Gradle version
+          echo "🔍 Verifying Gradle version..."
           ./gradlew --version
 
+          # Clean project
+          echo "🧹 Cleaning project..."
+          ./gradlew clean
+
           cd ..
+
+          echo "✅ Android Gradle wrapper initialized successfully"
 
           # Validate iOS environment
           echo "🍎 Checking iOS environment..."
