@@ -1,0 +1,3378 @@
+09:35:00.882: [quikapptest02] git -c credential.helper= -c core.quotepath=false -c log.showSignature=false init
+Initialized empty Git repository in /Users/alakaraj/workspace/quikapptest02/.git/
+09:35:08.474: [quikapptest02] git -c credential.helper= -c core.quotepath=false -c log.showSignature=false add --ignore-errors -A -- .metadata lib/scripts/ios/move_outputs.sh lib/scripts/android/get_splash.sh ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@1x.png linux/flutter/generated_plugin_registrant.cc lib/codemagic.yaml lib/scripts/ios/generate_p12.sh assets/fonts/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].ttf macos/Runner.xcodeproj/project.pbxproj macos/Runner/MainFlutterWindow.swift lib/scripts/README.md lib/scripts/ios/cleanup.sh ios/Runner.xcodeproj/project.xcworkspace/contents.xcworkspacedata ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@3x.png lib/scripts/android/move_outputs.sh android/app/src/main/kotlin/com/example/quikapptest02/MainActivity.kt windows/flutter/generated_plugin_registrant.h android/app/src/main/res/drawable-v21/launch_background.xml lib/utils/menu_parser.dart ios/Runner.xcworkspace/contents.xcworkspacedata assets/images/logo.png android/app/src/main/res/values-night/styles.xml windows/flutter/CMakeLists.txt lib/scripts/android/inject_permissions_android.sh lib/scripts/ios/archive_app.sh windows/flutter/generated_plugins.cmake lib/chat/assistant_service.dart ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@3x.png ios/Flutter/AppFrameworkInfo.plist macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_16.png macos/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme android/app/src/profile/AndroidManifest.xml android/gradle.properties lib/config/trusted_domains.dart lib/scripts/handle_build_error.sh lib/scripts/email_templates/success_email.html ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@3x.png linux/flutter/generated_plugins.cmake assets/google-services.json ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png linux/runner/my_application.cc linux/flutter/CMakeLists.txt lib/scripts/android/get_json.sh ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage.png macos/Runner/Base.lproj/MainMenu.xib lib/scripts/android/main.sh macos/.gitignore macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_256.png macos/Runner/Configs/Debug.xcconfig web/manifest.json lib/services/notification_service.dart ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json lib/scripts/android/android_file_manager.sh macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_64.png linux/runner/main.cc lib/scripts/ios/download_certificates.sh ios/Runner.xcodeproj/project.pbxproj ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@2x.png lib/module/splash_screen.dart windows/runner/runner.exe.manifest lib/scripts/android/clean_plugin_examples.sh ios/Runner/Base.lproj/Main.storyboard windows/runner/main.cpp test/widget_test.dart lib/scripts/android/send_output_email.sh macos/Runner/DebugProfile.entitlements lib/scripts/ios/main.sh lib/scripts/ios/setup_cocoapods.sh web/icons/Icon-192.png ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@1x.png ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@3x.png android/settings.gradle.kts lib/scripts/android/change_app_name.sh web/favicon.png lib/scripts/android/configure_android_build_fixed.sh lib/scripts/android/build.sh lib/main.dart lib/scripts/android/debug_env.sh macos/RunnerTests/RunnerTests.swift macos/Flutter/Flutter-Release.xcconfig pubspec.yaml windows/runner/win32_window.h lib/chat/smart_assistant_widget.dart lib/scripts/ios/send_output_email.sh web/icons/Icon-maskable-192.png macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_512.png web/icons/Icon-512.png ios/Runner.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings assets/images/splash.png windows/runner/utils.cpp macos/Runner/AppDelegate.swift windows/runner/resource.h lib/scripts/ios/update_xcode_settings.sh ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-83.5x83.5@2x.png lib/scripts/ios/handle_assets.sh lib/scripts/android/capture_build_logs.sh windows/runner/resources/app_icon.ico lib/scripts/android/README_EMAIL_NOTIFICATIONS.md lib/chat/chat_response.dart macos/Runner.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_1024.png windows/runner/win32_window.cpp android/build.gradle.kts linux/CMakeLists.txt ios/Runner/Info.plist android/app/src/main/res/values/styles.xml macos/Runner/Configs/Warnings.xcconfig ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@1x.png ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png linux/runner/CMakeLists.txt lib/scripts/android/setup_email_config.sh ios/.gitignore ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist lib/scripts/android/update_version.sh lib/scripts/email_notification.py android/.gitignore ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@1x.png android/app/build.gradle.kts macos/Runner/Configs/Release.xcconfig ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@3x.png analysis_options.yaml macos/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json ios/Runner/Assets.xcassets/LaunchImage.imageset/Contents.json lib/services/firebase_service.dart linux/runner/my_application.h fix_android_v1_embedding.sh lib/scripts/android/change_proj_name.sh macos/Runner/Info.plist lib/scripts/android/EMAIL_SETUP_GUIDE.md lib/scripts/ios/create_entitlements.sh lib/chat/search_result_model.dart lib/scripts/android/README_ANDROID_RULES.md ios/Flutter/Debug.xcconfig android/app/src/main/res/drawable/launch_background.xml android/app/src/main/res/mipmap-mdpi/ic_launcher.png lib/scripts/ios/export_ipa.sh macos/Runner/Release.entitlements windows/.gitignore macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_32.png ios/Runner.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist macos/Runner/Configs/AppInfo.xcconfig web/icons/Icon-maskable-512.png ios/RunnerTests/RunnerTests.swift android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png windows/CMakeLists.txt lib/config/env_config.dart lib/scripts/android/clean_conflicting_mainactivity.sh lib/scripts/ios/send_error_email.sh lib/scripts/ios/verify_profile.sh lib/scripts/ios/README.md macos/Runner.xcworkspace/contents.xcworkspacedata lib/chat/voice_input_card.dart macos/Runner.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist lib/chat/chat_message.dart lib/scripts/email_templates/error_email.html ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@2x.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png ios/Runner/AppDelegate.swift windows/flutter/generated_plugin_registrant.cc ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@2x.png lib/scripts/android/test_error_email.sh linux/.gitignore windows/runner/utils.h linux/flutter/generated_plugin_registrant.h lib/chat/chat_service.dart macos/Flutter/GeneratedPluginRegistrant.swift lib/scripts/android/inject_keystore.sh lib/scripts/android/export.sh lib/chat/chat_widget.dart macos/Flutter/Flutter-Debug.xcconfig web/index.html lib/scripts/ios/update_project_config.sh ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@2x.png lib/scripts/android/send_output_email.py ios/Flutter/Release.xcconfig lib/scripts/android/migrate_to_android_v2.sh lib/scripts/android/get_logo.sh lib/scripts/ios/export.sh .gitignore android/app/src/main/res/mipmap-hdpi/ic_launcher.png android/app/src/main/res/mipmap-xhdpi/ic_launcher.png ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings android/gradle/wrapper/gradle-wrapper.properties lib/scripts/android/delete_old_keystore.sh windows/runner/CMakeLists.txt lib/scripts/README_EMAIL_SYSTEM.md codemagic.yaml windows/runner/Runner.rc lib/scripts/ios/build_with_flutter.sh lib/module/myapp.dart android/app/src/debug/AndroidManifest.xml
+09:35:08.789: [quikapptest02] git -c credential.helper= -c core.quotepath=false -c log.showSignature=false add --ignore-errors -A -- ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme README.md windows/runner/flutter_window.cpp ios/Runner/Runner-Bridging-Header.h pubspec.lock ios/Runner/Base.lproj/LaunchScreen.storyboard lib/scripts/android/send_error_email.sh lib/module/main_home.dart android/app/src/main/AndroidManifest.xml macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_128.png lib/scripts/android/fix_v1_embedding.sh windows/runner/flutter_window.h
+09:35:08.813: [quikapptest02] git -c credential.helper= -c core.quotepath=false -c log.showSignature=false commit -m "Initial commit" --
+[main (root-commit) c2205e4] Initial commit
+ 205 files changed, 19827 insertions(+)
+ create mode 100644 .gitignore
+ create mode 100644 .metadata
+ create mode 100644 README.md
+ create mode 100644 analysis_options.yaml
+ create mode 100644 android/.gitignore
+ create mode 100644 android/app/build.gradle.kts
+ create mode 100644 android/app/src/debug/AndroidManifest.xml
+ create mode 100644 android/app/src/main/AndroidManifest.xml
+ create mode 100644 android/app/src/main/kotlin/com/example/quikapptest02/MainActivity.kt
+ create mode 100644 android/app/src/main/res/drawable-v21/launch_background.xml
+ create mode 100644 android/app/src/main/res/drawable/launch_background.xml
+ create mode 100644 android/app/src/main/res/mipmap-hdpi/ic_launcher.png
+ create mode 100644 android/app/src/main/res/mipmap-mdpi/ic_launcher.png
+ create mode 100644 android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+ create mode 100644 android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+ create mode 100644 android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+ create mode 100644 android/app/src/main/res/values-night/styles.xml
+ create mode 100644 android/app/src/main/res/values/styles.xml
+ create mode 100644 android/app/src/profile/AndroidManifest.xml
+ create mode 100644 android/build.gradle.kts
+ create mode 100644 android/gradle.properties
+ create mode 100644 android/gradle/wrapper/gradle-wrapper.properties
+ create mode 100644 android/settings.gradle.kts
+ create mode 100644 assets/fonts/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].ttf
+ create mode 100644 assets/google-services.json
+ create mode 100644 assets/images/logo.png
+ create mode 100644 assets/images/splash.png
+ create mode 100644 codemagic.yaml
+ create mode 100755 fix_android_v1_embedding.sh
+ create mode 100644 ios/.gitignore
+ create mode 100644 ios/Flutter/AppFrameworkInfo.plist
+ create mode 100644 ios/Flutter/Debug.xcconfig
+ create mode 100644 ios/Flutter/Release.xcconfig
+ create mode 100644 ios/Runner.xcodeproj/project.pbxproj
+ create mode 100644 ios/Runner.xcodeproj/project.xcworkspace/contents.xcworkspacedata
+ create mode 100644 ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+ create mode 100644 ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+ create mode 100644 ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme
+ create mode 100644 ios/Runner.xcworkspace/contents.xcworkspacedata
+ create mode 100644 ios/Runner.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+ create mode 100644 ios/Runner.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+ create mode 100644 ios/Runner/AppDelegate.swift
+ create mode 100644 ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json
+ create mode 100644 ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png
+ create mode 100644 ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@1x.png
+ create mode 100644 ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@2x.png
+ create mode 100644 ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@3x.png
+ create mode 100644 ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@1x.png
+ create mode 100644 ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@2x.png
+ create mode 100644 ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@3x.png
+ create mode 100644 ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@1x.png
+ create mode 100644 ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@2x.png
+ create mode 100644 ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@3x.png
+ create mode 100644 ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png
+ create mode 100644 ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@3x.png
+ create mode 100644 ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@1x.png
+ create mode 100644 ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png
+ create mode 100644 ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-83.5x83.5@2x.png
+ create mode 100644 ios/Runner/Assets.xcassets/LaunchImage.imageset/Contents.json
+ create mode 100644 ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage.png
+ create mode 100644 ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@2x.png
+ create mode 100644 ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@3x.png
+ create mode 100644 ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md
+ create mode 100644 ios/Runner/Base.lproj/LaunchScreen.storyboard
+ create mode 100644 ios/Runner/Base.lproj/Main.storyboard
+ create mode 100644 ios/Runner/Info.plist
+ create mode 100644 ios/Runner/Runner-Bridging-Header.h
+ create mode 100644 ios/RunnerTests/RunnerTests.swift
+ create mode 100644 lib/chat/assistant_service.dart
+ create mode 100644 lib/chat/chat_message.dart
+ create mode 100644 lib/chat/chat_response.dart
+ create mode 100644 lib/chat/chat_service.dart
+ create mode 100644 lib/chat/chat_widget.dart
+ create mode 100644 lib/chat/search_result_model.dart
+ create mode 100644 lib/chat/smart_assistant_widget.dart
+ create mode 100644 lib/chat/voice_input_card.dart
+ create mode 100644 lib/codemagic.yaml
+ create mode 100644 lib/config/env_config.dart
+ create mode 100644 lib/config/trusted_domains.dart
+ create mode 100644 lib/main.dart
+ create mode 100644 lib/module/main_home.dart
+ create mode 100644 lib/module/myapp.dart
+ create mode 100644 lib/module/splash_screen.dart
+ create mode 100644 lib/scripts/README.md
+ create mode 100644 lib/scripts/README_EMAIL_SYSTEM.md
+ create mode 100644 lib/scripts/android/EMAIL_SETUP_GUIDE.md
+ create mode 100644 lib/scripts/android/README_ANDROID_RULES.md
+ create mode 100644 lib/scripts/android/README_EMAIL_NOTIFICATIONS.md
+ create mode 100755 lib/scripts/android/android_file_manager.sh
+ create mode 100755 lib/scripts/android/build.sh
+ create mode 100755 lib/scripts/android/capture_build_logs.sh
+ create mode 100755 lib/scripts/android/change_app_name.sh
+ create mode 100755 lib/scripts/android/change_proj_name.sh
+ create mode 100755 lib/scripts/android/clean_conflicting_mainactivity.sh
+ create mode 100755 lib/scripts/android/clean_plugin_examples.sh
+ create mode 100755 lib/scripts/android/configure_android_build_fixed.sh
+ create mode 100755 lib/scripts/android/debug_env.sh
+ create mode 100755 lib/scripts/android/delete_old_keystore.sh
+ create mode 100755 lib/scripts/android/export.sh
+ create mode 100755 lib/scripts/android/fix_v1_embedding.sh
+ create mode 100755 lib/scripts/android/get_json.sh
+ create mode 100755 lib/scripts/android/get_logo.sh
+ create mode 100755 lib/scripts/android/get_splash.sh
+ create mode 100755 lib/scripts/android/inject_keystore.sh
+ create mode 100755 lib/scripts/android/inject_permissions_android.sh
+ create mode 100755 lib/scripts/android/main.sh
+ create mode 100755 lib/scripts/android/migrate_to_android_v2.sh
+ create mode 100755 lib/scripts/android/move_outputs.sh
+ create mode 100755 lib/scripts/android/send_error_email.sh
+ create mode 100755 lib/scripts/android/send_output_email.py
+ create mode 100755 lib/scripts/android/send_output_email.sh
+ create mode 100755 lib/scripts/android/setup_email_config.sh
+ create mode 100755 lib/scripts/android/test_error_email.sh
+ create mode 100755 lib/scripts/android/update_version.sh
+ create mode 100644 lib/scripts/email_notification.py
+ create mode 100644 lib/scripts/email_templates/error_email.html
+ create mode 100644 lib/scripts/email_templates/success_email.html
+ create mode 100644 lib/scripts/handle_build_error.sh
+ create mode 100644 lib/scripts/ios/README.md
+ create mode 100755 lib/scripts/ios/archive_app.sh
+ create mode 100755 lib/scripts/ios/build_with_flutter.sh
+ create mode 100755 lib/scripts/ios/cleanup.sh
+ create mode 100755 lib/scripts/ios/create_entitlements.sh
+ create mode 100755 lib/scripts/ios/download_certificates.sh
+ create mode 100755 lib/scripts/ios/export.sh
+ create mode 100755 lib/scripts/ios/export_ipa.sh
+ create mode 100755 lib/scripts/ios/generate_p12.sh
+ create mode 100755 lib/scripts/ios/handle_assets.sh
+ create mode 100755 lib/scripts/ios/main.sh
+ create mode 100755 lib/scripts/ios/move_outputs.sh
+ create mode 100755 lib/scripts/ios/send_error_email.sh
+ create mode 100755 lib/scripts/ios/send_output_email.sh
+ create mode 100755 lib/scripts/ios/setup_cocoapods.sh
+ create mode 100755 lib/scripts/ios/update_project_config.sh
+ create mode 100755 lib/scripts/ios/update_xcode_settings.sh
+ create mode 100755 lib/scripts/ios/verify_profile.sh
+ create mode 100644 lib/services/firebase_service.dart
+ create mode 100644 lib/services/notification_service.dart
+ create mode 100644 lib/utils/menu_parser.dart
+ create mode 100644 linux/.gitignore
+ create mode 100644 linux/CMakeLists.txt
+ create mode 100644 linux/flutter/CMakeLists.txt
+ create mode 100644 linux/flutter/generated_plugin_registrant.cc
+ create mode 100644 linux/flutter/generated_plugin_registrant.h
+ create mode 100644 linux/flutter/generated_plugins.cmake
+ create mode 100644 linux/runner/CMakeLists.txt
+ create mode 100644 linux/runner/main.cc
+ create mode 100644 linux/runner/my_application.cc
+ create mode 100644 linux/runner/my_application.h
+ create mode 100644 macos/.gitignore
+ create mode 100644 macos/Flutter/Flutter-Debug.xcconfig
+ create mode 100644 macos/Flutter/Flutter-Release.xcconfig
+ create mode 100644 macos/Flutter/GeneratedPluginRegistrant.swift
+ create mode 100644 macos/Runner.xcodeproj/project.pbxproj
+ create mode 100644 macos/Runner.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+ create mode 100644 macos/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme
+ create mode 100644 macos/Runner.xcworkspace/contents.xcworkspacedata
+ create mode 100644 macos/Runner.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+ create mode 100644 macos/Runner/AppDelegate.swift
+ create mode 100644 macos/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json
+ create mode 100644 macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_1024.png
+ create mode 100644 macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_128.png
+ create mode 100644 macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_16.png
+ create mode 100644 macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_256.png
+ create mode 100644 macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_32.png
+ create mode 100644 macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_512.png
+ create mode 100644 macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_64.png
+ create mode 100644 macos/Runner/Base.lproj/MainMenu.xib
+ create mode 100644 macos/Runner/Configs/AppInfo.xcconfig
+ create mode 100644 macos/Runner/Configs/Debug.xcconfig
+ create mode 100644 macos/Runner/Configs/Release.xcconfig
+ create mode 100644 macos/Runner/Configs/Warnings.xcconfig
+ create mode 100644 macos/Runner/DebugProfile.entitlements
+ create mode 100644 macos/Runner/Info.plist
+ create mode 100644 macos/Runner/MainFlutterWindow.swift
+ create mode 100644 macos/Runner/Release.entitlements
+ create mode 100644 macos/RunnerTests/RunnerTests.swift
+ create mode 100644 pubspec.lock
+ create mode 100644 pubspec.yaml
+ create mode 100644 test/widget_test.dart
+ create mode 100644 web/favicon.png
+ create mode 100644 web/icons/Icon-192.png
+ create mode 100644 web/icons/Icon-512.png
+ create mode 100644 web/icons/Icon-maskable-192.png
+ create mode 100644 web/icons/Icon-maskable-512.png
+ create mode 100644 web/index.html
+ create mode 100644 web/manifest.json
+ create mode 100644 windows/.gitignore
+ create mode 100644 windows/CMakeLists.txt
+ create mode 100644 windows/flutter/CMakeLists.txt
+ create mode 100644 windows/flutter/generated_plugin_registrant.cc
+ create mode 100644 windows/flutter/generated_plugin_registrant.h
+ create mode 100644 windows/flutter/generated_plugins.cmake
+ create mode 100644 windows/runner/CMakeLists.txt
+ create mode 100644 windows/runner/Runner.rc
+ create mode 100644 windows/runner/flutter_window.cpp
+ create mode 100644 windows/runner/flutter_window.h
+ create mode 100644 windows/runner/main.cpp
+ create mode 100644 windows/runner/resource.h
+ create mode 100644 windows/runner/resources/app_icon.ico
+ create mode 100644 windows/runner/runner.exe.manifest
+ create mode 100644 windows/runner/utils.cpp
+ create mode 100644 windows/runner/utils.h
+ create mode 100644 windows/runner/win32_window.cpp
+ create mode 100644 windows/runner/win32_window.h
+09:35:08.882: [quikapptest02] git -c credential.helper= -c core.quotepath=false -c log.showSignature=false push --progress --porcelain origin main --set-upstream
+Enumerating objects: 266, done.
+Counting objects:   0% (1/266)
+Counting objects:   1% (3/266)
+Counting objects:   2% (6/266)
+Counting objects:   3% (8/266)
+Counting objects:   4% (11/266)
+Counting objects:   5% (14/266)
+Counting objects:   6% (16/266)
+Counting objects:   7% (19/266)
+Counting objects:   8% (22/266)
+Counting objects:   9% (24/266)
+Counting objects:  10% (27/266)
+Counting objects:  11% (30/266)
+Counting objects:  12% (32/266)
+Counting objects:  13% (35/266)
+Counting objects:  14% (38/266)
+Counting objects:  15% (40/266)
+Counting objects:  16% (43/266)
+Counting objects:  17% (46/266)
+Counting objects:  18% (48/266)
+Counting objects:  19% (51/266)
+Counting objects:  20% (54/266)
+Counting objects:  21% (56/266)
+Counting objects:  22% (59/266)
+Counting objects:  23% (62/266)
+Counting objects:  24% (64/266)
+Counting objects:  25% (67/266)
+Counting objects:  26% (70/266)
+Counting objects:  27% (72/266)
+Counting objects:  28% (75/266)
+Counting objects:  29% (78/266)
+Counting objects:  30% (80/266)
+Counting objects:  31% (83/266)
+Counting objects:  32% (86/266)
+Counting objects:  33% (88/266)
+Counting objects:  34% (91/266)
+Counting objects:  35% (94/266)
+Counting objects:  36% (96/266)
+Counting objects:  37% (99/266)
+Counting objects:  38% (102/266)
+Counting objects:  39% (104/266)
+Counting objects:  40% (107/266)
+Counting objects:  41% (110/266)
+Counting objects:  42% (112/266)
+Counting objects:  43% (115/266)
+Counting objects:  44% (118/266)
+Counting objects:  45% (120/266)
+Counting objects:  46% (123/266)
+Counting objects:  47% (126/266)
+Counting objects:  48% (128/266)
+Counting objects:  49% (131/266)
+Counting objects:  50% (133/266)
+Counting objects:  51% (136/266)
+Counting objects:  52% (139/266)
+Counting objects:  53% (141/266)
+Counting objects:  54% (144/266)
+Counting objects:  55% (147/266)
+Counting objects:  56% (149/266)
+Counting objects:  57% (152/266)
+Counting objects:  58% (155/266)
+Counting objects:  59% (157/266)
+Counting objects:  60% (160/266)
+Counting objects:  61% (163/266)
+Counting objects:  62% (165/266)
+Counting objects:  63% (168/266)
+Counting objects:  64% (171/266)
+Counting objects:  65% (173/266)
+Counting objects:  66% (176/266)
+Counting objects:  67% (179/266)
+Counting objects:  68% (181/266)
+Counting objects:  69% (184/266)
+Counting objects:  70% (187/266)
+Counting objects:  71% (189/266)
+Counting objects:  72% (192/266)
+Counting objects:  73% (195/266)
+Counting objects:  74% (197/266)
+Counting objects:  75% (200/266)
+Counting objects:  76% (203/266)
+Counting objects:  77% (205/266)
+Counting objects:  78% (208/266)
+Counting objects:  79% (211/266)
+Counting objects:  80% (213/266)
+Counting objects:  81% (216/266)
+Counting objects:  82% (219/266)
+Counting objects:  83% (221/266)
+Counting objects:  84% (224/266)
+Counting objects:  85% (227/266)
+Counting objects:  86% (229/266)
+Counting objects:  87% (232/266)
+Counting objects:  88% (235/266)
+Counting objects:  89% (237/266)
+Counting objects:  90% (240/266)
+Counting objects:  91% (243/266)
+Counting objects:  92% (245/266)
+Counting objects:  93% (248/266)
+Counting objects:  94% (251/266)
+Counting objects:  95% (253/266)
+Counting objects:  96% (256/266)
+Counting objects:  97% (259/266)
+Counting objects:  98% (261/266)
+Counting objects:  99% (264/266)
+Counting objects: 100% (266/266)
+Counting objects: 100% (266/266), done.
+Delta compression using up to 8 threads
+Compressing objects:   0% (1/234)
+Compressing objects:   1% (3/234)
+Compressing objects:   2% (5/234)
+Compressing objects:   3% (8/234)
+Compressing objects:   4% (10/234)
+Compressing objects:   5% (12/234)
+Compressing objects:   6% (15/234)
+Compressing objects:   7% (17/234)
+Compressing objects:   8% (19/234)
+Compressing objects:   9% (22/234)
+Compressing objects:  10% (24/234)
+Compressing objects:  11% (26/234)
+Compressing objects:  12% (29/234)
+Compressing objects:  13% (31/234)
+Compressing objects:  14% (33/234)
+Compressing objects:  15% (36/234)
+Compressing objects:  16% (38/234)
+Compressing objects:  17% (40/234)
+Compressing objects:  18% (43/234)
+Compressing objects:  19% (45/234)
+Compressing objects:  20% (47/234)
+Compressing objects:  21% (50/234)
+Compressing objects:  22% (52/234)
+Compressing objects:  23% (54/234)
+Compressing objects:  24% (57/234)
+Compressing objects:  25% (59/234)
+Compressing objects:  26% (61/234)
+Compressing objects:  27% (64/234)
+Compressing objects:  28% (66/234)
+Compressing objects:  29% (68/234)
+Compressing objects:  30% (71/234)
+Compressing objects:  31% (73/234)
+Compressing objects:  32% (75/234)
+Compressing objects:  33% (78/234)
+Compressing objects:  34% (80/234)
+Compressing objects:  35% (82/234)
+Compressing objects:  36% (85/234)
+Compressing objects:  37% (87/234)
+Compressing objects:  38% (89/234)
+Compressing objects:  39% (92/234)
+Compressing objects:  40% (94/234)
+Compressing objects:  41% (96/234)
+Compressing objects:  42% (99/234)
+Compressing objects:  43% (101/234)
+Compressing objects:  44% (103/234)
+Compressing objects:  45% (106/234)
+Compressing objects:  46% (108/234)
+Compressing objects:  47% (110/234)
+Compressing objects:  48% (113/234)
+Compressing objects:  49% (115/234)
+Compressing objects:  50% (117/234)
+Compressing objects:  51% (120/234)
+Compressing objects:  52% (122/234)
+Compressing objects:  53% (125/234)
+Compressing objects:  54% (127/234)
+Compressing objects:  55% (129/234)
+Compressing objects:  56% (132/234)
+Compressing objects:  57% (134/234)
+Compressing objects:  58% (136/234)
+Compressing objects:  59% (139/234)
+Compressing objects:  60% (141/234)
+Compressing objects:  61% (143/234)
+Compressing objects:  62% (146/234)
+Compressing objects:  63% (148/234)
+Compressing objects:  64% (150/234)
+Compressing objects:  65% (153/234)
+Compressing objects:  66% (155/234)
+Compressing objects:  67% (157/234)
+Compressing objects:  68% (160/234)
+Compressing objects:  69% (162/234)
+Compressing objects:  70% (164/234)
+Compressing objects:  71% (167/234)
+Compressing objects:  72% (169/234)
+Compressing objects:  73% (171/234)
+Compressing objects:  74% (174/234)
+Compressing objects:  75% (176/234)
+Compressing objects:  76% (178/234)
+Compressing objects:  77% (181/234)
+Compressing objects:  78% (183/234)
+Compressing objects:  79% (185/234)
+Compressing objects:  80% (188/234)
+Compressing objects:  81% (190/234)
+Compressing objects:  82% (192/234)
+Compressing objects:  83% (195/234)
+Compressing objects:  84% (197/234)
+Compressing objects:  85% (199/234)
+Compressing objects:  86% (202/234)
+Compressing objects:  87% (204/234)
+Compressing objects:  88% (206/234)
+Compressing objects:  89% (209/234)
+Compressing objects:  90% (211/234)
+Compressing objects:  91% (213/234)
+Compressing objects:  92% (216/234)
+Compressing objects:  93% (218/234)
+Compressing objects:  94% (220/234)
+Compressing objects:  95% (223/234)
+Compressing objects:  96% (225/234)
+Compressing objects:  97% (227/234)
+Compressing objects:  98% (230/234)
+Compressing objects:  99% (232/234)
+Compressing objects: 100% (234/234)
+Compressing objects: 100% (234/234), done.
+Writing objects:   0% (1/266)
+Writing objects:   1% (3/266)
+Writing objects:   2% (6/266)
+Writing objects:   3% (8/266)
+Writing objects:   4% (11/266)
+Writing objects:   5% (14/266)
+Writing objects:   6% (16/266)
+Writing objects:   7% (19/266)
+Writing objects:   8% (22/266)
+Writing objects:   9% (24/266)
+Writing objects:  10% (27/266)
+Writing objects:  11% (30/266)
+Writing objects:  12% (32/266)
+Writing objects:  13% (35/266)
+Writing objects:  14% (38/266)
+Writing objects:  15% (40/266)
+Writing objects:  16% (43/266)
+Writing objects:  17% (46/266)
+error: RPC failed; HTTP 400 curl 22 The requested URL returned error: 400
+send-pack: unexpected disconnect while reading sideband packet
+Writing objects:  17% (47/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  18% (48/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  19% (51/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  20% (54/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  21% (56/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  22% (59/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  23% (62/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  24% (64/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  25% (67/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  26% (70/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  27% (72/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  28% (75/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  29% (78/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  30% (80/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  31% (83/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  32% (86/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  33% (88/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  34% (91/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  35% (94/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  36% (96/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  37% (99/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  38% (102/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  39% (104/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  40% (107/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  41% (110/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  42% (112/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  43% (115/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  44% (118/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  45% (120/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  46% (123/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  47% (126/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  48% (128/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  49% (131/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  50% (133/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  51% (136/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  52% (139/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  53% (141/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  54% (144/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  55% (147/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  56% (149/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  57% (152/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  58% (155/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  59% (158/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  60% (160/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  61% (163/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  62% (165/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  63% (168/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  64% (171/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  65% (173/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  66% (176/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  67% (179/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  68% (181/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  69% (184/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  70% (188/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  71% (190/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  72% (193/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  73% (196/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  74% (197/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  75% (200/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  76% (203/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  77% (205/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  78% (208/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  79% (211/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  80% (213/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  81% (216/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  82% (219/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  83% (221/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  84% (224/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  85% (227/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  86% (229/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  87% (232/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  88% (235/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  89% (237/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  90% (240/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  91% (243/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  92% (245/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  93% (248/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  94% (251/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  95% (253/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  96% (256/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  97% (259/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  98% (261/266), 1.08 MiB | 865.00 KiB/s
+Writing objects:  99% (264/266), 1.08 MiB | 865.00 KiB/s
+Writing objects: 100% (266/266), 1.08 MiB | 865.00 KiB/s
+Writing objects: 100% (266/266), 4.50 MiB | 3.43 MiB/s, done.
+Total 266 (delta 24), reused 0 (delta 0), pack-reused 0
+fatal: the remote end hung up unexpectedly
+Done
+09:35:18.724: [quikapptest02] git -c credential.helper= -c core.quotepath=false -c log.showSignature=false push --progress --porcelain origin main --set-upstream
+Enumerating objects: 266, done.
+Counting objects:   0% (1/266)
+Counting objects:   1% (3/266)
+Counting objects:   2% (6/266)
+Counting objects:   3% (8/266)
+Counting objects:   4% (11/266)
+Counting objects:   5% (14/266)
+Counting objects:   6% (16/266)
+Counting objects:   7% (19/266)
+Counting objects:   8% (22/266)
+Counting objects:   9% (24/266)
+Counting objects:  10% (27/266)
+Counting objects:  11% (30/266)
+Counting objects:  12% (32/266)
+Counting objects:  13% (35/266)
+Counting objects:  14% (38/266)
+Counting objects:  15% (40/266)
+Counting objects:  16% (43/266)
+Counting objects:  17% (46/266)
+Counting objects:  18% (48/266)
+Counting objects:  19% (51/266)
+Counting objects:  20% (54/266)
+Counting objects:  21% (56/266)
+Counting objects:  22% (59/266)
+Counting objects:  23% (62/266)
+Counting objects:  24% (64/266)
+Counting objects:  25% (67/266)
+Counting objects:  26% (70/266)
+Counting objects:  27% (72/266)
+Counting objects:  28% (75/266)
+Counting objects:  29% (78/266)
+Counting objects:  30% (80/266)
+Counting objects:  31% (83/266)
+Counting objects:  32% (86/266)
+Counting objects:  33% (88/266)
+Counting objects:  34% (91/266)
+Counting objects:  35% (94/266)
+Counting objects:  36% (96/266)
+Counting objects:  37% (99/266)
+Counting objects:  38% (102/266)
+Counting objects:  39% (104/266)
+Counting objects:  40% (107/266)
+Counting objects:  41% (110/266)
+Counting objects:  42% (112/266)
+Counting objects:  43% (115/266)
+Counting objects:  44% (118/266)
+Counting objects:  45% (120/266)
+Counting objects:  46% (123/266)
+Counting objects:  47% (126/266)
+Counting objects:  48% (128/266)
+Counting objects:  49% (131/266)
+Counting objects:  50% (133/266)
+Counting objects:  51% (136/266)
+Counting objects:  52% (139/266)
+Counting objects:  53% (141/266)
+Counting objects:  54% (144/266)
+Counting objects:  55% (147/266)
+Counting objects:  56% (149/266)
+Counting objects:  57% (152/266)
+Counting objects:  58% (155/266)
+Counting objects:  59% (157/266)
+Counting objects:  60% (160/266)
+Counting objects:  61% (163/266)
+Counting objects:  62% (165/266)
+Counting objects:  63% (168/266)
+Counting objects:  64% (171/266)
+Counting objects:  65% (173/266)
+Counting objects:  66% (176/266)
+Counting objects:  67% (179/266)
+Counting objects:  68% (181/266)
+Counting objects:  69% (184/266)
+Counting objects:  70% (187/266)
+Counting objects:  71% (189/266)
+Counting objects:  72% (192/266)
+Counting objects:  73% (195/266)
+Counting objects:  74% (197/266)
+Counting objects:  75% (200/266)
+Counting objects:  76% (203/266)
+Counting objects:  77% (205/266)
+Counting objects:  78% (208/266)
+Counting objects:  79% (211/266)
+Counting objects:  80% (213/266)
+Counting objects:  81% (216/266)
+Counting objects:  82% (219/266)
+Counting objects:  83% (221/266)
+Counting objects:  84% (224/266)
+Counting objects:  85% (227/266)
+Counting objects:  86% (229/266)
+Counting objects:  87% (232/266)
+Counting objects:  88% (235/266)
+Counting objects:  89% (237/266)
+Counting objects:  90% (240/266)
+Counting objects:  91% (243/266)
+Counting objects:  92% (245/266)
+Counting objects:  93% (248/266)
+Counting objects:  94% (251/266)
+Counting objects:  95% (253/266)
+Counting objects:  96% (256/266)
+Counting objects:  97% (259/266)
+Counting objects:  98% (261/266)
+Counting objects:  99% (264/266)
+Counting objects: 100% (266/266)
+Counting objects: 100% (266/266), done.
+Delta compression using up to 8 threads
+Compressing objects:   0% (1/234)
+Compressing objects:   1% (3/234)
+Compressing objects:   2% (5/234)
+Compressing objects:   3% (8/234)
+Compressing objects:   4% (10/234)
+Compressing objects:   5% (12/234)
+Compressing objects:   6% (15/234)
+Compressing objects:   7% (17/234)
+Compressing objects:   8% (19/234)
+Compressing objects:   9% (22/234)
+Compressing objects:  10% (24/234)
+Compressing objects:  11% (26/234)
+Compressing objects:  12% (29/234)
+Compressing objects:  13% (31/234)
+Compressing objects:  14% (33/234)
+Compressing objects:  15% (36/234)
+Compressing objects:  16% (38/234)
+Compressing objects:  17% (40/234)
+Compressing objects:  18% (43/234)
+Compressing objects:  19% (45/234)
+Compressing objects:  20% (47/234)
+Compressing objects:  21% (50/234)
+Compressing objects:  22% (52/234)
+Compressing objects:  23% (54/234)
+Compressing objects:  24% (57/234)
+Compressing objects:  25% (59/234)
+Compressing objects:  26% (61/234)
+Compressing objects:  27% (64/234)
+Compressing objects:  28% (66/234)
+Compressing objects:  29% (68/234)
+Compressing objects:  30% (71/234)
+Compressing objects:  31% (73/234)
+Compressing objects:  32% (75/234)
+Compressing objects:  33% (78/234)
+Compressing objects:  34% (80/234)
+Compressing objects:  35% (82/234)
+Compressing objects:  36% (85/234)
+Compressing objects:  37% (87/234)
+Compressing objects:  38% (89/234)
+Compressing objects:  39% (92/234)
+Compressing objects:  40% (94/234)
+Compressing objects:  41% (96/234)
+Compressing objects:  42% (99/234)
+Compressing objects:  43% (101/234)
+Compressing objects:  44% (103/234)
+Compressing objects:  45% (106/234)
+Compressing objects:  46% (108/234)
+Compressing objects:  47% (110/234)
+Compressing objects:  48% (113/234)
+Compressing objects:  49% (115/234)
+Compressing objects:  50% (117/234)
+Compressing objects:  51% (120/234)
+Compressing objects:  52% (122/234)
+Compressing objects:  53% (125/234)
+Compressing objects:  54% (127/234)
+Compressing objects:  55% (129/234)
+Compressing objects:  56% (132/234)
+Compressing objects:  57% (134/234)
+Compressing objects:  58% (136/234)
+Compressing objects:  59% (139/234)
+Compressing objects:  60% (141/234)
+Compressing objects:  61% (143/234)
+Compressing objects:  62% (146/234)
+Compressing objects:  63% (148/234)
+Compressing objects:  64% (150/234)
+Compressing objects:  65% (153/234)
+Compressing objects:  66% (155/234)
+Compressing objects:  67% (157/234)
+Compressing objects:  68% (160/234)
+Compressing objects:  69% (162/234)
+Compressing objects:  70% (164/234)
+Compressing objects:  71% (167/234)
+Compressing objects:  72% (169/234)
+Compressing objects:  73% (171/234)
+Compressing objects:  74% (174/234)
+Compressing objects:  75% (176/234)
+Compressing objects:  76% (178/234)
+Compressing objects:  77% (181/234)
+Compressing objects:  78% (183/234)
+Compressing objects:  79% (185/234)
+Compressing objects:  80% (188/234)
+Compressing objects:  81% (190/234)
+Compressing objects:  82% (192/234)
+Compressing objects:  83% (195/234)
+Compressing objects:  84% (197/234)
+Compressing objects:  85% (199/234)
+Compressing objects:  86% (202/234)
+Compressing objects:  87% (204/234)
+Compressing objects:  88% (206/234)
+Compressing objects:  89% (209/234)
+Compressing objects:  90% (211/234)
+Compressing objects:  91% (213/234)
+Compressing objects:  92% (216/234)
+Compressing objects:  93% (218/234)
+Compressing objects:  94% (220/234)
+Compressing objects:  95% (223/234)
+Compressing objects:  96% (225/234)
+Compressing objects:  97% (227/234)
+Compressing objects:  98% (230/234)
+Compressing objects:  99% (232/234)
+Compressing objects: 100% (234/234)
+Compressing objects: 100% (234/234), done.
+Writing objects:   0% (1/266)
+Writing objects:   1% (3/266)
+Writing objects:   2% (6/266)
+Writing objects:   3% (8/266)
+Writing objects:   4% (11/266)
+Writing objects:   5% (14/266)
+Writing objects:   6% (16/266)
+Writing objects:   7% (19/266)
+Writing objects:   8% (22/266)
+Writing objects:   9% (24/266)
+Writing objects:  10% (27/266)
+Writing objects:  11% (30/266)
+Writing objects:  12% (32/266)
+Writing objects:  13% (35/266)
+Writing objects:  14% (38/266)
+Writing objects:  15% (40/266)
+Writing objects:  16% (43/266)
+Writing objects:  17% (46/266)
+error: RPC failed; HTTP 400 curl 22 The requested URL returned error: 400
+Writing objects:  17% (47/266), 1.07 MiB | 489.00 KiB/s
+send-pack: unexpected disconnect while reading sideband packet
+Writing objects:  18% (48/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  19% (51/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  20% (54/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  21% (56/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  22% (59/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  23% (62/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  24% (64/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  25% (67/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  26% (70/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  27% (72/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  28% (75/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  29% (78/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  30% (80/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  31% (83/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  32% (86/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  33% (88/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  34% (91/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  35% (94/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  36% (96/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  37% (99/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  38% (102/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  39% (104/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  40% (107/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  41% (110/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  42% (112/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  43% (115/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  44% (118/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  45% (120/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  46% (123/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  47% (126/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  48% (128/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  49% (131/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  50% (133/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  51% (136/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  52% (139/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  53% (141/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  54% (144/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  55% (147/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  56% (149/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  57% (152/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  58% (155/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  59% (158/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  60% (160/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  61% (163/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  62% (165/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  63% (168/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  64% (171/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  65% (173/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  66% (176/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  67% (179/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  68% (181/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  69% (184/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  70% (188/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  71% (190/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  72% (193/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  73% (196/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  74% (197/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  75% (200/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  76% (203/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  77% (205/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  78% (208/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  79% (211/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  80% (213/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  81% (216/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  82% (219/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  83% (221/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  84% (224/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  85% (227/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  86% (229/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  87% (232/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  88% (235/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  89% (237/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  90% (240/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  91% (243/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  92% (245/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  93% (248/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  94% (251/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  95% (253/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  96% (256/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  97% (259/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  98% (261/266), 1.07 MiB | 489.00 KiB/s
+Writing objects:  99% (264/266), 1.07 MiB | 489.00 KiB/s
+Writing objects: 100% (266/266), 1.07 MiB | 489.00 KiB/s
+Writing objects: 100% (266/266), 4.50 MiB | 1.98 MiB/s, done.
+Total 266 (delta 24), reused 0 (delta 0), pack-reused 0
+fatal: the remote end hung up unexpectedly
+Done
+09:50:04.033: [quikapptest02] git -c credential.helper= -c core.quotepath=false -c log.showSignature=false add --ignore-errors -A -f -- pubspec.yaml
+09:50:04.052: [quikapptest02] git -c credential.helper= -c core.quotepath=false -c log.showSignature=false commit -F /private/var/folders/5f/9k2f991x0x9cv4x9yjhk8zl00000gn/T/git-commit-msg-.txt --
+[main 77743d0] test
+ 1 file changed, 1 insertion(+)
+09:50:06.609: [quikapptest02] git -c credential.helper= -c core.quotepath=false -c log.showSignature=false push --progress --porcelain origin refs/heads/main:refs/heads/main --set-upstream
+Enumerating objects: 269, done.
+Counting objects:   0% (1/269)
+Counting objects:   1% (3/269)
+Counting objects:   2% (6/269)
+Counting objects:   3% (9/269)
+Counting objects:   4% (11/269)
+Counting objects:   5% (14/269)
+Counting objects:   6% (17/269)
+Counting objects:   7% (19/269)
+Counting objects:   8% (22/269)
+Counting objects:   9% (25/269)
+Counting objects:  10% (27/269)
+Counting objects:  11% (30/269)
+Counting objects:  12% (33/269)
+Counting objects:  13% (35/269)
+Counting objects:  14% (38/269)
+Counting objects:  15% (41/269)
+Counting objects:  16% (44/269)
+Counting objects:  17% (46/269)
+Counting objects:  18% (49/269)
+Counting objects:  19% (52/269)
+Counting objects:  20% (54/269)
+Counting objects:  21% (57/269)
+Counting objects:  22% (60/269)
+Counting objects:  23% (62/269)
+Counting objects:  24% (65/269)
+Counting objects:  25% (68/269)
+Counting objects:  26% (70/269)
+Counting objects:  27% (73/269)
+Counting objects:  28% (76/269)
+Counting objects:  29% (79/269)
+Counting objects:  30% (81/269)
+Counting objects:  31% (84/269)
+Counting objects:  32% (87/269)
+Counting objects:  33% (89/269)
+Counting objects:  34% (92/269)
+Counting objects:  35% (95/269)
+Counting objects:  36% (97/269)
+Counting objects:  37% (100/269)
+Counting objects:  38% (103/269)
+Counting objects:  39% (105/269)
+Counting objects:  40% (108/269)
+Counting objects:  41% (111/269)
+Counting objects:  42% (113/269)
+Counting objects:  43% (116/269)
+Counting objects:  44% (119/269)
+Counting objects:  45% (122/269)
+Counting objects:  46% (124/269)
+Counting objects:  47% (127/269)
+Counting objects:  48% (130/269)
+Counting objects:  49% (132/269)
+Counting objects:  50% (135/269)
+Counting objects:  51% (138/269)
+Counting objects:  52% (140/269)
+Counting objects:  53% (143/269)
+Counting objects:  54% (146/269)
+Counting objects:  55% (148/269)
+Counting objects:  56% (151/269)
+Counting objects:  57% (154/269)
+Counting objects:  58% (157/269)
+Counting objects:  59% (159/269)
+Counting objects:  60% (162/269)
+Counting objects:  61% (165/269)
+Counting objects:  62% (167/269)
+Counting objects:  63% (170/269)
+Counting objects:  64% (173/269)
+Counting objects:  65% (175/269)
+Counting objects:  66% (178/269)
+Counting objects:  67% (181/269)
+Counting objects:  68% (183/269)
+Counting objects:  69% (186/269)
+Counting objects:  70% (189/269)
+Counting objects:  71% (191/269)
+Counting objects:  72% (194/269)
+Counting objects:  73% (197/269)
+Counting objects:  74% (200/269)
+Counting objects:  75% (202/269)
+Counting objects:  76% (205/269)
+Counting objects:  77% (208/269)
+Counting objects:  78% (210/269)
+Counting objects:  79% (213/269)
+Counting objects:  80% (216/269)
+Counting objects:  81% (218/269)
+Counting objects:  82% (221/269)
+Counting objects:  83% (224/269)
+Counting objects:  84% (226/269)
+Counting objects:  85% (229/269)
+Counting objects:  86% (232/269)
+Counting objects:  87% (235/269)
+Counting objects:  88% (237/269)
+Counting objects:  89% (240/269)
+Counting objects:  90% (243/269)
+Counting objects:  91% (245/269)
+Counting objects:  92% (248/269)
+Counting objects:  93% (251/269)
+Counting objects:  94% (253/269)
+Counting objects:  95% (256/269)
+Counting objects:  96% (259/269)
+Counting objects:  97% (261/269)
+Counting objects:  98% (264/269)
+Counting objects:  99% (267/269)
+Counting objects: 100% (269/269)
+Counting objects: 100% (269/269), done.
+Delta compression using up to 8 threads
+Compressing objects:   0% (1/237)
+Compressing objects:   1% (3/237)
+Compressing objects:   2% (5/237)
+Compressing objects:   3% (8/237)
+Compressing objects:   4% (10/237)
+Compressing objects:   5% (12/237)
+Compressing objects:   6% (15/237)
+Compressing objects:   7% (17/237)
+Compressing objects:   8% (19/237)
+Compressing objects:   9% (22/237)
+Compressing objects:  10% (24/237)
+Compressing objects:  11% (27/237)
+Compressing objects:  12% (29/237)
+Compressing objects:  13% (31/237)
+Compressing objects:  14% (34/237)
+Compressing objects:  15% (36/237)
+Compressing objects:  16% (38/237)
+Compressing objects:  17% (41/237)
+Compressing objects:  18% (43/237)
+Compressing objects:  19% (46/237)
+Compressing objects:  20% (48/237)
+Compressing objects:  21% (50/237)
+Compressing objects:  22% (53/237)
+Compressing objects:  23% (55/237)
+Compressing objects:  24% (57/237)
+Compressing objects:  25% (60/237)
+Compressing objects:  26% (62/237)
+Compressing objects:  27% (64/237)
+Compressing objects:  28% (67/237)
+Compressing objects:  29% (69/237)
+Compressing objects:  30% (72/237)
+Compressing objects:  31% (74/237)
+Compressing objects:  32% (76/237)
+Compressing objects:  33% (79/237)
+Compressing objects:  34% (81/237)
+Compressing objects:  35% (83/237)
+Compressing objects:  36% (86/237)
+Compressing objects:  37% (88/237)
+Compressing objects:  38% (91/237)
+Compressing objects:  39% (93/237)
+Compressing objects:  40% (95/237)
+Compressing objects:  41% (98/237)
+Compressing objects:  42% (100/237)
+Compressing objects:  43% (102/237)
+Compressing objects:  44% (105/237)
+Compressing objects:  45% (107/237)
+Compressing objects:  46% (110/237)
+Compressing objects:  47% (112/237)
+Compressing objects:  48% (114/237)
+Compressing objects:  49% (117/237)
+Compressing objects:  50% (119/237)
+Compressing objects:  51% (121/237)
+Compressing objects:  52% (124/237)
+Compressing objects:  53% (126/237)
+Compressing objects:  54% (128/237)
+Compressing objects:  55% (131/237)
+Compressing objects:  56% (133/237)
+Compressing objects:  57% (136/237)
+Compressing objects:  58% (138/237)
+Compressing objects:  59% (140/237)
+Compressing objects:  60% (143/237)
+Compressing objects:  61% (145/237)
+Compressing objects:  62% (147/237)
+Compressing objects:  63% (150/237)
+Compressing objects:  64% (152/237)
+Compressing objects:  65% (155/237)
+Compressing objects:  66% (157/237)
+Compressing objects:  67% (159/237)
+Compressing objects:  68% (162/237)
+Compressing objects:  69% (164/237)
+Compressing objects:  70% (166/237)
+Compressing objects:  71% (169/237)
+Compressing objects:  72% (171/237)
+Compressing objects:  73% (174/237)
+Compressing objects:  74% (176/237)
+Compressing objects:  75% (178/237)
+Compressing objects:  76% (181/237)
+Compressing objects:  77% (183/237)
+Compressing objects:  78% (185/237)
+Compressing objects:  79% (188/237)
+Compressing objects:  80% (190/237)
+Compressing objects:  81% (192/237)
+Compressing objects:  82% (195/237)
+Compressing objects:  83% (197/237)
+Compressing objects:  84% (200/237)
+Compressing objects:  85% (202/237)
+Compressing objects:  86% (204/237)
+Compressing objects:  87% (207/237)
+Compressing objects:  88% (209/237)
+Compressing objects:  89% (211/237)
+Compressing objects:  90% (214/237)
+Compressing objects:  91% (216/237)
+Compressing objects:  92% (219/237)
+Compressing objects:  93% (221/237)
+Compressing objects:  94% (223/237)
+Compressing objects:  95% (226/237)
+Compressing objects:  96% (228/237)
+Compressing objects:  97% (230/237)
+Compressing objects:  98% (233/237)
+Compressing objects:  99% (235/237)
+Compressing objects: 100% (237/237)
+Compressing objects: 100% (237/237), done.
+Writing objects:   0% (1/269)
+Writing objects:   1% (3/269)
+Writing objects:   2% (6/269)
+Writing objects:   3% (9/269)
+Writing objects:   4% (11/269)
+Writing objects:   5% (14/269)
+Writing objects:   6% (17/269)
+Writing objects:   7% (19/269)
+Writing objects:   8% (22/269)
+Writing objects:   9% (25/269)
+Writing objects:  10% (27/269)
+Writing objects:  11% (30/269)
+Writing objects:  12% (33/269)
+Writing objects:  13% (35/269)
+Writing objects:  14% (38/269)
+Writing objects:  15% (41/269)
+Writing objects:  16% (44/269)
+Writing objects:  17% (46/269)
+error: RPC failed; HTTP 400 curl 22 The requested URL returned error: 400
+send-pack: unexpected disconnect while reading sideband packet
+Writing objects:  17% (48/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  18% (49/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  19% (52/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  20% (54/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  21% (57/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  22% (60/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  23% (62/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  24% (65/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  25% (68/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  26% (70/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  27% (73/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  28% (76/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  29% (79/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  30% (81/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  31% (84/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  32% (87/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  33% (89/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  34% (92/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  35% (95/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  36% (97/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  37% (100/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  38% (103/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  39% (105/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  40% (108/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  41% (111/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  42% (113/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  43% (116/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  44% (119/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  45% (122/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  46% (124/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  47% (127/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  48% (130/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  49% (132/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  50% (135/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  51% (138/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  52% (140/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  53% (143/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  54% (146/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  55% (148/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  56% (152/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  57% (154/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  58% (157/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  59% (159/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  60% (162/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  61% (165/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  62% (167/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  63% (170/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  64% (173/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  65% (175/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  66% (178/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  67% (181/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  68% (183/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  69% (186/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  70% (189/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  71% (191/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  72% (194/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  73% (197/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  74% (200/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  75% (202/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  76% (205/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  77% (208/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  78% (210/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  79% (213/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  80% (216/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  81% (218/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  82% (221/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  83% (224/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  84% (226/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  85% (229/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  86% (232/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  87% (235/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  88% (237/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  89% (240/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  90% (243/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  91% (245/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  92% (248/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  93% (251/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  94% (253/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  95% (256/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  96% (259/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  97% (261/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  98% (264/269), 1.09 MiB | 974.00 KiB/s
+Writing objects:  99% (267/269), 1.09 MiB | 974.00 KiB/s
+Writing objects: 100% (269/269), 1.09 MiB | 974.00 KiB/s
+Writing objects: 100% (269/269), 4.50 MiB | 3.83 MiB/s, done.
+Total 269 (delta 26), reused 0 (delta 0), pack-reused 0
+fatal: the remote end hung up unexpectedly
+Done
+09:50:19.881: [quikapptest02] git -c credential.helper= -c core.quotepath=false -c log.showSignature=false push --progress --porcelain origin refs/heads/main:refs/heads/main --set-upstream
+Enumerating objects: 269, done.
+Counting objects:   0% (1/269)
+Counting objects:   1% (3/269)
+Counting objects:   2% (6/269)
+Counting objects:   3% (9/269)
+Counting objects:   4% (11/269)
+Counting objects:   5% (14/269)
+Counting objects:   6% (17/269)
+Counting objects:   7% (19/269)
+Counting objects:   8% (22/269)
+Counting objects:   9% (25/269)
+Counting objects:  10% (27/269)
+Counting objects:  11% (30/269)
+Counting objects:  12% (33/269)
+Counting objects:  13% (35/269)
+Counting objects:  14% (38/269)
+Counting objects:  15% (41/269)
+Counting objects:  16% (44/269)
+Counting objects:  17% (46/269)
+Counting objects:  18% (49/269)
+Counting objects:  19% (52/269)
+Counting objects:  20% (54/269)
+Counting objects:  21% (57/269)
+Counting objects:  22% (60/269)
+Counting objects:  23% (62/269)
+Counting objects:  24% (65/269)
+Counting objects:  25% (68/269)
+Counting objects:  26% (70/269)
+Counting objects:  27% (73/269)
+Counting objects:  28% (76/269)
+Counting objects:  29% (79/269)
+Counting objects:  30% (81/269)
+Counting objects:  31% (84/269)
+Counting objects:  32% (87/269)
+Counting objects:  33% (89/269)
+Counting objects:  34% (92/269)
+Counting objects:  35% (95/269)
+Counting objects:  36% (97/269)
+Counting objects:  37% (100/269)
+Counting objects:  38% (103/269)
+Counting objects:  39% (105/269)
+Counting objects:  40% (108/269)
+Counting objects:  41% (111/269)
+Counting objects:  42% (113/269)
+Counting objects:  43% (116/269)
+Counting objects:  44% (119/269)
+Counting objects:  45% (122/269)
+Counting objects:  46% (124/269)
+Counting objects:  47% (127/269)
+Counting objects:  48% (130/269)
+Counting objects:  49% (132/269)
+Counting objects:  50% (135/269)
+Counting objects:  51% (138/269)
+Counting objects:  52% (140/269)
+Counting objects:  53% (143/269)
+Counting objects:  54% (146/269)
+Counting objects:  55% (148/269)
+Counting objects:  56% (151/269)
+Counting objects:  57% (154/269)
+Counting objects:  58% (157/269)
+Counting objects:  59% (159/269)
+Counting objects:  60% (162/269)
+Counting objects:  61% (165/269)
+Counting objects:  62% (167/269)
+Counting objects:  63% (170/269)
+Counting objects:  64% (173/269)
+Counting objects:  65% (175/269)
+Counting objects:  66% (178/269)
+Counting objects:  67% (181/269)
+Counting objects:  68% (183/269)
+Counting objects:  69% (186/269)
+Counting objects:  70% (189/269)
+Counting objects:  71% (191/269)
+Counting objects:  72% (194/269)
+Counting objects:  73% (197/269)
+Counting objects:  74% (200/269)
+Counting objects:  75% (202/269)
+Counting objects:  76% (205/269)
+Counting objects:  77% (208/269)
+Counting objects:  78% (210/269)
+Counting objects:  79% (213/269)
+Counting objects:  80% (216/269)
+Counting objects:  81% (218/269)
+Counting objects:  82% (221/269)
+Counting objects:  83% (224/269)
+Counting objects:  84% (226/269)
+Counting objects:  85% (229/269)
+Counting objects:  86% (232/269)
+Counting objects:  87% (235/269)
+Counting objects:  88% (237/269)
+Counting objects:  89% (240/269)
+Counting objects:  90% (243/269)
+Counting objects:  91% (245/269)
+Counting objects:  92% (248/269)
+Counting objects:  93% (251/269)
+Counting objects:  94% (253/269)
+Counting objects:  95% (256/269)
+Counting objects:  96% (259/269)
+Counting objects:  97% (261/269)
+Counting objects:  98% (264/269)
+Counting objects:  99% (267/269)
+Counting objects: 100% (269/269)
+Counting objects: 100% (269/269), done.
+Delta compression using up to 8 threads
+Compressing objects:   0% (1/237)
+Compressing objects:   1% (3/237)
+Compressing objects:   2% (5/237)
+Compressing objects:   3% (8/237)
+Compressing objects:   4% (10/237)
+Compressing objects:   5% (12/237)
+Compressing objects:   6% (15/237)
+Compressing objects:   7% (17/237)
+Compressing objects:   8% (19/237)
+Compressing objects:   9% (22/237)
+Compressing objects:  10% (24/237)
+Compressing objects:  11% (27/237)
+Compressing objects:  12% (29/237)
+Compressing objects:  13% (31/237)
+Compressing objects:  14% (34/237)
+Compressing objects:  15% (36/237)
+Compressing objects:  16% (38/237)
+Compressing objects:  17% (41/237)
+Compressing objects:  18% (43/237)
+Compressing objects:  19% (46/237)
+Compressing objects:  20% (48/237)
+Compressing objects:  21% (50/237)
+Compressing objects:  22% (53/237)
+Compressing objects:  23% (55/237)
+Compressing objects:  24% (57/237)
+Compressing objects:  25% (60/237)
+Compressing objects:  26% (62/237)
+Compressing objects:  27% (64/237)
+Compressing objects:  28% (67/237)
+Compressing objects:  29% (69/237)
+Compressing objects:  30% (72/237)
+Compressing objects:  31% (74/237)
+Compressing objects:  32% (76/237)
+Compressing objects:  33% (79/237)
+Compressing objects:  34% (81/237)
+Compressing objects:  35% (83/237)
+Compressing objects:  36% (86/237)
+Compressing objects:  37% (88/237)
+Compressing objects:  38% (91/237)
+Compressing objects:  39% (93/237)
+Compressing objects:  40% (95/237)
+Compressing objects:  41% (98/237)
+Compressing objects:  42% (100/237)
+Compressing objects:  43% (102/237)
+Compressing objects:  44% (105/237)
+Compressing objects:  45% (107/237)
+Compressing objects:  46% (110/237)
+Compressing objects:  47% (112/237)
+Compressing objects:  48% (114/237)
+Compressing objects:  49% (117/237)
+Compressing objects:  50% (119/237)
+Compressing objects:  51% (121/237)
+Compressing objects:  52% (124/237)
+Compressing objects:  53% (126/237)
+Compressing objects:  54% (128/237)
+Compressing objects:  55% (131/237)
+Compressing objects:  56% (133/237)
+Compressing objects:  57% (136/237)
+Compressing objects:  58% (138/237)
+Compressing objects:  59% (140/237)
+Compressing objects:  60% (143/237)
+Compressing objects:  61% (145/237)
+Compressing objects:  62% (147/237)
+Compressing objects:  63% (150/237)
+Compressing objects:  64% (152/237)
+Compressing objects:  65% (155/237)
+Compressing objects:  66% (157/237)
+Compressing objects:  67% (159/237)
+Compressing objects:  68% (162/237)
+Compressing objects:  69% (164/237)
+Compressing objects:  70% (166/237)
+Compressing objects:  71% (169/237)
+Compressing objects:  72% (171/237)
+Compressing objects:  73% (174/237)
+Compressing objects:  74% (176/237)
+Compressing objects:  75% (178/237)
+Compressing objects:  76% (181/237)
+Compressing objects:  77% (183/237)
+Compressing objects:  78% (185/237)
+Compressing objects:  79% (188/237)
+Compressing objects:  80% (190/237)
+Compressing objects:  81% (192/237)
+Compressing objects:  82% (195/237)
+Compressing objects:  83% (197/237)
+Compressing objects:  84% (200/237)
+Compressing objects:  85% (202/237)
+Compressing objects:  86% (204/237)
+Compressing objects:  87% (207/237)
+Compressing objects:  88% (209/237)
+Compressing objects:  89% (211/237)
+Compressing objects:  90% (214/237)
+Compressing objects:  91% (216/237)
+Compressing objects:  92% (219/237)
+Compressing objects:  93% (221/237)
+Compressing objects:  94% (223/237)
+Compressing objects:  95% (226/237)
+Compressing objects:  96% (228/237)
+Compressing objects:  97% (230/237)
+Compressing objects:  98% (233/237)
+Compressing objects:  99% (235/237)
+Compressing objects: 100% (237/237)
+Compressing objects: 100% (237/237), done.
+Writing objects:   0% (1/269)
+Writing objects:   1% (3/269)
+Writing objects:   2% (6/269)
+Writing objects:   3% (9/269)
+Writing objects:   4% (11/269)
+Writing objects:   5% (14/269)
+Writing objects:   6% (17/269)
+Writing objects:   7% (19/269)
+Writing objects:   8% (22/269)
+Writing objects:   9% (25/269)
+Writing objects:  10% (27/269)
+Writing objects:  11% (30/269)
+Writing objects:  12% (33/269)
+Writing objects:  13% (35/269)
+Writing objects:  14% (38/269)
+Writing objects:  15% (41/269)
+Writing objects:  16% (44/269)
+Writing objects:  17% (46/269)
+error: RPC failed; HTTP 400 curl 22 The requested URL returned error: 400
+send-pack: unexpected disconnect while reading sideband packet
+Writing objects:  18% (49/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  19% (52/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  20% (54/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  21% (57/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  22% (60/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  23% (62/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  24% (65/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  25% (68/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  26% (70/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  27% (73/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  28% (76/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  29% (79/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  30% (81/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  31% (84/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  32% (87/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  33% (89/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  34% (92/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  35% (95/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  36% (97/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  37% (100/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  38% (103/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  39% (105/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  40% (108/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  41% (111/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  42% (113/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  43% (116/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  44% (119/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  45% (122/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  46% (124/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  47% (127/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  48% (130/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  49% (132/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  50% (135/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  51% (138/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  52% (140/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  53% (143/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  54% (146/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  55% (148/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  56% (152/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  57% (154/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  58% (157/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  59% (159/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  60% (162/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  61% (165/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  62% (167/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  63% (170/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  64% (173/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  65% (175/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  66% (178/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  67% (181/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  68% (183/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  69% (186/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  70% (189/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  71% (191/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  72% (194/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  73% (197/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  74% (200/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  75% (202/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  76% (205/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  77% (208/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  78% (210/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  79% (213/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  80% (216/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  81% (218/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  82% (221/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  83% (224/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  84% (226/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  85% (229/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  86% (232/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  87% (235/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  88% (237/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  89% (240/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  90% (243/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  91% (245/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  92% (248/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  93% (251/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  94% (253/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  95% (256/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  96% (259/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  97% (261/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  98% (264/269), 1.08 MiB | 1.09 MiB/s
+Writing objects:  99% (267/269), 1.08 MiB | 1.09 MiB/s
+Writing objects: 100% (269/269), 1.08 MiB | 1.09 MiB/s
+Writing objects: 100% (269/269), 4.50 MiB | 4.25 MiB/s, done.
+Total 269 (delta 26), reused 0 (delta 0), pack-reused 0
+fatal: the remote end hung up unexpectedly
+Done
+10:16:19.183: [quikapptest02] git -c credential.helper= -c core.quotepath=false -c log.showSignature=false add --ignore-errors -A -f -- pubspec.yaml
+10:16:19.203: [quikapptest02] git -c credential.helper= -c core.quotepath=false -c log.showSignature=false commit -F /private/var/folders/5f/9k2f991x0x9cv4x9yjhk8zl00000gn/T/git-commit-msg-.txt --
+[main f586c6f] test01
+ 1 file changed, 1 deletion(-)
+10:16:22.508: [quikapptest02] git -c credential.helper= -c core.quotepath=false -c log.showSignature=false push --progress --porcelain origin refs/heads/main:refs/heads/main --set-upstream
+Enumerating objects: 270, done.
+Counting objects:   0% (1/270)
+Counting objects:   1% (3/270)
+Counting objects:   2% (6/270)
+Counting objects:   3% (9/270)
+Counting objects:   4% (11/270)
+Counting objects:   5% (14/270)
+Counting objects:   6% (17/270)
+Counting objects:   7% (19/270)
+Counting objects:   8% (22/270)
+Counting objects:   9% (25/270)
+Counting objects:  10% (27/270)
+Counting objects:  11% (30/270)
+Counting objects:  12% (33/270)
+Counting objects:  13% (36/270)
+Counting objects:  14% (38/270)
+Counting objects:  15% (41/270)
+Counting objects:  16% (44/270)
+Counting objects:  17% (46/270)
+Counting objects:  18% (49/270)
+Counting objects:  19% (52/270)
+Counting objects:  20% (54/270)
+Counting objects:  21% (57/270)
+Counting objects:  22% (60/270)
+Counting objects:  23% (63/270)
+Counting objects:  24% (65/270)
+Counting objects:  25% (68/270)
+Counting objects:  26% (71/270)
+Counting objects:  27% (73/270)
+Counting objects:  28% (76/270)
+Counting objects:  29% (79/270)
+Counting objects:  30% (81/270)
+Counting objects:  31% (84/270)
+Counting objects:  32% (87/270)
+Counting objects:  33% (90/270)
+Counting objects:  34% (92/270)
+Counting objects:  35% (95/270)
+Counting objects:  36% (98/270)
+Counting objects:  37% (100/270)
+Counting objects:  38% (103/270)
+Counting objects:  39% (106/270)
+Counting objects:  40% (108/270)
+Counting objects:  41% (111/270)
+Counting objects:  42% (114/270)
+Counting objects:  43% (117/270)
+Counting objects:  44% (119/270)
+Counting objects:  45% (122/270)
+Counting objects:  46% (125/270)
+Counting objects:  47% (127/270)
+Counting objects:  48% (130/270)
+Counting objects:  49% (133/270)
+Counting objects:  50% (135/270)
+Counting objects:  51% (138/270)
+Counting objects:  52% (141/270)
+Counting objects:  53% (144/270)
+Counting objects:  54% (146/270)
+Counting objects:  55% (149/270)
+Counting objects:  56% (152/270)
+Counting objects:  57% (154/270)
+Counting objects:  58% (157/270)
+Counting objects:  59% (160/270)
+Counting objects:  60% (162/270)
+Counting objects:  61% (165/270)
+Counting objects:  62% (168/270)
+Counting objects:  63% (171/270)
+Counting objects:  64% (173/270)
+Counting objects:  65% (176/270)
+Counting objects:  66% (179/270)
+Counting objects:  67% (181/270)
+Counting objects:  68% (184/270)
+Counting objects:  69% (187/270)
+Counting objects:  70% (189/270)
+Counting objects:  71% (192/270)
+Counting objects:  72% (195/270)
+Counting objects:  73% (198/270)
+Counting objects:  74% (200/270)
+Counting objects:  75% (203/270)
+Counting objects:  76% (206/270)
+Counting objects:  77% (208/270)
+Counting objects:  78% (211/270)
+Counting objects:  79% (214/270)
+Counting objects:  80% (216/270)
+Counting objects:  81% (219/270)
+Counting objects:  82% (222/270)
+Counting objects:  83% (225/270)
+Counting objects:  84% (227/270)
+Counting objects:  85% (230/270)
+Counting objects:  86% (233/270)
+Counting objects:  87% (235/270)
+Counting objects:  88% (238/270)
+Counting objects:  89% (241/270)
+Counting objects:  90% (243/270)
+Counting objects:  91% (246/270)
+Counting objects:  92% (249/270)
+Counting objects:  93% (252/270)
+Counting objects:  94% (254/270)
+Counting objects:  95% (257/270)
+Counting objects:  96% (260/270)
+Counting objects:  97% (262/270)
+Counting objects:  98% (265/270)
+Counting objects:  99% (268/270)
+Counting objects: 100% (270/270)
+Counting objects: 100% (270/270), done.
+Delta compression using up to 8 threads
+Compressing objects:   0% (1/238)
+Compressing objects:   1% (3/238)
+Compressing objects:   2% (5/238)
+Compressing objects:   3% (8/238)
+Compressing objects:   4% (10/238)
+Compressing objects:   5% (12/238)
+Compressing objects:   6% (15/238)
+Compressing objects:   7% (17/238)
+Compressing objects:   8% (20/238)
+Compressing objects:   9% (22/238)
+Compressing objects:  10% (24/238)
+Compressing objects:  11% (27/238)
+Compressing objects:  12% (29/238)
+Compressing objects:  13% (31/238)
+Compressing objects:  14% (34/238)
+Compressing objects:  15% (36/238)
+Compressing objects:  16% (39/238)
+Compressing objects:  17% (41/238)
+Compressing objects:  18% (43/238)
+Compressing objects:  19% (46/238)
+Compressing objects:  20% (48/238)
+Compressing objects:  21% (50/238)
+Compressing objects:  22% (53/238)
+Compressing objects:  23% (55/238)
+Compressing objects:  24% (58/238)
+Compressing objects:  25% (60/238)
+Compressing objects:  26% (62/238)
+Compressing objects:  27% (65/238)
+Compressing objects:  28% (67/238)
+Compressing objects:  29% (70/238)
+Compressing objects:  30% (72/238)
+Compressing objects:  31% (74/238)
+Compressing objects:  32% (77/238)
+Compressing objects:  33% (79/238)
+Compressing objects:  34% (81/238)
+Compressing objects:  35% (84/238)
+Compressing objects:  36% (86/238)
+Compressing objects:  37% (89/238)
+Compressing objects:  38% (91/238)
+Compressing objects:  39% (93/238)
+Compressing objects:  40% (96/238)
+Compressing objects:  41% (98/238)
+Compressing objects:  42% (100/238)
+Compressing objects:  43% (103/238)
+Compressing objects:  44% (105/238)
+Compressing objects:  45% (108/238)
+Compressing objects:  46% (110/238)
+Compressing objects:  47% (112/238)
+Compressing objects:  48% (115/238)
+Compressing objects:  49% (117/238)
+Compressing objects:  50% (119/238)
+Compressing objects:  51% (122/238)
+Compressing objects:  52% (124/238)
+Compressing objects:  53% (127/238)
+Compressing objects:  54% (129/238)
+Compressing objects:  55% (131/238)
+Compressing objects:  56% (134/238)
+Compressing objects:  57% (136/238)
+Compressing objects:  58% (139/238)
+Compressing objects:  59% (141/238)
+Compressing objects:  60% (143/238)
+Compressing objects:  61% (146/238)
+Compressing objects:  62% (148/238)
+Compressing objects:  63% (150/238)
+Compressing objects:  64% (153/238)
+Compressing objects:  65% (155/238)
+Compressing objects:  66% (158/238)
+Compressing objects:  67% (160/238)
+Compressing objects:  68% (162/238)
+Compressing objects:  69% (165/238)
+Compressing objects:  70% (167/238)
+Compressing objects:  71% (169/238)
+Compressing objects:  72% (172/238)
+Compressing objects:  73% (174/238)
+Compressing objects:  74% (177/238)
+Compressing objects:  75% (179/238)
+Compressing objects:  76% (181/238)
+Compressing objects:  77% (184/238)
+Compressing objects:  78% (186/238)
+Compressing objects:  79% (189/238)
+Compressing objects:  80% (191/238)
+Compressing objects:  81% (193/238)
+Compressing objects:  82% (196/238)
+Compressing objects:  83% (198/238)
+Compressing objects:  84% (200/238)
+Compressing objects:  85% (203/238)
+Compressing objects:  86% (205/238)
+Compressing objects:  87% (208/238)
+Compressing objects:  88% (210/238)
+Compressing objects:  89% (212/238)
+Compressing objects:  90% (215/238)
+Compressing objects:  91% (217/238)
+Compressing objects:  92% (219/238)
+Compressing objects:  93% (222/238)
+Compressing objects:  94% (224/238)
+Compressing objects:  95% (227/238)
+Compressing objects:  96% (229/238)
+Compressing objects:  97% (231/238)
+Compressing objects:  98% (234/238)
+Compressing objects:  99% (236/238)
+Compressing objects: 100% (238/238)
+Compressing objects: 100% (238/238), done.
+Writing objects:   0% (1/270)
+Writing objects:   1% (3/270)
+Writing objects:   2% (6/270)
+Writing objects:   3% (9/270)
+Writing objects:   4% (11/270)
+Writing objects:   5% (14/270)
+Writing objects:   6% (17/270)
+Writing objects:   7% (19/270)
+Writing objects:   8% (22/270)
+Writing objects:   9% (25/270)
+Writing objects:  10% (27/270)
+Writing objects:  11% (30/270)
+Writing objects:  12% (33/270)
+Writing objects:  13% (36/270)
+Writing objects:  14% (38/270)
+Writing objects:  15% (41/270)
+Writing objects:  16% (44/270)
+Writing objects:  17% (46/270)
+Writing objects:  18% (49/270)
+error: RPC failed; HTTP 400 curl 22 The requested URL returned error: 400
+send-pack: unexpected disconnect while reading sideband packet
+Writing objects:  18% (49/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  19% (52/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  20% (54/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  21% (57/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  22% (60/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  23% (63/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  24% (66/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  25% (68/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  26% (71/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  27% (73/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  28% (76/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  29% (79/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  30% (81/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  31% (84/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  32% (87/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  33% (90/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  34% (92/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  35% (95/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  36% (98/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  37% (100/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  38% (103/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  39% (106/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  40% (108/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  41% (111/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  42% (114/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  43% (117/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  44% (119/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  45% (122/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  46% (125/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  47% (127/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  48% (130/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  49% (133/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  50% (135/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  51% (138/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  52% (141/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  53% (144/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  54% (146/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  55% (149/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  56% (153/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  57% (154/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  58% (157/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  59% (160/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  60% (162/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  61% (165/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  62% (168/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  63% (171/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  64% (173/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  65% (176/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  66% (179/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  67% (181/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  68% (184/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  69% (187/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  70% (190/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  71% (192/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  72% (195/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  73% (198/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  74% (200/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  75% (203/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  76% (206/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  77% (208/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  78% (211/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  79% (214/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  80% (216/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  81% (219/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  82% (222/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  83% (225/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  84% (227/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  85% (230/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  86% (233/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  87% (235/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  88% (238/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  89% (241/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  90% (243/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  91% (246/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  92% (249/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  93% (252/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  94% (254/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  95% (257/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  96% (260/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  97% (262/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  98% (265/270), 1.08 MiB | 1.03 MiB/s
+Writing objects:  99% (268/270), 1.08 MiB | 1.03 MiB/s
+Writing objects: 100% (270/270), 1.08 MiB | 1.03 MiB/s
+Writing objects: 100% (270/270), 4.50 MiB | 4.11 MiB/s, done.
+Total 270 (delta 27), reused 0 (delta 0), pack-reused 0
+fatal: the remote end hung up unexpectedly
+Done
+10:16:26.472: [quikapptest02] git -c credential.helper= -c core.quotepath=false -c log.showSignature=false push --progress --porcelain origin refs/heads/main:refs/heads/main --set-upstream
+Enumerating objects: 270, done.
+Counting objects:   0% (1/270)
+Counting objects:   1% (3/270)
+Counting objects:   2% (6/270)
+Counting objects:   3% (9/270)
+Counting objects:   4% (11/270)
+Counting objects:   5% (14/270)
+Counting objects:   6% (17/270)
+Counting objects:   7% (19/270)
+Counting objects:   8% (22/270)
+Counting objects:   9% (25/270)
+Counting objects:  10% (27/270)
+Counting objects:  11% (30/270)
+Counting objects:  12% (33/270)
+Counting objects:  13% (36/270)
+Counting objects:  14% (38/270)
+Counting objects:  15% (41/270)
+Counting objects:  16% (44/270)
+Counting objects:  17% (46/270)
+Counting objects:  18% (49/270)
+Counting objects:  19% (52/270)
+Counting objects:  20% (54/270)
+Counting objects:  21% (57/270)
+Counting objects:  22% (60/270)
+Counting objects:  23% (63/270)
+Counting objects:  24% (65/270)
+Counting objects:  25% (68/270)
+Counting objects:  26% (71/270)
+Counting objects:  27% (73/270)
+Counting objects:  28% (76/270)
+Counting objects:  29% (79/270)
+Counting objects:  30% (81/270)
+Counting objects:  31% (84/270)
+Counting objects:  32% (87/270)
+Counting objects:  33% (90/270)
+Counting objects:  34% (92/270)
+Counting objects:  35% (95/270)
+Counting objects:  36% (98/270)
+Counting objects:  37% (100/270)
+Counting objects:  38% (103/270)
+Counting objects:  39% (106/270)
+Counting objects:  40% (108/270)
+Counting objects:  41% (111/270)
+Counting objects:  42% (114/270)
+Counting objects:  43% (117/270)
+Counting objects:  44% (119/270)
+Counting objects:  45% (122/270)
+Counting objects:  46% (125/270)
+Counting objects:  47% (127/270)
+Counting objects:  48% (130/270)
+Counting objects:  49% (133/270)
+Counting objects:  50% (135/270)
+Counting objects:  51% (138/270)
+Counting objects:  52% (141/270)
+Counting objects:  53% (144/270)
+Counting objects:  54% (146/270)
+Counting objects:  55% (149/270)
+Counting objects:  56% (152/270)
+Counting objects:  57% (154/270)
+Counting objects:  58% (157/270)
+Counting objects:  59% (160/270)
+Counting objects:  60% (162/270)
+Counting objects:  61% (165/270)
+Counting objects:  62% (168/270)
+Counting objects:  63% (171/270)
+Counting objects:  64% (173/270)
+Counting objects:  65% (176/270)
+Counting objects:  66% (179/270)
+Counting objects:  67% (181/270)
+Counting objects:  68% (184/270)
+Counting objects:  69% (187/270)
+Counting objects:  70% (189/270)
+Counting objects:  71% (192/270)
+Counting objects:  72% (195/270)
+Counting objects:  73% (198/270)
+Counting objects:  74% (200/270)
+Counting objects:  75% (203/270)
+Counting objects:  76% (206/270)
+Counting objects:  77% (208/270)
+Counting objects:  78% (211/270)
+Counting objects:  79% (214/270)
+Counting objects:  80% (216/270)
+Counting objects:  81% (219/270)
+Counting objects:  82% (222/270)
+Counting objects:  83% (225/270)
+Counting objects:  84% (227/270)
+Counting objects:  85% (230/270)
+Counting objects:  86% (233/270)
+Counting objects:  87% (235/270)
+Counting objects:  88% (238/270)
+Counting objects:  89% (241/270)
+Counting objects:  90% (243/270)
+Counting objects:  91% (246/270)
+Counting objects:  92% (249/270)
+Counting objects:  93% (252/270)
+Counting objects:  94% (254/270)
+Counting objects:  95% (257/270)
+Counting objects:  96% (260/270)
+Counting objects:  97% (262/270)
+Counting objects:  98% (265/270)
+Counting objects:  99% (268/270)
+Counting objects: 100% (270/270)
+Counting objects: 100% (270/270), done.
+Delta compression using up to 8 threads
+Compressing objects:   0% (1/238)
+Compressing objects:   1% (3/238)
+Compressing objects:   2% (5/238)
+Compressing objects:   3% (8/238)
+Compressing objects:   4% (10/238)
+Compressing objects:   5% (12/238)
+Compressing objects:   6% (15/238)
+Compressing objects:   7% (17/238)
+Compressing objects:   8% (20/238)
+Compressing objects:   9% (22/238)
+Compressing objects:  10% (24/238)
+Compressing objects:  11% (27/238)
+Compressing objects:  12% (29/238)
+Compressing objects:  13% (31/238)
+Compressing objects:  14% (34/238)
+Compressing objects:  15% (36/238)
+Compressing objects:  16% (39/238)
+Compressing objects:  17% (41/238)
+Compressing objects:  18% (43/238)
+Compressing objects:  19% (46/238)
+Compressing objects:  20% (48/238)
+Compressing objects:  21% (50/238)
+Compressing objects:  22% (53/238)
+Compressing objects:  23% (55/238)
+Compressing objects:  24% (58/238)
+Compressing objects:  25% (60/238)
+Compressing objects:  26% (62/238)
+Compressing objects:  27% (65/238)
+Compressing objects:  28% (67/238)
+Compressing objects:  29% (70/238)
+Compressing objects:  30% (72/238)
+Compressing objects:  31% (74/238)
+Compressing objects:  32% (77/238)
+Compressing objects:  33% (79/238)
+Compressing objects:  34% (81/238)
+Compressing objects:  35% (84/238)
+Compressing objects:  36% (86/238)
+Compressing objects:  37% (89/238)
+Compressing objects:  38% (91/238)
+Compressing objects:  39% (93/238)
+Compressing objects:  40% (96/238)
+Compressing objects:  41% (98/238)
+Compressing objects:  42% (100/238)
+Compressing objects:  43% (103/238)
+Compressing objects:  44% (105/238)
+Compressing objects:  45% (108/238)
+Compressing objects:  46% (110/238)
+Compressing objects:  47% (112/238)
+Compressing objects:  48% (115/238)
+Compressing objects:  49% (117/238)
+Compressing objects:  50% (119/238)
+Compressing objects:  51% (122/238)
+Compressing objects:  52% (124/238)
+Compressing objects:  53% (127/238)
+Compressing objects:  54% (129/238)
+Compressing objects:  55% (131/238)
+Compressing objects:  56% (134/238)
+Compressing objects:  57% (136/238)
+Compressing objects:  58% (139/238)
+Compressing objects:  59% (141/238)
+Compressing objects:  60% (143/238)
+Compressing objects:  61% (146/238)
+Compressing objects:  62% (148/238)
+Compressing objects:  63% (150/238)
+Compressing objects:  64% (153/238)
+Compressing objects:  65% (155/238)
+Compressing objects:  66% (158/238)
+Compressing objects:  67% (160/238)
+Compressing objects:  68% (162/238)
+Compressing objects:  69% (165/238)
+Compressing objects:  70% (167/238)
+Compressing objects:  71% (169/238)
+Compressing objects:  72% (172/238)
+Compressing objects:  73% (174/238)
+Compressing objects:  74% (177/238)
+Compressing objects:  75% (179/238)
+Compressing objects:  76% (181/238)
+Compressing objects:  77% (184/238)
+Compressing objects:  78% (186/238)
+Compressing objects:  79% (189/238)
+Compressing objects:  80% (191/238)
+Compressing objects:  81% (193/238)
+Compressing objects:  82% (196/238)
+Compressing objects:  83% (198/238)
+Compressing objects:  84% (200/238)
+Compressing objects:  85% (203/238)
+Compressing objects:  86% (205/238)
+Compressing objects:  87% (208/238)
+Compressing objects:  88% (210/238)
+Compressing objects:  89% (212/238)
+Compressing objects:  90% (215/238)
+Compressing objects:  91% (217/238)
+Compressing objects:  92% (219/238)
+Compressing objects:  93% (222/238)
+Compressing objects:  94% (224/238)
+Compressing objects:  95% (227/238)
+Compressing objects:  96% (229/238)
+Compressing objects:  97% (231/238)
+Compressing objects:  98% (234/238)
+Compressing objects:  99% (236/238)
+Compressing objects: 100% (238/238)
+Compressing objects: 100% (238/238), done.
+Writing objects:   0% (1/270)
+Writing objects:   1% (3/270)
+Writing objects:   2% (6/270)
+Writing objects:   3% (9/270)
+Writing objects:   4% (11/270)
+Writing objects:   5% (14/270)
+Writing objects:   6% (17/270)
+Writing objects:   7% (19/270)
+Writing objects:   8% (22/270)
+Writing objects:   9% (25/270)
+Writing objects:  10% (27/270)
+Writing objects:  11% (30/270)
+Writing objects:  12% (33/270)
+Writing objects:  13% (36/270)
+Writing objects:  14% (38/270)
+Writing objects:  15% (41/270)
+Writing objects:  16% (44/270)
+Writing objects:  17% (46/270)
+Writing objects:  18% (49/270)
+error: RPC failed; HTTP 400 curl 22 The requested URL returned error: 400
+send-pack: unexpected disconnect while reading sideband packet
+Writing objects:  19% (52/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  20% (54/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  21% (57/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  22% (60/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  23% (63/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  24% (66/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  25% (68/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  26% (71/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  27% (73/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  28% (76/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  29% (79/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  30% (81/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  31% (84/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  32% (87/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  33% (90/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  34% (92/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  35% (95/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  36% (98/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  37% (100/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  38% (103/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  39% (106/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  40% (108/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  41% (111/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  42% (114/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  43% (117/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  44% (119/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  45% (122/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  46% (125/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  47% (127/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  48% (130/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  49% (133/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  50% (135/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  51% (138/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  52% (141/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  53% (144/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  54% (146/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  55% (149/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  56% (153/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  57% (154/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  58% (157/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  59% (160/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  60% (162/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  61% (165/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  62% (168/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  63% (171/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  64% (173/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  65% (176/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  66% (179/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  67% (181/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  68% (184/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  69% (187/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  70% (190/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  71% (192/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  72% (195/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  73% (198/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  74% (200/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  75% (203/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  76% (206/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  77% (208/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  78% (211/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  79% (214/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  80% (216/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  81% (219/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  82% (222/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  83% (225/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  84% (227/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  85% (230/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  86% (233/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  87% (235/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  88% (238/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  89% (241/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  90% (243/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  91% (246/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  92% (249/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  93% (252/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  94% (254/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  95% (257/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  96% (260/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  97% (262/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  98% (265/270), 1.10 MiB | 1.17 MiB/s
+Writing objects:  99% (268/270), 1.10 MiB | 1.17 MiB/s
+Writing objects: 100% (270/270), 1.10 MiB | 1.17 MiB/s
+Writing objects: 100% (270/270), 4.50 MiB | 4.51 MiB/s, done.
+Total 270 (delta 27), reused 0 (delta 0), pack-reused 0
+fatal: the remote end hung up unexpectedly
+Done
+10:20:16.850: [quikapptest02] git -c credential.helper= -c core.quotepath=false -c log.showSignature=false add --ignore-errors -A -f -- pubspec.yaml
+10:20:16.883: [quikapptest02] git -c credential.helper= -c core.quotepath=false -c log.showSignature=false commit -F /private/var/folders/5f/9k2f991x0x9cv4x9yjhk8zl00000gn/T/git-commit-msg-.txt --
+[main 398e1d7] test01x
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+10:20:20.901: [quikapptest02] git -c credential.helper= -c core.quotepath=false -c log.showSignature=false push --progress --porcelain origin refs/heads/main:refs/heads/main --set-upstream
+Enumerating objects: 273, done.
+Counting objects:   0% (1/273)
+Counting objects:   1% (3/273)
+Counting objects:   2% (6/273)
+Counting objects:   3% (9/273)
+Counting objects:   4% (11/273)
+Counting objects:   5% (14/273)
+Counting objects:   6% (17/273)
+Counting objects:   7% (20/273)
+Counting objects:   8% (22/273)
+Counting objects:   9% (25/273)
+Counting objects:  10% (28/273)
+Counting objects:  11% (31/273)
+Counting objects:  12% (33/273)
+Counting objects:  13% (36/273)
+Counting objects:  14% (39/273)
+Counting objects:  15% (41/273)
+Counting objects:  16% (44/273)
+Counting objects:  17% (47/273)
+Counting objects:  18% (50/273)
+Counting objects:  19% (52/273)
+Counting objects:  20% (55/273)
+Counting objects:  21% (58/273)
+Counting objects:  22% (61/273)
+Counting objects:  23% (63/273)
+Counting objects:  24% (66/273)
+Counting objects:  25% (69/273)
+Counting objects:  26% (71/273)
+Counting objects:  27% (74/273)
+Counting objects:  28% (77/273)
+Counting objects:  29% (80/273)
+Counting objects:  30% (82/273)
+Counting objects:  31% (85/273)
+Counting objects:  32% (88/273)
+Counting objects:  33% (91/273)
+Counting objects:  34% (93/273)
+Counting objects:  35% (96/273)
+Counting objects:  36% (99/273)
+Counting objects:  37% (102/273)
+Counting objects:  38% (104/273)
+Counting objects:  39% (107/273)
+Counting objects:  40% (110/273)
+Counting objects:  41% (112/273)
+Counting objects:  42% (115/273)
+Counting objects:  43% (118/273)
+Counting objects:  44% (121/273)
+Counting objects:  45% (123/273)
+Counting objects:  46% (126/273)
+Counting objects:  47% (129/273)
+Counting objects:  48% (132/273)
+Counting objects:  49% (134/273)
+Counting objects:  50% (137/273)
+Counting objects:  51% (140/273)
+Counting objects:  52% (142/273)
+Counting objects:  53% (145/273)
+Counting objects:  54% (148/273)
+Counting objects:  55% (151/273)
+Counting objects:  56% (153/273)
+Counting objects:  57% (156/273)
+Counting objects:  58% (159/273)
+Counting objects:  59% (162/273)
+Counting objects:  60% (164/273)
+Counting objects:  61% (167/273)
+Counting objects:  62% (170/273)
+Counting objects:  63% (172/273)
+Counting objects:  64% (175/273)
+Counting objects:  65% (178/273)
+Counting objects:  66% (181/273)
+Counting objects:  67% (183/273)
+Counting objects:  68% (186/273)
+Counting objects:  69% (189/273)
+Counting objects:  70% (192/273)
+Counting objects:  71% (194/273)
+Counting objects:  72% (197/273)
+Counting objects:  73% (200/273)
+Counting objects:  74% (203/273)
+Counting objects:  75% (205/273)
+Counting objects:  76% (208/273)
+Counting objects:  77% (211/273)
+Counting objects:  78% (213/273)
+Counting objects:  79% (216/273)
+Counting objects:  80% (219/273)
+Counting objects:  81% (222/273)
+Counting objects:  82% (224/273)
+Counting objects:  83% (227/273)
+Counting objects:  84% (230/273)
+Counting objects:  85% (233/273)
+Counting objects:  86% (235/273)
+Counting objects:  87% (238/273)
+Counting objects:  88% (241/273)
+Counting objects:  89% (243/273)
+Counting objects:  90% (246/273)
+Counting objects:  91% (249/273)
+Counting objects:  92% (252/273)
+Counting objects:  93% (254/273)
+Counting objects:  94% (257/273)
+Counting objects:  95% (260/273)
+Counting objects:  96% (263/273)
+Counting objects:  97% (265/273)
+Counting objects:  98% (268/273)
+Counting objects:  99% (271/273)
+Counting objects: 100% (273/273)
+Counting objects: 100% (273/273), done.
+Delta compression using up to 8 threads
+Compressing objects:   0% (1/241)
+Compressing objects:   1% (3/241)
+Compressing objects:   2% (5/241)
+Compressing objects:   3% (8/241)
+Compressing objects:   4% (10/241)
+Compressing objects:   5% (13/241)
+Compressing objects:   6% (15/241)
+Compressing objects:   7% (17/241)
+Compressing objects:   8% (20/241)
+Compressing objects:   9% (22/241)
+Compressing objects:  10% (25/241)
+Compressing objects:  11% (27/241)
+Compressing objects:  12% (29/241)
+Compressing objects:  13% (32/241)
+Compressing objects:  14% (34/241)
+Compressing objects:  15% (37/241)
+Compressing objects:  16% (39/241)
+Compressing objects:  17% (41/241)
+Compressing objects:  18% (44/241)
+Compressing objects:  19% (46/241)
+Compressing objects:  20% (49/241)
+Compressing objects:  21% (51/241)
+Compressing objects:  22% (54/241)
+Compressing objects:  23% (56/241)
+Compressing objects:  24% (58/241)
+Compressing objects:  25% (61/241)
+Compressing objects:  26% (63/241)
+Compressing objects:  27% (66/241)
+Compressing objects:  28% (68/241)
+Compressing objects:  29% (70/241)
+Compressing objects:  30% (73/241)
+Compressing objects:  31% (75/241)
+Compressing objects:  32% (78/241)
+Compressing objects:  33% (80/241)
+Compressing objects:  34% (82/241)
+Compressing objects:  35% (85/241)
+Compressing objects:  36% (87/241)
+Compressing objects:  37% (90/241)
+Compressing objects:  38% (92/241)
+Compressing objects:  39% (94/241)
+Compressing objects:  40% (97/241)
+Compressing objects:  41% (99/241)
+Compressing objects:  42% (102/241)
+Compressing objects:  43% (104/241)
+Compressing objects:  44% (107/241)
+Compressing objects:  45% (109/241)
+Compressing objects:  46% (111/241)
+Compressing objects:  47% (114/241)
+Compressing objects:  48% (116/241)
+Compressing objects:  49% (119/241)
+Compressing objects:  50% (121/241)
+Compressing objects:  51% (123/241)
+Compressing objects:  52% (126/241)
+Compressing objects:  53% (128/241)
+Compressing objects:  54% (131/241)
+Compressing objects:  55% (133/241)
+Compressing objects:  56% (135/241)
+Compressing objects:  57% (138/241)
+Compressing objects:  58% (140/241)
+Compressing objects:  59% (143/241)
+Compressing objects:  60% (145/241)
+Compressing objects:  61% (148/241)
+Compressing objects:  62% (150/241)
+Compressing objects:  63% (152/241)
+Compressing objects:  64% (155/241)
+Compressing objects:  65% (157/241)
+Compressing objects:  66% (160/241)
+Compressing objects:  67% (162/241)
+Compressing objects:  68% (164/241)
+Compressing objects:  69% (167/241)
+Compressing objects:  70% (169/241)
+Compressing objects:  71% (172/241)
+Compressing objects:  72% (174/241)
+Compressing objects:  73% (176/241)
+Compressing objects:  74% (179/241)
+Compressing objects:  75% (181/241)
+Compressing objects:  76% (184/241)
+Compressing objects:  77% (186/241)
+Compressing objects:  78% (188/241)
+Compressing objects:  79% (191/241)
+Compressing objects:  80% (193/241)
+Compressing objects:  81% (196/241)
+Compressing objects:  82% (198/241)
+Compressing objects:  83% (201/241)
+Compressing objects:  84% (203/241)
+Compressing objects:  85% (205/241)
+Compressing objects:  86% (208/241)
+Compressing objects:  87% (210/241)
+Compressing objects:  88% (213/241)
+Compressing objects:  89% (215/241)
+Compressing objects:  90% (217/241)
+Compressing objects:  91% (220/241)
+Compressing objects:  92% (222/241)
+Compressing objects:  93% (225/241)
+Compressing objects:  94% (227/241)
+Compressing objects:  95% (229/241)
+Compressing objects:  96% (232/241)
+Compressing objects:  97% (234/241)
+Compressing objects:  98% (237/241)
+Compressing objects:  99% (239/241)
+Compressing objects: 100% (241/241)
+Compressing objects: 100% (241/241), done.
+Writing objects:   0% (1/273)
+Writing objects:   1% (3/273)
+Writing objects:   2% (6/273)
+Writing objects:   3% (9/273)
+Writing objects:   4% (11/273)
+Writing objects:   5% (14/273)
+Writing objects:   6% (17/273)
+Writing objects:   7% (20/273)
+Writing objects:   8% (22/273)
+Writing objects:   9% (25/273)
+Writing objects:  10% (28/273)
+Writing objects:  11% (31/273)
+Writing objects:  12% (33/273)
+Writing objects:  13% (36/273)
+Writing objects:  14% (39/273)
+Writing objects:  15% (41/273)
+Writing objects:  16% (44/273)
+Writing objects:  17% (47/273)
+Writing objects:  18% (50/273)
+error: RPC failed; HTTP 400 curl 22 The requested URL returned error: 400
+send-pack: unexpected disconnect while reading sideband packet
+Writing objects:  18% (50/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  19% (52/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  20% (55/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  21% (58/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  22% (61/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  23% (64/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  24% (67/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  25% (69/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  26% (71/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  27% (74/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  28% (77/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  29% (80/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  30% (82/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  31% (85/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  32% (88/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  33% (91/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  34% (93/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  35% (96/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  36% (99/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  37% (102/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  38% (104/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  39% (107/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  40% (110/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  41% (112/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  42% (115/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  43% (118/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  44% (121/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  45% (123/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  46% (126/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  47% (129/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  48% (132/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  49% (134/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  50% (137/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  51% (140/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  52% (142/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  53% (145/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  54% (148/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  55% (151/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  56% (154/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  57% (156/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  58% (159/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  59% (162/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  60% (164/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  61% (167/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  62% (170/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  63% (172/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  64% (175/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  65% (178/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  66% (181/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  67% (183/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  68% (186/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  69% (189/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  70% (193/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  71% (194/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  72% (197/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  73% (200/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  74% (203/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  75% (205/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  76% (208/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  77% (211/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  78% (213/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  79% (216/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  80% (219/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  81% (222/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  82% (224/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  83% (227/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  84% (230/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  85% (233/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  86% (235/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  87% (238/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  88% (241/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  89% (243/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  90% (246/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  91% (249/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  92% (252/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  93% (254/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  94% (257/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  95% (260/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  96% (263/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  97% (265/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  98% (268/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  99% (271/273), 1.07 MiB | 1.04 MiB/s
+Writing objects: 100% (273/273), 1.07 MiB | 1.04 MiB/s
+Writing objects: 100% (273/273), 4.51 MiB | 4.16 MiB/s, done.
+Total 273 (delta 28), reused 0 (delta 0), pack-reused 0
+fatal: the remote end hung up unexpectedly
+Done
+10:20:24.474: [quikapptest02] git -c credential.helper= -c core.quotepath=false -c log.showSignature=false push --progress --porcelain origin refs/heads/main:refs/heads/main --set-upstream
+Enumerating objects: 273, done.
+Counting objects:   0% (1/273)
+Counting objects:   1% (3/273)
+Counting objects:   2% (6/273)
+Counting objects:   3% (9/273)
+Counting objects:   4% (11/273)
+Counting objects:   5% (14/273)
+Counting objects:   6% (17/273)
+Counting objects:   7% (20/273)
+Counting objects:   8% (22/273)
+Counting objects:   9% (25/273)
+Counting objects:  10% (28/273)
+Counting objects:  11% (31/273)
+Counting objects:  12% (33/273)
+Counting objects:  13% (36/273)
+Counting objects:  14% (39/273)
+Counting objects:  15% (41/273)
+Counting objects:  16% (44/273)
+Counting objects:  17% (47/273)
+Counting objects:  18% (50/273)
+Counting objects:  19% (52/273)
+Counting objects:  20% (55/273)
+Counting objects:  21% (58/273)
+Counting objects:  22% (61/273)
+Counting objects:  23% (63/273)
+Counting objects:  24% (66/273)
+Counting objects:  25% (69/273)
+Counting objects:  26% (71/273)
+Counting objects:  27% (74/273)
+Counting objects:  28% (77/273)
+Counting objects:  29% (80/273)
+Counting objects:  30% (82/273)
+Counting objects:  31% (85/273)
+Counting objects:  32% (88/273)
+Counting objects:  33% (91/273)
+Counting objects:  34% (93/273)
+Counting objects:  35% (96/273)
+Counting objects:  36% (99/273)
+Counting objects:  37% (102/273)
+Counting objects:  38% (104/273)
+Counting objects:  39% (107/273)
+Counting objects:  40% (110/273)
+Counting objects:  41% (112/273)
+Counting objects:  42% (115/273)
+Counting objects:  43% (118/273)
+Counting objects:  44% (121/273)
+Counting objects:  45% (123/273)
+Counting objects:  46% (126/273)
+Counting objects:  47% (129/273)
+Counting objects:  48% (132/273)
+Counting objects:  49% (134/273)
+Counting objects:  50% (137/273)
+Counting objects:  51% (140/273)
+Counting objects:  52% (142/273)
+Counting objects:  53% (145/273)
+Counting objects:  54% (148/273)
+Counting objects:  55% (151/273)
+Counting objects:  56% (153/273)
+Counting objects:  57% (156/273)
+Counting objects:  58% (159/273)
+Counting objects:  59% (162/273)
+Counting objects:  60% (164/273)
+Counting objects:  61% (167/273)
+Counting objects:  62% (170/273)
+Counting objects:  63% (172/273)
+Counting objects:  64% (175/273)
+Counting objects:  65% (178/273)
+Counting objects:  66% (181/273)
+Counting objects:  67% (183/273)
+Counting objects:  68% (186/273)
+Counting objects:  69% (189/273)
+Counting objects:  70% (192/273)
+Counting objects:  71% (194/273)
+Counting objects:  72% (197/273)
+Counting objects:  73% (200/273)
+Counting objects:  74% (203/273)
+Counting objects:  75% (205/273)
+Counting objects:  76% (208/273)
+Counting objects:  77% (211/273)
+Counting objects:  78% (213/273)
+Counting objects:  79% (216/273)
+Counting objects:  80% (219/273)
+Counting objects:  81% (222/273)
+Counting objects:  82% (224/273)
+Counting objects:  83% (227/273)
+Counting objects:  84% (230/273)
+Counting objects:  85% (233/273)
+Counting objects:  86% (235/273)
+Counting objects:  87% (238/273)
+Counting objects:  88% (241/273)
+Counting objects:  89% (243/273)
+Counting objects:  90% (246/273)
+Counting objects:  91% (249/273)
+Counting objects:  92% (252/273)
+Counting objects:  93% (254/273)
+Counting objects:  94% (257/273)
+Counting objects:  95% (260/273)
+Counting objects:  96% (263/273)
+Counting objects:  97% (265/273)
+Counting objects:  98% (268/273)
+Counting objects:  99% (271/273)
+Counting objects: 100% (273/273)
+Counting objects: 100% (273/273), done.
+Delta compression using up to 8 threads
+Compressing objects:   0% (1/241)
+Compressing objects:   1% (3/241)
+Compressing objects:   2% (5/241)
+Compressing objects:   3% (8/241)
+Compressing objects:   4% (10/241)
+Compressing objects:   5% (13/241)
+Compressing objects:   6% (15/241)
+Compressing objects:   7% (17/241)
+Compressing objects:   8% (20/241)
+Compressing objects:   9% (22/241)
+Compressing objects:  10% (25/241)
+Compressing objects:  11% (27/241)
+Compressing objects:  12% (29/241)
+Compressing objects:  13% (32/241)
+Compressing objects:  14% (34/241)
+Compressing objects:  15% (37/241)
+Compressing objects:  16% (39/241)
+Compressing objects:  17% (41/241)
+Compressing objects:  18% (44/241)
+Compressing objects:  19% (46/241)
+Compressing objects:  20% (49/241)
+Compressing objects:  21% (51/241)
+Compressing objects:  22% (54/241)
+Compressing objects:  23% (56/241)
+Compressing objects:  24% (58/241)
+Compressing objects:  25% (61/241)
+Compressing objects:  26% (63/241)
+Compressing objects:  27% (66/241)
+Compressing objects:  28% (68/241)
+Compressing objects:  29% (70/241)
+Compressing objects:  30% (73/241)
+Compressing objects:  31% (75/241)
+Compressing objects:  32% (78/241)
+Compressing objects:  33% (80/241)
+Compressing objects:  34% (82/241)
+Compressing objects:  35% (85/241)
+Compressing objects:  36% (87/241)
+Compressing objects:  37% (90/241)
+Compressing objects:  38% (92/241)
+Compressing objects:  39% (94/241)
+Compressing objects:  40% (97/241)
+Compressing objects:  41% (99/241)
+Compressing objects:  42% (102/241)
+Compressing objects:  43% (104/241)
+Compressing objects:  44% (107/241)
+Compressing objects:  45% (109/241)
+Compressing objects:  46% (111/241)
+Compressing objects:  47% (114/241)
+Compressing objects:  48% (116/241)
+Compressing objects:  49% (119/241)
+Compressing objects:  50% (121/241)
+Compressing objects:  51% (123/241)
+Compressing objects:  52% (126/241)
+Compressing objects:  53% (128/241)
+Compressing objects:  54% (131/241)
+Compressing objects:  55% (133/241)
+Compressing objects:  56% (135/241)
+Compressing objects:  57% (138/241)
+Compressing objects:  58% (140/241)
+Compressing objects:  59% (143/241)
+Compressing objects:  60% (145/241)
+Compressing objects:  61% (148/241)
+Compressing objects:  62% (150/241)
+Compressing objects:  63% (152/241)
+Compressing objects:  64% (155/241)
+Compressing objects:  65% (157/241)
+Compressing objects:  66% (160/241)
+Compressing objects:  67% (162/241)
+Compressing objects:  68% (164/241)
+Compressing objects:  69% (167/241)
+Compressing objects:  70% (169/241)
+Compressing objects:  71% (172/241)
+Compressing objects:  72% (174/241)
+Compressing objects:  73% (176/241)
+Compressing objects:  74% (179/241)
+Compressing objects:  75% (181/241)
+Compressing objects:  76% (184/241)
+Compressing objects:  77% (186/241)
+Compressing objects:  78% (188/241)
+Compressing objects:  79% (191/241)
+Compressing objects:  80% (193/241)
+Compressing objects:  81% (196/241)
+Compressing objects:  82% (198/241)
+Compressing objects:  83% (201/241)
+Compressing objects:  84% (203/241)
+Compressing objects:  85% (205/241)
+Compressing objects:  86% (208/241)
+Compressing objects:  87% (210/241)
+Compressing objects:  88% (213/241)
+Compressing objects:  89% (215/241)
+Compressing objects:  90% (217/241)
+Compressing objects:  91% (220/241)
+Compressing objects:  92% (222/241)
+Compressing objects:  93% (225/241)
+Compressing objects:  94% (227/241)
+Compressing objects:  95% (229/241)
+Compressing objects:  96% (232/241)
+Compressing objects:  97% (234/241)
+Compressing objects:  98% (237/241)
+Compressing objects:  99% (239/241)
+Compressing objects: 100% (241/241)
+Compressing objects: 100% (241/241), done.
+Writing objects:   0% (1/273)
+Writing objects:   1% (3/273)
+Writing objects:   2% (6/273)
+Writing objects:   3% (9/273)
+Writing objects:   4% (11/273)
+Writing objects:   5% (14/273)
+Writing objects:   6% (17/273)
+Writing objects:   7% (20/273)
+Writing objects:   8% (22/273)
+Writing objects:   9% (25/273)
+Writing objects:  10% (28/273)
+Writing objects:  11% (31/273)
+Writing objects:  12% (33/273)
+Writing objects:  13% (36/273)
+Writing objects:  14% (39/273)
+Writing objects:  15% (41/273)
+Writing objects:  16% (44/273)
+Writing objects:  17% (47/273)
+Writing objects:  18% (50/273)
+error: RPC failed; HTTP 400 curl 22 The requested URL returned error: 400
+send-pack: unexpected disconnect while reading sideband packet
+Writing objects:  18% (50/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  19% (52/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  20% (55/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  21% (58/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  22% (61/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  23% (64/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  24% (67/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  25% (69/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  26% (71/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  27% (74/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  28% (77/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  29% (80/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  30% (82/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  31% (85/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  32% (88/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  33% (91/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  34% (93/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  35% (96/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  36% (99/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  37% (102/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  38% (104/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  39% (107/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  40% (110/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  41% (112/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  42% (115/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  43% (118/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  44% (121/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  45% (123/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  46% (126/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  47% (129/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  48% (132/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  49% (134/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  50% (137/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  51% (140/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  52% (142/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  53% (145/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  54% (148/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  55% (151/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  56% (154/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  57% (156/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  58% (159/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  59% (162/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  60% (164/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  61% (167/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  62% (170/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  63% (172/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  64% (175/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  65% (178/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  66% (181/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  67% (183/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  68% (186/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  69% (189/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  70% (193/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  71% (194/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  72% (197/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  73% (200/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  74% (203/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  75% (205/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  76% (208/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  77% (211/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  78% (213/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  79% (216/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  80% (219/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  81% (222/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  82% (224/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  83% (227/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  84% (230/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  85% (233/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  86% (235/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  87% (238/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  88% (241/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  89% (243/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  90% (246/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  91% (249/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  92% (252/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  93% (254/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  94% (257/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  95% (260/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  96% (263/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  97% (265/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  98% (268/273), 1.07 MiB | 1.04 MiB/s
+Writing objects:  99% (271/273), 1.07 MiB | 1.04 MiB/s
+Writing objects: 100% (273/273), 1.07 MiB | 1.04 MiB/s
+Writing objects: 100% (273/273), 4.51 MiB | 4.15 MiB/s, done.
+Total 273 (delta 28), reused 0 (delta 0), pack-reused 0
+fatal: the remote end hung up unexpectedly
+Done
+10:21:58.008: [quikapptest02] git -c credential.helper= -c core.quotepath=false -c log.showSignature=false checkout -b main2 HEAD --
+Switched to a new branch 'main2'
+10:22:19.408: [quikapptest02] git -c credential.helper= -c core.quotepath=false -c log.showSignature=false add --ignore-errors -A -f -- pubspec.yaml
+10:22:19.426: [quikapptest02] git -c credential.helper= -c core.quotepath=false -c log.showSignature=false commit -F /private/var/folders/5f/9k2f991x0x9cv4x9yjhk8zl00000gn/T/git-commit-msg-.txt --
+[main2 ca9887d] test02
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+10:22:26.857: [quikapptest02] git -c credential.helper= -c core.quotepath=false -c log.showSignature=false push --progress --porcelain origin refs/heads/main2:refs/heads/main2 --set-upstream
+Enumerating objects: 276, done.
+Counting objects:   0% (1/276)
+Counting objects:   1% (3/276)
+Counting objects:   2% (6/276)
+Counting objects:   3% (9/276)
+Counting objects:   4% (12/276)
+Counting objects:   5% (14/276)
+Counting objects:   6% (17/276)
+Counting objects:   7% (20/276)
+Counting objects:   8% (23/276)
+Counting objects:   9% (25/276)
+Counting objects:  10% (28/276)
+Counting objects:  11% (31/276)
+Counting objects:  12% (34/276)
+Counting objects:  13% (36/276)
+Counting objects:  14% (39/276)
+Counting objects:  15% (42/276)
+Counting objects:  16% (45/276)
+Counting objects:  17% (47/276)
+Counting objects:  18% (50/276)
+Counting objects:  19% (53/276)
+Counting objects:  20% (56/276)
+Counting objects:  21% (58/276)
+Counting objects:  22% (61/276)
+Counting objects:  23% (64/276)
+Counting objects:  24% (67/276)
+Counting objects:  25% (69/276)
+Counting objects:  26% (72/276)
+Counting objects:  27% (75/276)
+Counting objects:  28% (78/276)
+Counting objects:  29% (81/276)
+Counting objects:  30% (83/276)
+Counting objects:  31% (86/276)
+Counting objects:  32% (89/276)
+Counting objects:  33% (92/276)
+Counting objects:  34% (94/276)
+Counting objects:  35% (97/276)
+Counting objects:  36% (100/276)
+Counting objects:  37% (103/276)
+Counting objects:  38% (105/276)
+Counting objects:  39% (108/276)
+Counting objects:  40% (111/276)
+Counting objects:  41% (114/276)
+Counting objects:  42% (116/276)
+Counting objects:  43% (119/276)
+Counting objects:  44% (122/276)
+Counting objects:  45% (125/276)
+Counting objects:  46% (127/276)
+Counting objects:  47% (130/276)
+Counting objects:  48% (133/276)
+Counting objects:  49% (136/276)
+Counting objects:  50% (138/276)
+Counting objects:  51% (141/276)
+Counting objects:  52% (144/276)
+Counting objects:  53% (147/276)
+Counting objects:  54% (150/276)
+Counting objects:  55% (152/276)
+Counting objects:  56% (155/276)
+Counting objects:  57% (158/276)
+Counting objects:  58% (161/276)
+Counting objects:  59% (163/276)
+Counting objects:  60% (166/276)
+Counting objects:  61% (169/276)
+Counting objects:  62% (172/276)
+Counting objects:  63% (174/276)
+Counting objects:  64% (177/276)
+Counting objects:  65% (180/276)
+Counting objects:  66% (183/276)
+Counting objects:  67% (185/276)
+Counting objects:  68% (188/276)
+Counting objects:  69% (191/276)
+Counting objects:  70% (194/276)
+Counting objects:  71% (196/276)
+Counting objects:  72% (199/276)
+Counting objects:  73% (202/276)
+Counting objects:  74% (205/276)
+Counting objects:  75% (207/276)
+Counting objects:  76% (210/276)
+Counting objects:  77% (213/276)
+Counting objects:  78% (216/276)
+Counting objects:  79% (219/276)
+Counting objects:  80% (221/276)
+Counting objects:  81% (224/276)
+Counting objects:  82% (227/276)
+Counting objects:  83% (230/276)
+Counting objects:  84% (232/276)
+Counting objects:  85% (235/276)
+Counting objects:  86% (238/276)
+Counting objects:  87% (241/276)
+Counting objects:  88% (243/276)
+Counting objects:  89% (246/276)
+Counting objects:  90% (249/276)
+Counting objects:  91% (252/276)
+Counting objects:  92% (254/276)
+Counting objects:  93% (257/276)
+Counting objects:  94% (260/276)
+Counting objects:  95% (263/276)
+Counting objects:  96% (265/276)
+Counting objects:  97% (268/276)
+Counting objects:  98% (271/276)
+Counting objects:  99% (274/276)
+Counting objects: 100% (276/276)
+Counting objects: 100% (276/276), done.
+Delta compression using up to 8 threads
+Compressing objects:   0% (1/244)
+Compressing objects:   1% (3/244)
+Compressing objects:   2% (5/244)
+Compressing objects:   3% (8/244)
+Compressing objects:   4% (10/244)
+Compressing objects:   5% (13/244)
+Compressing objects:   6% (15/244)
+Compressing objects:   7% (18/244)
+Compressing objects:   8% (20/244)
+Compressing objects:   9% (22/244)
+Compressing objects:  10% (25/244)
+Compressing objects:  11% (27/244)
+Compressing objects:  12% (30/244)
+Compressing objects:  13% (32/244)
+Compressing objects:  14% (35/244)
+Compressing objects:  15% (37/244)
+Compressing objects:  16% (40/244)
+Compressing objects:  17% (42/244)
+Compressing objects:  18% (44/244)
+Compressing objects:  19% (47/244)
+Compressing objects:  20% (49/244)
+Compressing objects:  21% (52/244)
+Compressing objects:  22% (54/244)
+Compressing objects:  23% (57/244)
+Compressing objects:  24% (59/244)
+Compressing objects:  25% (61/244)
+Compressing objects:  26% (64/244)
+Compressing objects:  27% (66/244)
+Compressing objects:  28% (69/244)
+Compressing objects:  29% (71/244)
+Compressing objects:  30% (74/244)
+Compressing objects:  31% (76/244)
+Compressing objects:  32% (79/244)
+Compressing objects:  33% (81/244)
+Compressing objects:  34% (83/244)
+Compressing objects:  35% (86/244)
+Compressing objects:  36% (88/244)
+Compressing objects:  37% (91/244)
+Compressing objects:  38% (93/244)
+Compressing objects:  39% (96/244)
+Compressing objects:  40% (98/244)
+Compressing objects:  41% (101/244)
+Compressing objects:  42% (103/244)
+Compressing objects:  43% (105/244)
+Compressing objects:  44% (108/244)
+Compressing objects:  45% (110/244)
+Compressing objects:  46% (113/244)
+Compressing objects:  47% (115/244)
+Compressing objects:  48% (118/244)
+Compressing objects:  49% (120/244)
+Compressing objects:  50% (122/244)
+Compressing objects:  51% (125/244)
+Compressing objects:  52% (127/244)
+Compressing objects:  53% (130/244)
+Compressing objects:  54% (132/244)
+Compressing objects:  55% (135/244)
+Compressing objects:  56% (137/244)
+Compressing objects:  57% (140/244)
+Compressing objects:  58% (142/244)
+Compressing objects:  59% (144/244)
+Compressing objects:  60% (147/244)
+Compressing objects:  61% (149/244)
+Compressing objects:  62% (152/244)
+Compressing objects:  63% (154/244)
+Compressing objects:  64% (157/244)
+Compressing objects:  65% (159/244)
+Compressing objects:  66% (162/244)
+Compressing objects:  67% (164/244)
+Compressing objects:  68% (166/244)
+Compressing objects:  69% (169/244)
+Compressing objects:  70% (171/244)
+Compressing objects:  71% (174/244)
+Compressing objects:  72% (176/244)
+Compressing objects:  73% (179/244)
+Compressing objects:  74% (181/244)
+Compressing objects:  75% (183/244)
+Compressing objects:  76% (186/244)
+Compressing objects:  77% (188/244)
+Compressing objects:  78% (191/244)
+Compressing objects:  79% (193/244)
+Compressing objects:  80% (196/244)
+Compressing objects:  81% (198/244)
+Compressing objects:  82% (201/244)
+Compressing objects:  83% (203/244)
+Compressing objects:  84% (205/244)
+Compressing objects:  85% (208/244)
+Compressing objects:  86% (210/244)
+Compressing objects:  87% (213/244)
+Compressing objects:  88% (215/244)
+Compressing objects:  89% (218/244)
+Compressing objects:  90% (220/244)
+Compressing objects:  91% (223/244)
+Compressing objects:  92% (225/244)
+Compressing objects:  93% (227/244)
+Compressing objects:  94% (230/244)
+Compressing objects:  95% (232/244)
+Compressing objects:  96% (235/244)
+Compressing objects:  97% (237/244)
+Compressing objects:  98% (240/244)
+Compressing objects:  99% (242/244)
+Compressing objects: 100% (244/244)
+Compressing objects: 100% (244/244), done.
+Writing objects:   0% (1/276)
+Writing objects:   1% (3/276)
+Writing objects:   2% (6/276)
+Writing objects:   3% (9/276)
+Writing objects:   4% (12/276)
+Writing objects:   5% (14/276)
+Writing objects:   6% (17/276)
+Writing objects:   7% (20/276)
+Writing objects:   8% (23/276)
+Writing objects:   9% (25/276)
+Writing objects:  10% (28/276)
+Writing objects:  11% (31/276)
+Writing objects:  12% (34/276)
+Writing objects:  13% (36/276)
+Writing objects:  14% (39/276)
+Writing objects:  15% (42/276)
+Writing objects:  16% (45/276)
+Writing objects:  17% (47/276)
+Writing objects:  18% (50/276)
+error: RPC failed; HTTP 400 curl 22 The requested URL returned error: 400
+send-pack: unexpected disconnect while reading sideband packet
+Writing objects:  18% (51/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  19% (53/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  20% (56/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  21% (58/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  22% (61/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  23% (65/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  24% (68/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  25% (69/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  26% (72/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  27% (75/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  28% (78/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  29% (81/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  30% (83/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  31% (86/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  32% (89/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  33% (92/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  34% (94/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  35% (97/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  36% (100/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  37% (103/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  38% (105/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  39% (108/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  40% (111/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  41% (114/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  42% (116/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  43% (119/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  44% (122/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  45% (125/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  46% (127/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  47% (130/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  48% (133/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  49% (136/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  50% (138/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  51% (141/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  52% (144/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  53% (147/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  54% (150/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  55% (152/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  56% (155/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  57% (158/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  58% (162/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  59% (163/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  60% (166/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  61% (169/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  62% (172/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  63% (174/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  64% (177/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  65% (180/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  66% (183/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  67% (185/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  68% (188/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  69% (192/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  70% (194/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  71% (197/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  72% (200/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  73% (202/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  74% (205/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  75% (207/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  76% (210/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  77% (213/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  78% (216/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  79% (219/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  80% (221/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  81% (224/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  82% (227/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  83% (230/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  84% (232/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  85% (235/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  86% (238/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  87% (241/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  88% (243/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  89% (246/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  90% (249/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  91% (252/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  92% (254/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  93% (257/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  94% (260/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  95% (263/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  96% (265/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  97% (268/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  98% (271/276), 1.09 MiB | 815.00 KiB/s
+Writing objects:  99% (274/276), 1.09 MiB | 815.00 KiB/s
+Writing objects: 100% (276/276), 1.09 MiB | 815.00 KiB/s
+Writing objects: 100% (276/276), 4.51 MiB | 3.17 MiB/s, done.
+Total 276 (delta 30), reused 0 (delta 0), pack-reused 0
+fatal: the remote end hung up unexpectedly
+Done
+10:22:30.813: [quikapptest02] git -c credential.helper= -c core.quotepath=false -c log.showSignature=false push --progress --porcelain origin refs/heads/main2:refs/heads/main2 --set-upstream
+Enumerating objects: 276, done.
+Counting objects:   0% (1/276)
+Counting objects:   1% (3/276)
+Counting objects:   2% (6/276)
+Counting objects:   3% (9/276)
+Counting objects:   4% (12/276)
+Counting objects:   5% (14/276)
+Counting objects:   6% (17/276)
+Counting objects:   7% (20/276)
+Counting objects:   8% (23/276)
+Counting objects:   9% (25/276)
+Counting objects:  10% (28/276)
+Counting objects:  11% (31/276)
+Counting objects:  12% (34/276)
+Counting objects:  13% (36/276)
+Counting objects:  14% (39/276)
+Counting objects:  15% (42/276)
+Counting objects:  16% (45/276)
+Counting objects:  17% (47/276)
+Counting objects:  18% (50/276)
+Counting objects:  19% (53/276)
+Counting objects:  20% (56/276)
+Counting objects:  21% (58/276)
+Counting objects:  22% (61/276)
+Counting objects:  23% (64/276)
+Counting objects:  24% (67/276)
+Counting objects:  25% (69/276)
+Counting objects:  26% (72/276)
+Counting objects:  27% (75/276)
+Counting objects:  28% (78/276)
+Counting objects:  29% (81/276)
+Counting objects:  30% (83/276)
+Counting objects:  31% (86/276)
+Counting objects:  32% (89/276)
+Counting objects:  33% (92/276)
+Counting objects:  34% (94/276)
+Counting objects:  35% (97/276)
+Counting objects:  36% (100/276)
+Counting objects:  37% (103/276)
+Counting objects:  38% (105/276)
+Counting objects:  39% (108/276)
+Counting objects:  40% (111/276)
+Counting objects:  41% (114/276)
+Counting objects:  42% (116/276)
+Counting objects:  43% (119/276)
+Counting objects:  44% (122/276)
+Counting objects:  45% (125/276)
+Counting objects:  46% (127/276)
+Counting objects:  47% (130/276)
+Counting objects:  48% (133/276)
+Counting objects:  49% (136/276)
+Counting objects:  50% (138/276)
+Counting objects:  51% (141/276)
+Counting objects:  52% (144/276)
+Counting objects:  53% (147/276)
+Counting objects:  54% (150/276)
+Counting objects:  55% (152/276)
+Counting objects:  56% (155/276)
+Counting objects:  57% (158/276)
+Counting objects:  58% (161/276)
+Counting objects:  59% (163/276)
+Counting objects:  60% (166/276)
+Counting objects:  61% (169/276)
+Counting objects:  62% (172/276)
+Counting objects:  63% (174/276)
+Counting objects:  64% (177/276)
+Counting objects:  65% (180/276)
+Counting objects:  66% (183/276)
+Counting objects:  67% (185/276)
+Counting objects:  68% (188/276)
+Counting objects:  69% (191/276)
+Counting objects:  70% (194/276)
+Counting objects:  71% (196/276)
+Counting objects:  72% (199/276)
+Counting objects:  73% (202/276)
+Counting objects:  74% (205/276)
+Counting objects:  75% (207/276)
+Counting objects:  76% (210/276)
+Counting objects:  77% (213/276)
+Counting objects:  78% (216/276)
+Counting objects:  79% (219/276)
+Counting objects:  80% (221/276)
+Counting objects:  81% (224/276)
+Counting objects:  82% (227/276)
+Counting objects:  83% (230/276)
+Counting objects:  84% (232/276)
+Counting objects:  85% (235/276)
+Counting objects:  86% (238/276)
+Counting objects:  87% (241/276)
+Counting objects:  88% (243/276)
+Counting objects:  89% (246/276)
+Counting objects:  90% (249/276)
+Counting objects:  91% (252/276)
+Counting objects:  92% (254/276)
+Counting objects:  93% (257/276)
+Counting objects:  94% (260/276)
+Counting objects:  95% (263/276)
+Counting objects:  96% (265/276)
+Counting objects:  97% (268/276)
+Counting objects:  98% (271/276)
+Counting objects:  99% (274/276)
+Counting objects: 100% (276/276)
+Counting objects: 100% (276/276), done.
+Delta compression using up to 8 threads
+Compressing objects:   0% (1/244)
+Compressing objects:   1% (3/244)
+Compressing objects:   2% (5/244)
+Compressing objects:   3% (8/244)
+Compressing objects:   4% (10/244)
+Compressing objects:   5% (13/244)
+Compressing objects:   6% (15/244)
+Compressing objects:   7% (18/244)
+Compressing objects:   8% (20/244)
+Compressing objects:   9% (22/244)
+Compressing objects:  10% (25/244)
+Compressing objects:  11% (27/244)
+Compressing objects:  12% (30/244)
+Compressing objects:  13% (32/244)
+Compressing objects:  14% (35/244)
+Compressing objects:  15% (37/244)
+Compressing objects:  16% (40/244)
+Compressing objects:  17% (42/244)
+Compressing objects:  18% (44/244)
+Compressing objects:  19% (47/244)
+Compressing objects:  20% (49/244)
+Compressing objects:  21% (52/244)
+Compressing objects:  22% (54/244)
+Compressing objects:  23% (57/244)
+Compressing objects:  24% (59/244)
+Compressing objects:  25% (61/244)
+Compressing objects:  26% (64/244)
+Compressing objects:  27% (66/244)
+Compressing objects:  28% (69/244)
+Compressing objects:  29% (71/244)
+Compressing objects:  30% (74/244)
+Compressing objects:  31% (76/244)
+Compressing objects:  32% (79/244)
+Compressing objects:  33% (81/244)
+Compressing objects:  34% (83/244)
+Compressing objects:  35% (86/244)
+Compressing objects:  36% (88/244)
+Compressing objects:  37% (91/244)
+Compressing objects:  38% (93/244)
+Compressing objects:  39% (96/244)
+Compressing objects:  40% (98/244)
+Compressing objects:  41% (101/244)
+Compressing objects:  42% (103/244)
+Compressing objects:  43% (105/244)
+Compressing objects:  44% (108/244)
+Compressing objects:  45% (110/244)
+Compressing objects:  46% (113/244)
+Compressing objects:  47% (115/244)
+Compressing objects:  48% (118/244)
+Compressing objects:  49% (120/244)
+Compressing objects:  50% (122/244)
+Compressing objects:  51% (125/244)
+Compressing objects:  52% (127/244)
+Compressing objects:  53% (130/244)
+Compressing objects:  54% (132/244)
+Compressing objects:  55% (135/244)
+Compressing objects:  56% (137/244)
+Compressing objects:  57% (140/244)
+Compressing objects:  58% (142/244)
+Compressing objects:  59% (144/244)
+Compressing objects:  60% (147/244)
+Compressing objects:  61% (149/244)
+Compressing objects:  62% (152/244)
+Compressing objects:  63% (154/244)
+Compressing objects:  64% (157/244)
+Compressing objects:  65% (159/244)
+Compressing objects:  66% (162/244)
+Compressing objects:  67% (164/244)
+Compressing objects:  68% (166/244)
+Compressing objects:  69% (169/244)
+Compressing objects:  70% (171/244)
+Compressing objects:  71% (174/244)
+Compressing objects:  72% (176/244)
+Compressing objects:  73% (179/244)
+Compressing objects:  74% (181/244)
+Compressing objects:  75% (183/244)
+Compressing objects:  76% (186/244)
+Compressing objects:  77% (188/244)
+Compressing objects:  78% (191/244)
+Compressing objects:  79% (193/244)
+Compressing objects:  80% (196/244)
+Compressing objects:  81% (198/244)
+Compressing objects:  82% (201/244)
+Compressing objects:  83% (203/244)
+Compressing objects:  84% (205/244)
+Compressing objects:  85% (208/244)
+Compressing objects:  86% (210/244)
+Compressing objects:  87% (213/244)
+Compressing objects:  88% (215/244)
+Compressing objects:  89% (218/244)
+Compressing objects:  90% (220/244)
+Compressing objects:  91% (223/244)
+Compressing objects:  92% (225/244)
+Compressing objects:  93% (227/244)
+Compressing objects:  94% (230/244)
+Compressing objects:  95% (232/244)
+Compressing objects:  96% (235/244)
+Compressing objects:  97% (237/244)
+Compressing objects:  98% (240/244)
+Compressing objects:  99% (242/244)
+Compressing objects: 100% (244/244)
+Compressing objects: 100% (244/244), done.
+Writing objects:   0% (1/276)
+Writing objects:   1% (3/276)
+Writing objects:   2% (6/276)
+Writing objects:   3% (9/276)
+Writing objects:   4% (12/276)
+Writing objects:   5% (14/276)
+Writing objects:   6% (17/276)
+Writing objects:   7% (20/276)
+Writing objects:   8% (23/276)
+Writing objects:   9% (25/276)
+Writing objects:  10% (28/276)
+Writing objects:  11% (31/276)
+Writing objects:  12% (34/276)
+Writing objects:  13% (36/276)
+Writing objects:  14% (39/276)
+Writing objects:  15% (42/276)
+Writing objects:  16% (45/276)
+Writing objects:  17% (47/276)
+Writing objects:  18% (50/276)
+error: RPC failed; HTTP 400 curl 22 The requested URL returned error: 400
+Writing objects:  18% (51/276), 1.07 MiB | 979.00 KiB/s
+send-pack: unexpected disconnect while reading sideband packet
+Writing objects:  19% (53/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  20% (56/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  21% (58/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  22% (61/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  23% (65/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  24% (68/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  25% (69/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  26% (72/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  27% (75/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  28% (78/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  29% (81/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  30% (83/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  31% (86/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  32% (89/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  33% (92/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  34% (94/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  35% (97/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  36% (100/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  37% (103/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  38% (105/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  39% (108/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  40% (111/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  41% (114/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  42% (116/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  43% (119/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  44% (122/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  45% (125/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  46% (127/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  47% (130/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  48% (133/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  49% (136/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  50% (138/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  51% (141/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  52% (144/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  53% (147/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  54% (150/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  55% (152/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  56% (155/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  57% (158/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  58% (162/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  59% (163/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  60% (166/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  61% (169/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  62% (172/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  63% (174/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  64% (177/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  65% (180/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  66% (183/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  67% (185/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  68% (188/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  69% (192/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  70% (194/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  71% (197/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  72% (200/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  73% (202/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  74% (205/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  75% (207/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  76% (210/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  77% (213/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  78% (216/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  79% (219/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  80% (221/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  81% (224/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  82% (227/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  83% (230/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  84% (232/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  85% (235/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  86% (238/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  87% (241/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  88% (243/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  89% (246/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  90% (249/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  91% (252/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  92% (254/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  93% (257/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  94% (260/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  95% (263/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  96% (265/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  97% (268/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  98% (271/276), 1.07 MiB | 979.00 KiB/s
+Writing objects:  99% (274/276), 1.07 MiB | 979.00 KiB/s
+Writing objects: 100% (276/276), 1.07 MiB | 979.00 KiB/s
+Writing objects: 100% (276/276), 4.51 MiB | 3.87 MiB/s, done.
+Total 276 (delta 30), reused 0 (delta 0), pack-reused 0
+fatal: the remote end hung up unexpectedly
+Done
