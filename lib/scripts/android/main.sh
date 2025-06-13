@@ -58,6 +58,39 @@ mkdir -p "$OUTPUT_DIR"
 rm -rf android/app/build
 echo ""
 
+# 3.5. Initialize Gradle wrapper with official distribution
+cd "$SCRIPT_DIR/../../android"
+echo "--- Initializing Gradle Wrapper ---"
+mkdir -p gradle/wrapper
+curl -O https://services.gradle.org/distributions/gradle-8.12-bin.zip
+unzip -j gradle-8.12-bin.zip "gradle-8.12/bin/gradle-wrapper.jar" -d gradle/wrapper/
+rm gradle-8.12-bin.zip
+cat > gradle/wrapper/gradle-wrapper.properties << EOF
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.12-bin.zip
+networkTimeout=10000
+validateDistributionUrl=true
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+EOF
+if [ ! -f "gradlew" ]; then
+    echo "📝 Creating gradlew script..."
+    cat > gradlew << EOL
+#!/bin/sh
+SCRIPT_DIR="\$( cd "\$( dirname "\$0" )" && pwd )"
+WRAPPER_JAR="\${SCRIPT_DIR}/gradle/wrapper/gradle-wrapper.jar"
+if [ ! -f "\${WRAPPER_JAR}" ]; then
+    echo "Error: Could not find gradle-wrapper.jar at \${WRAPPER_JAR}"
+    exit 1
+fi
+exec java -cp "\${WRAPPER_JAR}" org.gradle.wrapper.GradleWrapperMain "\$@"
+EOL
+    chmod +x gradlew
+fi
+cd "$SCRIPT_DIR"
+echo ""
+
 # 4. Validate Android project structure
 echo "--- Validating Android Project Structure ---"
 "$SCRIPT_DIR/android_file_manager.sh" validate

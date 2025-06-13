@@ -1004,52 +1004,10 @@ workflows:
           # Create Gradle wrapper directory
           mkdir -p android/gradle/wrapper
 
-          # Download Gradle wrapper JAR
-          curl -L -o android/gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/v8.12.0/gradle/wrapper/gradle-wrapper.jar
-
-          # Create gradle-wrapper.properties
-          cat > android/gradle/wrapper/gradle-wrapper.properties << EOL
-          distributionBase=GRADLE_USER_HOME
-          distributionPath=wrapper/dists
-          zipStoreBase=GRADLE_USER_HOME
-          zipStorePath=wrapper/dists
-          distributionUrl=https\://services.gradle.org/distributions/gradle-8.12-all.zip
-          EOL
-
-          # Create gradlew script
-          cat > android/gradlew << EOL
-          #!/bin/sh
-          exec java -cp android/gradle/wrapper/gradle-wrapper.jar org.gradle.wrapper.GradleWrapperMain "\$@"
-          EOL
-
-          # Make gradlew executable
-          chmod +x android/gradlew
-
-          # Verify Gradle wrapper
-          ./android/gradlew --version
-
-          echo "✅ Gradle wrapper initialized"
-      - name: Get Flutter packages
-        script: flutter pub get
-      - name: Build Android (Using main.sh)
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "🤖 Building Android using comprehensive script system..."
-
-          # Set workflow name for email notifications
-          export WORKFLOW_NAME="Combined Android & iOS Build"
-
-          # Initialize Gradle wrapper first
-          echo "🔧 Initializing Gradle wrapper..."
-          cd android
-
-          # Create gradle wrapper directory if it doesn't exist
-          mkdir -p gradle/wrapper
-
-          # Download gradle-wrapper.jar
-          echo "📥 Downloading gradle-wrapper.jar..."
-          curl -L -o gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/v8.12.0/gradle/wrapper/gradle-wrapper.jar
+          # Download the official Gradle distribution ZIP and extract the wrapper JAR
+          curl -O https://services.gradle.org/distributions/gradle-8.12-bin.zip
+          unzip -j gradle-8.12-bin.zip "gradle-8.12/bin/gradle-wrapper.jar" -d gradle/wrapper/
+          rm gradle-8.12-bin.zip
 
           # Create gradle-wrapper.properties
           echo "📝 Creating gradle-wrapper.properties..."
