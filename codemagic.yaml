@@ -96,12 +96,88 @@ environment: &default_env
     SMTP_PORT: "${SMTP_PORT:-587}"
     SMTP_USERNAME: "${SMTP_USERNAME:-prasannasrie@gmail.com}"
     SMTP_PASSWORD: "${SMTP_PASSWORD:-jbbf nzhm zoay lbwb}"
+  scripts:
+    - &debug_env
+      name: Debug Environment Variables
+      script: |
+        echo "*********** App Name & Version ***********"
+        echo "APP_NAME: $APP_NAME"
+        echo "ORG_NAME: $ORG_NAME"
+        echo "WEB_URL: $WEB_URL"
+        echo "VERSION_NAME: $VERSION_NAME"      
+        echo "VERSION_CODE: $VERSION_CODE" 
+        echo "PKG_NAME: $PKG_NAME"
+        echo "BUNDLE_ID: $BUNDLE_ID"
 
+        echo "*********** App Customization Configuration ***********"
+        echo "Splash screen: $IS_SPLASH"
+        echo "Pull to refresh: $IS_PULLDOWN"
+        echo "Loading indicators: $IS_LOAD_IND"
+        echo "Bottom navigation bar: $IS_BOTTOMMENU"
+        echo "Deep linking: $IS_DEEPLINK"
+
+        echo "*********** Push Notification Configuration ***********"
+        echo "PUSH_NOTIFY: $PUSH_NOTIFY"
+        echo "IS_CHATBOT: $IS_CHATBOT"
+
+        echo "*********** Android Keystore ***********"
+        echo "KEY_STORE: $KEY_STORE"
+        echo "CM_KEYSTORE_PASSWORD: $CM_KEYSTORE_PASSWORD"
+        echo "CM_KEY_ALIAS: $CM_KEY_ALIAS"
+        echo "CM_KEY_PASSWORD: $CM_KEY_PASSWORD"
+
+        echo "*********** IOS Keystore ***********"
+        echo "APP_STORE_CONNECT_ISSUER_ID: $APP_STORE_CONNECT_ISSUER_ID"
+        echo "APP_STORE_CONNECT_KEY_IDENTIFIER: $APP_STORE_CONNECT_KEY_IDENTIFIER"
+        echo "APNS_KEY_ID: $APNS_KEY_ID"
+        echo "TEAM_ID: $APPLE_TEAM_ID"
+        echo "APNS_AUTH_KEY_URL: $APNS_AUTH_KEY_URL"
+
+        echo "*********** Firebase Android config file ***********"
+        echo "firebase_config_android: $firebase_config_android"
+
+        echo "*********** Firebase IOS config file ***********"
+        echo "firebase_config_ios: $firebase_config_ios"
+
+        echo "*********** Splash Configuration ***********"
+        echo "SPLASH: $SPLASH"
+        echo "SPLASH_BG:$SPLASH_BG"
+        echo "SPLASH_BG_COLOR: $SPLASH_BG_COLOR"
+        echo "SPLASH_TAGLINE: $SPLASH_TAGLINE"
+        echo "SPLASH_TAGLINE_COLOR: $SPLASH_TAGLINE_COLOR"
+        echo "SPLASH_ANIMATION: $SPLASH_ANIMATION"
+        echo "SPLASH_DURATION: $SPLASH_DURATION"
+
+        echo "*********** Bottom Navigation Configuration ***********"
+        echo "BOTTOMMENU_ITEMS: $BOTTOMMENU_ITEMS"
+        echo "BOTTOMMENU_BG_COLOR: $BOTTOMMENU_BG_COLOR"  
+        echo "BOTTOMMENU_ICON_COLOR: $BOTTOMMENU_ICON_COLOR"
+        echo "BOTTOMMENU_TEXT_COLOR: $BOTTOMMENU_TEXT_COLOR"
+        echo "BOTTOMMENU_FONT: $BOTTOMMENU_FONT"
+        echo "BOTTOMMENU_FONT_SIZE: $BOTTOMMENU_FONT_SIZE"
+        echo "BOTTOMMENU_FONT_BOLD: $BOTTOMMENU_FONT_BOLD"
+        echo "BOTTOMMENU_FONT_ITALIC: $BOTTOMMENU_FONT_ITALIC"
+        echo "BOTTOMMENU_ACTIVE_TAB_COLOR: $BOTTOMMENU_ACTIVE_TAB_COLOR"
+        echo "BOTTOMMENU_ICON_POSITION: $BOTTOMMENU_ICON_POSITION"
+        echo "BOTTOMMENU_VISIBLE_ON: $BOTTOMMENU_VISIBLE_ON"
+
+        echo "*********** Permissions ***********"
+        echo "IS_CAMERA: $IS_CAMERA"
+        echo "IS_LOCATION: $IS_LOCATION"
+        echo "IS_MIC: $IS_MIC"
+        echo "IS_NOTIFICATION: $IS_NOTIFICATION"
+        echo "IS_CONTACT: $IS_CONTACT"
+        echo "IS_BIOMETRIC: $IS_BIOMETRIC"
+        echo "IS_CALENDAR: $IS_CALENDAR"
+
+        echo "*********** Publish Configuration ***********" 
+        echo "EMAIL_ID: $EMAIL_ID"
 workflows:
   android-publish:
     name: Android Publish
     environment: *default_env
     scripts:
+      - *debug_env
       - name: Set up code signing settings
         script: |
           #!/usr/bin/env bash
@@ -241,6 +317,7 @@ workflows:
     name: iOS Publish
     environment: *default_env
     scripts:
+      - *debug_env
       - name: Set up code signing settings
         script: |
           #!/usr/bin/env bash
@@ -537,6 +614,7 @@ workflows:
     name: Combined Android & iOS Build
     environment: *default_env
     scripts:
+      - *debug_env
       - name: Set up Android code signing
         script: |
           #!/usr/bin/env bash
