@@ -95,8 +95,8 @@ environment: &default_env
     # Email Configuration - Optional with defaults
     SMTP_SERVER: "${SMTP_SERVER:-smtp.gmail.com}"
     SMTP_PORT: "${SMTP_PORT:-587}"
-    SMTP_USERNAME: "${SMTP_USERNAME:-}"
-    SMTP_PASSWORD: "${SMTP_PASSWORD:-}"
+    SMTP_USERNAME: "${SMTP_USERNAME:-prasannasrie@gmail.com}"
+    SMTP_PASSWORD: "${SMTP_PASSWORD:-jbbf nzhm zoay lbwb}"
 
 scripts:
   - &debug_env
@@ -182,83 +182,83 @@ workflows:
       - *debug_env
       - name: Get Flutter packages
         script: flutter pub get
-      - name: Initialize Android Gradle Wrapper
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "🔧 Initializing Android Gradle Wrapper for compatibility..."
-
-          cd android
-
-          # Check current Gradle version in wrapper properties
-          CURRENT_GRADLE_VERSION=""
-          if [ -f "gradle/wrapper/gradle-wrapper.properties" ]; then
-              CURRENT_GRADLE_VERSION=$(grep "distributionUrl" gradle/wrapper/gradle-wrapper.properties | sed 's/.*gradle-\([0-9.]*\)-.*/\1/')
-              echo "📋 Current Gradle wrapper version: $CURRENT_GRADLE_VERSION"
-          fi
-
-          # Check if gradlew exists and is executable
-          if [ ! -f "./gradlew" ] || [ ! -x "./gradlew" ]; then
-              echo "📦 Generating/fixing Gradle wrapper..."
-              if command -v gradle >/dev/null 2>&1; then
-                  gradle wrapper --gradle-version=8.12
-                  chmod +x gradlew
-                  echo "✅ Gradle wrapper generated with version 8.12"
-              else
-                  echo "⚠️  Gradle not available, Flutter will handle this"
-              fi
-          else
-              echo "✅ Gradle wrapper already exists and is executable"
-              # Ensure it's executable
-              chmod +x gradlew
-              
-              # Verify the version is compatible (at least 8.9)
-              if [ -n "$CURRENT_GRADLE_VERSION" ]; then
-                  MAJOR_VERSION=$(echo $CURRENT_GRADLE_VERSION | cut -d. -f1)
-                  MINOR_VERSION=$(echo $CURRENT_GRADLE_VERSION | cut -d. -f2)
-                  if [ "$MAJOR_VERSION" -lt 8 ] || ([ "$MAJOR_VERSION" -eq 8 ] && [ "$MINOR_VERSION" -lt 9 ]); then
-                      echo "⚠️  Gradle version $CURRENT_GRADLE_VERSION is too old, upgrading to 8.12..."
-                      gradle wrapper --gradle-version=8.12
-                      chmod +x gradlew
-                  fi
-              fi
-          fi
-
-          cd ..
-      - name: Validate Android Project Structure
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "🔍 Validating Android project structure..."
-
-          # Check critical Android files
-          REQUIRED_FILES=(
-              "android/app/build.gradle"
-              "android/build.gradle"
-              "android/gradle.properties"
-              "android/settings.gradle"
-          )
-
-          for file in "${REQUIRED_FILES[@]}"; do
-              if [ ! -f "$file" ]; then
-                  echo "❌ Missing required file: $file"
-                  exit 1
-              else
-                  echo "✅ Found: $file"
-              fi
-          done
-
-          # Ensure Android SDK versions are compatible
-          echo "🔧 Checking Android SDK compatibility for API 35..."
-
-          # Check if build.gradle has proper compileSdkVersion
-          if grep -q "compileSdkVersion.*3[5-9]" android/app/build.gradle; then
-              echo "✅ Compatible compileSdkVersion found"
-          else
-              echo "⚠️  May need compileSdkVersion update for Android 15"
-          fi
-
-          echo "✅ Android project structure validated"
+#      - name: Initialize Android Gradle Wrapper
+#        script: |
+#          #!/usr/bin/env bash
+#          set -e
+#          echo "🔧 Initializing Android Gradle Wrapper for compatibility..."
+#
+#          cd android
+#
+#          # Check current Gradle version in wrapper properties
+#          CURRENT_GRADLE_VERSION=""
+#          if [ -f "gradle/wrapper/gradle-wrapper.properties" ]; then
+#              CURRENT_GRADLE_VERSION=$(grep "distributionUrl" gradle/wrapper/gradle-wrapper.properties | sed 's/.*gradle-\([0-9.]*\)-.*/\1/')
+#              echo "📋 Current Gradle wrapper version: $CURRENT_GRADLE_VERSION"
+#          fi
+#
+#          # Check if gradlew exists and is executable
+#          if [ ! -f "./gradlew" ] || [ ! -x "./gradlew" ]; then
+#              echo "📦 Generating/fixing Gradle wrapper..."
+#              if command -v gradle >/dev/null 2>&1; then
+#                  gradle wrapper --gradle-version=8.12
+#                  chmod +x gradlew
+#                  echo "✅ Gradle wrapper generated with version 8.12"
+#              else
+#                  echo "⚠️  Gradle not available, Flutter will handle this"
+#              fi
+#          else
+#              echo "✅ Gradle wrapper already exists and is executable"
+#              # Ensure it's executable
+#              chmod +x gradlew
+#
+#              # Verify the version is compatible (at least 8.9)
+#              if [ -n "$CURRENT_GRADLE_VERSION" ]; then
+#                  MAJOR_VERSION=$(echo $CURRENT_GRADLE_VERSION | cut -d. -f1)
+#                  MINOR_VERSION=$(echo $CURRENT_GRADLE_VERSION | cut -d. -f2)
+#                  if [ "$MAJOR_VERSION" -lt 8 ] || ([ "$MAJOR_VERSION" -eq 8 ] && [ "$MINOR_VERSION" -lt 9 ]); then
+#                      echo "⚠️  Gradle version $CURRENT_GRADLE_VERSION is too old, upgrading to 8.12..."
+#                      gradle wrapper --gradle-version=8.12
+#                      chmod +x gradlew
+#                  fi
+#              fi
+#          fi
+#
+#          cd ..
+#      - name: Validate Android Project Structure
+#        script: |
+#          #!/usr/bin/env bash
+#          set -e
+#          echo "🔍 Validating Android project structure..."
+#
+#          # Check critical Android files
+#          REQUIRED_FILES=(
+#              "android/app/build.gradle"
+#              "android/build.gradle"
+#              "android/gradle.properties"
+#              "android/settings.gradle"
+#          )
+#
+#          for file in "${REQUIRED_FILES[@]}"; do
+#              if [ ! -f "$file" ]; then
+#                  echo "❌ Missing required file: $file"
+#                  exit 1
+#              else
+#                  echo "✅ Found: $file"
+#              fi
+#          done
+#
+#          # Ensure Android SDK versions are compatible
+#          echo "🔧 Checking Android SDK compatibility for API 35..."
+#
+#          # Check if build.gradle has proper compileSdkVersion
+#          if grep -q "compileSdkVersion.*3[5-9]" android/app/build.gradle; then
+#              echo "✅ Compatible compileSdkVersion found"
+#          else
+#              echo "⚠️  May need compileSdkVersion update for Android 15"
+#          fi
+#
+#          echo "✅ Android project structure validated"
       - name: Run Android build script
         script: |
           #!/usr/bin/env bash
@@ -430,135 +430,135 @@ workflows:
       - *debug_env
       - name: Get Flutter packages
         script: flutter pub get
-      - name: Validate iOS Environment
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "🔍 Validating iOS build environment..."
-
-          # Check Xcode version compatibility
-          XCODE_VERSION=$(xcodebuild -version | grep "Xcode" | awk '{print $2}')
-          echo "📱 Xcode Version: $XCODE_VERSION"
-
-          # Check iOS Simulator availability
-          echo "📱 Available iOS Simulators:"
-          xcrun simctl list devices ios | grep -E "(iPhone|iPad)" | head -3
-
-          # Check required iOS files
-          REQUIRED_IOS_FILES=(
-              "ios/Runner.xcodeproj/project.pbxproj"
-              "ios/Runner/Info.plist"
-              "ios/Podfile"
-          )
-
-          for file in "${REQUIRED_IOS_FILES[@]}"; do
-              if [ ! -f "$file" ]; then
-                  echo "❌ Missing required iOS file: $file"
-                  exit 1
-              else
-                  echo "✅ Found: $file"
-              fi
-          done
-
-          # Check iOS deployment target
-          if grep -q "IPHONEOS_DEPLOYMENT_TARGET.*13\|14\|15\|16\|17" ios/Runner.xcodeproj/project.pbxproj; then
-              echo "✅ Compatible iOS deployment target found"
-          else
-              echo "⚠️  iOS deployment target may need update for latest iOS versions"
-          fi
-
-          echo "✅ iOS environment validated"
-      - name: Setup iOS Dependencies
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "📦 Setting up iOS dependencies with enhanced compatibility..."
-
-          cd ios
-
-          # Ensure Podfile exists and is properly configured
-          if [ ! -f "Podfile" ]; then
-              echo "⚠️  Podfile not found, creating optimized version..."
-              cat > Podfile << EOF
-          platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'
-          use_frameworks! :linkage => :static
-
-          ENV['COCOAPODS_DISABLE_STATS'] = 'true'
-
-          project 'Runner', {
-            'Debug' => :debug,
-            'Profile' => :release,
-            'Release' => :release,
-          }
-
-          def flutter_root
-            generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
-            unless File.exist?(generated_xcode_build_settings_path)
-              raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
-            end
-
-            File.foreach(generated_xcode_build_settings_path) do |line|
-              matches = line.match(/FLUTTER_ROOT\\=(.*)/)
-              return matches[1].strip if matches
-            end
-            raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
-          end
-
-          require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
-
-          flutter_ios_podfile_setup
-
-          target 'Runner' do
-            use_frameworks!
-            use_modular_headers!
-            
-            flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-          end
-
-          post_install do |installer|
-            installer.pods_project.targets.each do |target|
-              flutter_additional_ios_build_settings(target)
-              target.build_configurations.each do |config|
-                config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'
-                config.build_settings['ENABLE_BITCODE'] = 'NO'
-                config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64' if config.build_settings['SDKROOT'] == 'iphoneos'
-              end
-            end
-          end
-          EOF
-              echo "✅ Created optimized Podfile"
-          else
-              # Update existing Podfile deployment target
-              if grep -q "platform :ios" Podfile; then
-                  sed -i.bak "s/platform :ios, '[^']*'/platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'/" Podfile
-                  echo "✅ Updated platform to iOS $IPHONEOS_DEPLOYMENT_TARGET"
-              fi
-          fi
-
-          # Clean and install pods with retry mechanism
-          echo "🧹 Cleaning previous CocoaPods installation..."
-          rm -rf Pods/ Podfile.lock
-
-          echo "📦 Installing CocoaPods dependencies..."
-
-          # Retry mechanism for pod install
-          for i in {1..3}; do
-              if pod install --repo-update; then
-                  echo "✅ CocoaPods installation successful"
-                  break
-              else
-                  echo "⚠️  Pod install attempt $i failed"
-                  if [ $i -eq 3 ]; then
-                      echo "❌ Pod install failed after 3 attempts"
-                      exit 1
-                  fi
-                  echo "🔄 Retrying in 10 seconds..."
-                  sleep 10
-              fi
-          done
-
-          cd ..
-          echo "✅ iOS dependencies setup complete"
+#      - name: Validate iOS Environment
+#        script: |
+#          #!/usr/bin/env bash
+#          set -e
+#          echo "🔍 Validating iOS build environment..."
+#
+#          # Check Xcode version compatibility
+#          XCODE_VERSION=$(xcodebuild -version | grep "Xcode" | awk '{print $2}')
+#          echo "📱 Xcode Version: $XCODE_VERSION"
+#
+#          # Check iOS Simulator availability
+#          echo "📱 Available iOS Simulators:"
+#          xcrun simctl list devices ios | grep -E "(iPhone|iPad)" | head -3
+#
+#          # Check required iOS files
+#          REQUIRED_IOS_FILES=(
+#              "ios/Runner.xcodeproj/project.pbxproj"
+#              "ios/Runner/Info.plist"
+#              "ios/Podfile"
+#          )
+#
+#          for file in "${REQUIRED_IOS_FILES[@]}"; do
+#              if [ ! -f "$file" ]; then
+#                  echo "❌ Missing required iOS file: $file"
+#                  exit 1
+#              else
+#                  echo "✅ Found: $file"
+#              fi
+#          done
+#
+#          # Check iOS deployment target
+#          if grep -q "IPHONEOS_DEPLOYMENT_TARGET.*13\|14\|15\|16\|17" ios/Runner.xcodeproj/project.pbxproj; then
+#              echo "✅ Compatible iOS deployment target found"
+#          else
+#              echo "⚠️  iOS deployment target may need update for latest iOS versions"
+#          fi
+#
+#          echo "✅ iOS environment validated"
+#      - name: Setup iOS Dependencies
+#        script: |
+#          #!/usr/bin/env bash
+#          set -e
+#          echo "📦 Setting up iOS dependencies with enhanced compatibility..."
+#
+#          cd ios
+#
+#          # Ensure Podfile exists and is properly configured
+#          if [ ! -f "Podfile" ]; then
+#              echo "⚠️  Podfile not found, creating optimized version..."
+#              cat > Podfile << EOF
+#          platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'
+#          use_frameworks! :linkage => :static
+#
+#          ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+#
+#          project 'Runner', {
+#            'Debug' => :debug,
+#            'Profile' => :release,
+#            'Release' => :release,
+#          }
+#
+#          def flutter_root
+#            generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+#            unless File.exist?(generated_xcode_build_settings_path)
+#              raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
+#            end
+#
+#            File.foreach(generated_xcode_build_settings_path) do |line|
+#              matches = line.match(/FLUTTER_ROOT\\=(.*)/)
+#              return matches[1].strip if matches
+#            end
+#            raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
+#          end
+#
+#          require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+#
+#          flutter_ios_podfile_setup
+#
+#          target 'Runner' do
+#            use_frameworks!
+#            use_modular_headers!
+#
+#            flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+#          end
+#
+#          post_install do |installer|
+#            installer.pods_project.targets.each do |target|
+#              flutter_additional_ios_build_settings(target)
+#              target.build_configurations.each do |config|
+#                config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'
+#                config.build_settings['ENABLE_BITCODE'] = 'NO'
+#                config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64' if config.build_settings['SDKROOT'] == 'iphoneos'
+#              end
+#            end
+#          end
+#          EOF
+#              echo "✅ Created optimized Podfile"
+#          else
+#              # Update existing Podfile deployment target
+#              if grep -q "platform :ios" Podfile; then
+#                  sed -i.bak "s/platform :ios, '[^']*'/platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'/" Podfile
+#                  echo "✅ Updated platform to iOS $IPHONEOS_DEPLOYMENT_TARGET"
+#              fi
+#          fi
+#
+#          # Clean and install pods with retry mechanism
+#          echo "🧹 Cleaning previous CocoaPods installation..."
+#          rm -rf Pods/ Podfile.lock
+#
+#          echo "📦 Installing CocoaPods dependencies..."
+#
+#          # Retry mechanism for pod install
+#          for i in {1..3}; do
+#              if pod install --repo-update; then
+#                  echo "✅ CocoaPods installation successful"
+#                  break
+#              else
+#                  echo "⚠️  Pod install attempt $i failed"
+#                  if [ $i -eq 3 ]; then
+#                      echo "❌ Pod install failed after 3 attempts"
+#                      exit 1
+#                  fi
+#                  echo "🔄 Retrying in 10 seconds..."
+#                  sleep 10
+#              fi
+#          done
+#
+#          cd ..
+#          echo "✅ iOS dependencies setup complete"
       - name: Run iOS build script
         script: |
           #!/usr/bin/env bash
@@ -838,62 +838,62 @@ workflows:
       - *debug_env
       - name: Get Flutter packages
         script: flutter pub get
-      - name: Initialize Build Environment
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "🔧 Initializing build environment for both platforms..."
-
-          # Initialize Android Gradle wrapper with version checking
-          cd android
-
-          # Check current Gradle version in wrapper properties
-          CURRENT_GRADLE_VERSION=""
-          if [ -f "gradle/wrapper/gradle-wrapper.properties" ]; then
-              CURRENT_GRADLE_VERSION=$(grep "distributionUrl" gradle/wrapper/gradle-wrapper.properties | sed 's/.*gradle-\([0-9.]*\)-.*/\1/')
-              echo "📋 Current Gradle wrapper version: $CURRENT_GRADLE_VERSION"
-          fi
-
-          # Check if gradlew exists and is executable
-          if [ ! -f "./gradlew" ] || [ ! -x "./gradlew" ]; then
-              echo "📦 Generating/fixing Android Gradle wrapper..."
-              if command -v gradle >/dev/null 2>&1; then
-                  gradle wrapper --gradle-version=8.12
-                  chmod +x gradlew
-                  echo "✅ Android Gradle wrapper generated with version 8.12"
-              else
-                  echo "⚠️  Gradle not available, Flutter will handle this"
-              fi
-          else
-              echo "✅ Android Gradle wrapper already exists and is executable"
-              chmod +x gradlew
-              
-              # Verify the version is compatible (at least 8.9)
-              if [ -n "$CURRENT_GRADLE_VERSION" ]; then
-                  MAJOR_VERSION=$(echo $CURRENT_GRADLE_VERSION | cut -d. -f1)
-                  MINOR_VERSION=$(echo $CURRENT_GRADLE_VERSION | cut -d. -f2)
-                  if [ "$MAJOR_VERSION" -lt 8 ] || ([ "$MAJOR_VERSION" -eq 8 ] && [ "$MINOR_VERSION" -lt 9 ]); then
-                      echo "⚠️  Gradle version $CURRENT_GRADLE_VERSION is too old, upgrading to 8.12..."
-                      gradle wrapper --gradle-version=8.12
-                      chmod +x gradlew
-                  fi
-              fi
-          fi
-          cd ..
-
-          # Validate iOS environment
-          echo "🍎 Checking iOS environment..."
-          XCODE_VERSION=$(xcodebuild -version | grep "Xcode" | awk '{print $2}')
-          echo "📱 Xcode Version: $XCODE_VERSION"
-
-          # Check iOS Podfile
-          if [ ! -f "ios/Podfile" ]; then
-              echo "⚠️  iOS Podfile missing, will be created during iOS setup"
-          else
-              echo "✅ iOS Podfile exists"
-          fi
-
-          echo "✅ Build environment initialized"
+#      - name: Initialize Build Environment
+#        script: |
+#          #!/usr/bin/env bash
+#          set -e
+#          echo "🔧 Initializing build environment for both platforms..."
+#
+#          # Initialize Android Gradle wrapper with version checking
+#          cd android
+#
+#          # Check current Gradle version in wrapper properties
+#          CURRENT_GRADLE_VERSION=""
+#          if [ -f "gradle/wrapper/gradle-wrapper.properties" ]; then
+#              CURRENT_GRADLE_VERSION=$(grep "distributionUrl" gradle/wrapper/gradle-wrapper.properties | sed 's/.*gradle-\([0-9.]*\)-.*/\1/')
+#              echo "📋 Current Gradle wrapper version: $CURRENT_GRADLE_VERSION"
+#          fi
+#
+#          # Check if gradlew exists and is executable
+#          if [ ! -f "./gradlew" ] || [ ! -x "./gradlew" ]; then
+#              echo "📦 Generating/fixing Android Gradle wrapper..."
+#              if command -v gradle >/dev/null 2>&1; then
+#                  gradle wrapper --gradle-version=8.12
+#                  chmod +x gradlew
+#                  echo "✅ Android Gradle wrapper generated with version 8.12"
+#              else
+#                  echo "⚠️  Gradle not available, Flutter will handle this"
+#              fi
+#          else
+#              echo "✅ Android Gradle wrapper already exists and is executable"
+#              chmod +x gradlew
+#
+#              # Verify the version is compatible (at least 8.9)
+#              if [ -n "$CURRENT_GRADLE_VERSION" ]; then
+#                  MAJOR_VERSION=$(echo $CURRENT_GRADLE_VERSION | cut -d. -f1)
+#                  MINOR_VERSION=$(echo $CURRENT_GRADLE_VERSION | cut -d. -f2)
+#                  if [ "$MAJOR_VERSION" -lt 8 ] || ([ "$MAJOR_VERSION" -eq 8 ] && [ "$MINOR_VERSION" -lt 9 ]); then
+#                      echo "⚠️  Gradle version $CURRENT_GRADLE_VERSION is too old, upgrading to 8.12..."
+#                      gradle wrapper --gradle-version=8.12
+#                      chmod +x gradlew
+#                  fi
+#              fi
+#          fi
+#          cd ..
+#
+#          # Validate iOS environment
+#          echo "🍎 Checking iOS environment..."
+#          XCODE_VERSION=$(xcodebuild -version | grep "Xcode" | awk '{print $2}')
+#          echo "📱 Xcode Version: $XCODE_VERSION"
+#
+#          # Check iOS Podfile
+#          if [ ! -f "ios/Podfile" ]; then
+#              echo "⚠️  iOS Podfile missing, will be created during iOS setup"
+#          else
+#              echo "✅ iOS Podfile exists"
+#          fi
+#
+#          echo "✅ Build environment initialized"
       - name: Build Android (Using main.sh)
         script: |
           #!/usr/bin/env bash
@@ -980,78 +980,78 @@ workflows:
               
               echo "✅ Android builds completed"
           fi
-      - name: Setup iOS Dependencies
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "📦 Setting up iOS dependencies for combined build..."
-
-          cd ios
-
-          # Create or update Podfile
-          if [ ! -f "Podfile" ]; then
-              echo "📄 Creating optimized Podfile..."
-              cat > Podfile << EOF
-          platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'
-          use_frameworks! :linkage => :static
-
-          ENV['COCOAPODS_DISABLE_STATS'] = 'true'
-
-          def flutter_root
-            generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
-            unless File.exist?(generated_xcode_build_settings_path)
-              raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
-            end
-
-            File.foreach(generated_xcode_build_settings_path) do |line|
-              matches = line.match(/FLUTTER_ROOT\\=(.*)/)
-              return matches[1].strip if matches
-            end
-            raise "FLUTTER_ROOT not found"
-          end
-
-          require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
-
-          flutter_ios_podfile_setup
-
-          target 'Runner' do
-            use_frameworks!
-            use_modular_headers!
-            flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-          end
-
-          post_install do |installer|
-            installer.pods_project.targets.each do |target|
-              flutter_additional_ios_build_settings(target)
-              target.build_configurations.each do |config|
-                config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'
-                config.build_settings['ENABLE_BITCODE'] = 'NO'
-              end
-            end
-          end
-          EOF
-          fi
-
-          # Clean and install with retry
-          echo "🧹 Cleaning iOS dependencies..."
-          rm -rf Pods/ Podfile.lock
-
-          echo "📦 Installing iOS dependencies..."
-          for i in {1..2}; do
-              if pod install --repo-update; then
-                  echo "✅ iOS dependencies installed successfully"
-                  break
-              else
-                  if [ $i -eq 2 ]; then
-                      echo "❌ Pod install failed, but continuing..."
-                      break
-                  fi
-                  echo "🔄 Retrying pod install..."
-                  sleep 5
-              fi
-          done
-
-          cd ..
+#      - name: Setup iOS Dependencies
+#        script: |
+#          #!/usr/bin/env bash
+#          set -e
+#          echo "📦 Setting up iOS dependencies for combined build..."
+#
+#          cd ios
+#
+#          # Create or update Podfile
+#          if [ ! -f "Podfile" ]; then
+#              echo "📄 Creating optimized Podfile..."
+#              cat > Podfile << EOF
+#          platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'
+#          use_frameworks! :linkage => :static
+#
+#          ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+#
+#          def flutter_root
+#            generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+#            unless File.exist?(generated_xcode_build_settings_path)
+#              raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
+#            end
+#
+#            File.foreach(generated_xcode_build_settings_path) do |line|
+#              matches = line.match(/FLUTTER_ROOT\\=(.*)/)
+#              return matches[1].strip if matches
+#            end
+#            raise "FLUTTER_ROOT not found"
+#          end
+#
+#          require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+#
+#          flutter_ios_podfile_setup
+#
+#          target 'Runner' do
+#            use_frameworks!
+#            use_modular_headers!
+#            flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+#          end
+#
+#          post_install do |installer|
+#            installer.pods_project.targets.each do |target|
+#              flutter_additional_ios_build_settings(target)
+#              target.build_configurations.each do |config|
+#                config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'
+#                config.build_settings['ENABLE_BITCODE'] = 'NO'
+#              end
+#            end
+#          end
+#          EOF
+#          fi
+#
+#          # Clean and install with retry
+#          echo "🧹 Cleaning iOS dependencies..."
+#          rm -rf Pods/ Podfile.lock
+#
+#          echo "📦 Installing iOS dependencies..."
+#          for i in {1..2}; do
+#              if pod install --repo-update; then
+#                  echo "✅ iOS dependencies installed successfully"
+#                  break
+#              else
+#                  if [ $i -eq 2 ]; then
+#                      echo "❌ Pod install failed, but continuing..."
+#                      break
+#                  fi
+#                  echo "🔄 Retrying pod install..."
+#                  sleep 5
+#              fi
+#          done
+#
+#          cd ..
       - name: Build iOS (Using main.sh)
         script: |
           #!/usr/bin/env bash
