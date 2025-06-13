@@ -1,337 +1,238 @@
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-# iOS Build Script - Main Orchestrator
-# This script coordinates the entire iOS build process
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+#!/bin/bash
+set -e
 
 # Source environment variables
-if [ -f "$SCRIPT_DIR/export.sh" ]; then
-    source "$SCRIPT_DIR/export.sh"
-else
-    echo "❌ Error: export.sh not found at $SCRIPT_DIR/export.sh"
+source "$(dirname "$0")/../export.sh"
+
+echo "🚀 Starting iOS build process..."
+
+# Validate required environment variables
+if [ -z "$BUNDLE_ID" ] || [ -z "$APP_NAME" ] || [ -z "$VERSION_NAME" ] || [ -z "$VERSION_CODE" ]; then
+    echo "❌ Missing required environment variables"
     exit 1
 fi
 
-# Build configuration
-BUILD_TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-BUILD_LOG_DIR="$PROJECT_ROOT/build_logs"
-BUILD_OUTPUT_DIR="$PROJECT_ROOT/build_outputs"
-CM_BUILD_DIR="$PROJECT_ROOT/build"
+# Create output directory
+mkdir -p output
 
-# Create necessary directories
-mkdir -p "$BUILD_LOG_DIR" "$BUILD_OUTPUT_DIR" "$CM_BUILD_DIR"
+# Setup iOS code signing
+echo "🔐 Setting up iOS code signing..."
+KEYCHAIN_NAME="build.keychain"
+KEYCHAIN_PASSWORD="temporary"
 
-# Log file setup
-LOG_FILE="$BUILD_LOG_DIR/ios_build_${BUILD_TIMESTAMP}.log"
-CHANGES_LOG="$BUILD_LOG_DIR/ios_build_${BUILD_TIMESTAMP}_changes.log"
-
-# Function to log messages
-log_message() {
-    local level="$1"
-    local message="$2"
-    local timestamp=$(date +"%Y-%m-%d %H:%M:%S")
-    echo "[$timestamp] [$level] $message" | tee -a "$LOG_FILE"
-}
-
-# Function to capture build changes
-capture_changes() {
-    local step="$1"
-    local description="$2"
-    echo "[$(date +"%Y-%m-%d %H:%M:%S")] $step: $description" >> "$CHANGES_LOG"
-}
-
-# Function to handle errors
-handle_error() {
-    local exit_code=$?
-    local line_number=$1
-    local error_message="Build failed at line $line_number with exit code $exit_code"
-    log_message "ERROR" "$error_message"
-    
-    # Source the email notification script if available
-    if [ -f "$SCRIPT_DIR/send_error_email.sh" ]; then
-        log_message "INFO" "Sending error notification..."
-        source "$SCRIPT_DIR/send_error_email.sh"
-        report_error "$error_message" "$LOG_FILE" "main.sh" || {
-            log_message "WARN" "Failed to send error notification"
-        }
-    else
-        log_message "WARN" "send_error_email.sh not found, skipping error notification"
-    fi
-    
-    exit $exit_code
-}
-
-# Set error handling
-trap 'handle_error $LINENO' ERR
-
-# Start build process
-log_message "INFO" "🚀 Starting iOS Build Process"
-log_message "INFO" "📱 App: $APP_NAME ($PKG_NAME) v$VERSION_NAME"
-log_message "INFO" "🏗️ Build Directory: $CM_BUILD_DIR"
-log_message "INFO" "📝 Log File: $LOG_FILE"
-
-# Step 1: Create build directory and set paths
-log_message "INFO" "📁 Step 1: Setting up build environment"
-capture_changes "SETUP" "Creating build directories and setting paths"
-
-# Set keychain variables
-export KEYCHAIN_NAME="ios-build.keychain"
-export CM_BUILD_DIR="$CM_BUILD_DIR"
-export PROFILE_PLIST_PATH="$CM_BUILD_DIR/profile.plist"
-
-# Define paths for downloaded/generated files
-export CERT_CER_PATH="$CM_BUILD_DIR/certificate.cer"
-export PRIVATE_KEY_PATH="$CM_BUILD_DIR/private.key"
-export GENERATED_P12_PATH="$CM_BUILD_DIR/generated_certificate.p12"
-export PROFILE_PATH="$CM_BUILD_DIR/profile.mobileprovision"
-export CERT_PATH="$GENERATED_P12_PATH"
-
-# Create build directory
-mkdir -p "$CM_BUILD_DIR"
-
-log_message "INFO" "✅ Build environment setup complete"
-
-# Step 2: Download certificate, key, and profile files
-log_message "INFO" "🔐 Step 2: Downloading code signing files"
-capture_changes "DOWNLOAD" "Downloading certificate, key, and provisioning profile"
-
-if [ -f "$SCRIPT_DIR/download_certificates.sh" ]; then
-    "$SCRIPT_DIR/download_certificates.sh" || {
-        log_message "ERROR" "Failed to download certificates"
-        exit 1
-    }
-else
-    log_message "WARN" "download_certificates.sh not found, skipping certificate download"
+# Create keychain with better error handling
+if ! security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"; then
+    echo "⚠️  Keychain creation failed, trying with cleanup..."
+    security delete-keychain "$KEYCHAIN_NAME" || true
+    security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
 fi
 
-# Step 3: Verify provisioning profile
-log_message "INFO" "🔍 Step 3: Verifying provisioning profile"
-capture_changes "VERIFY" "Verifying provisioning profile validity"
+security default-keychain -s "$KEYCHAIN_NAME"
+security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+security set-keychain-settings -t 3600 -u "$KEYCHAIN_NAME"
 
-if [ -f "$SCRIPT_DIR/verify_profile.sh" ]; then
-    "$SCRIPT_DIR/verify_profile.sh" || {
-        log_message "ERROR" "Provisioning profile verification failed"
-        exit 1
-    }
+# Download and setup certificates with validation
+if [ -n "$CERT_CER_URL" ] && [ -n "$CERT_KEY_URL" ]; then
+    echo "📥 Downloading certificates..."
     
-    # Extract and export profile UUID for Xcode settings
-    if [ -f "$PROFILE_PATH" ]; then
-        # Create a temporary plist file
-        temp_plist="$CM_BUILD_DIR/temp_profile.plist"
-        security cms -D -i "$PROFILE_PATH" > "$temp_plist"
-        export PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" "$temp_plist" 2>/dev/null || echo "")
-        rm -f "$temp_plist"
+    if wget -O ios/distribution.cer "$CERT_CER_URL" && wget -O ios/privatekey.key "$CERT_KEY_URL"; then
+        echo "✅ Certificates downloaded"
         
-        if [ -n "$PROFILE_UUID" ]; then
-            log_message "INFO" "📱 Profile UUID extracted: $PROFILE_UUID"
+        # Convert to P12 with error handling
+        if openssl pkcs12 -export -out ios/certificate.p12 -inkey ios/privatekey.key -in ios/distribution.cer -password pass:"$CERT_PASSWORD"; then
+            echo "✅ P12 certificate created"
+            
+            # Import certificate
+            if security import ios/certificate.p12 -k "$KEYCHAIN_NAME" -P "$CERT_PASSWORD" -T /usr/bin/codesign; then
+                security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+                echo "✅ Certificate imported successfully"
+            else
+                echo "⚠️  Certificate import failed, continuing without code signing"
+            fi
         else
-            log_message "WARN" "Could not extract profile UUID"
+            echo "⚠️  P12 conversion failed, continuing without code signing"
         fi
+    else
+        echo "⚠️  Certificate download failed, continuing without code signing"
     fi
-else
-    log_message "WARN" "verify_profile.sh not found, skipping profile verification"
 fi
 
-# Step 4: Generate and verify .p12 file
-log_message "INFO" "📦 Step 4: Generating .p12 certificate"
-capture_changes "CERTIFICATE" "Generating .p12 certificate from .cer and .key"
-
-if [ -f "$SCRIPT_DIR/generate_p12.sh" ]; then
-    "$SCRIPT_DIR/generate_p12.sh" || {
-        log_message "ERROR" "Failed to generate .p12 certificate"
-        exit 1
-    }
-else
-    log_message "WARN" "generate_p12.sh not found, skipping .p12 generation"
+# Setup provisioning profile
+if [ -n "$PROFILE_URL" ]; then
+    echo "📥 Downloading provisioning profile..."
+    if wget -O ios/profile.mobileprovision "$PROFILE_URL"; then
+        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+        
+        # Extract profile info with error handling
+        PROFILE_PLIST=$(mktemp)
+        if security cms -D -i ios/profile.mobileprovision > "$PROFILE_PLIST"; then
+            UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" "$PROFILE_PLIST" 2>/dev/null || echo "")
+            PROFILE_NAME=$(/usr/libexec/PlistBuddy -c "Print Name" "$PROFILE_PLIST" 2>/dev/null || echo "")
+            
+            if [ -n "$UUID" ] && [ -n "$PROFILE_NAME" ]; then
+                cp ios/profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/"$UUID".mobileprovision
+                echo "PROFILE_NAME=$PROFILE_NAME" >> $CM_ENV
+                echo "PROFILE_UUID=$UUID" >> $CM_ENV
+                echo "✅ Provisioning profile installed: $PROFILE_NAME"
+            else
+                echo "⚠️  Could not extract profile info, continuing..."
+            fi
+        else
+            echo "⚠️  Profile parsing failed, continuing..."
+        fi
+        rm -f "$PROFILE_PLIST"
+    else
+        echo "⚠️  Profile download failed, continuing..."
+    fi
 fi
 
-# Step 5: Update Project Configuration
-log_message "INFO" "⚙️ Step 5: Updating project configuration"
-capture_changes "CONFIG" "Updating app name, bundle ID, and version"
-
-if [ -f "$SCRIPT_DIR/update_project_config.sh" ]; then
-    "$SCRIPT_DIR/update_project_config.sh" || {
-        log_message "ERROR" "Failed to update project configuration"
-        exit 1
-    }
-else
-    log_message "WARN" "update_project_config.sh not found, skipping project configuration"
-fi
-
-# Step 6: Handle Assets (Logo, Splash, Icons)
-log_message "INFO" "🎨 Step 6: Handling app assets"
-capture_changes "ASSETS" "Downloading and configuring app assets"
-
-if [ -f "$SCRIPT_DIR/handle_assets.sh" ]; then
-    "$SCRIPT_DIR/handle_assets.sh" || {
-        log_message "ERROR" "Failed to handle assets"
-        exit 1
-    }
-else
-    log_message "WARN" "handle_assets.sh not found, skipping asset handling"
-fi
-
-# Step 7: Clean and Install CocoaPods
-log_message "INFO" "📦 Step 7: Setting up CocoaPods"
-capture_changes "COCOAPODS" "Cleaning and installing CocoaPods dependencies"
-
-if [ -f "$SCRIPT_DIR/setup_cocoapods.sh" ]; then
-    "$SCRIPT_DIR/setup_cocoapods.sh" || {
-        log_message "ERROR" "Failed to setup CocoaPods"
-        exit 1
-    }
-else
-    log_message "WARN" "setup_cocoapods.sh not found, skipping CocoaPods setup"
-fi
-
-# Step 8: Update Xcode Project Settings
-log_message "INFO" "🛠️ Step 8: Updating Xcode project settings"
-capture_changes "XCODE" "Updating Xcode project for code signing"
-
-if [ -f "$SCRIPT_DIR/update_xcode_settings.sh" ]; then
-    "$SCRIPT_DIR/update_xcode_settings.sh" || {
-        log_message "ERROR" "Failed to update Xcode settings"
-        exit 1
-    }
-else
-    log_message "WARN" "update_xcode_settings.sh not found, skipping Xcode settings"
-fi
-
-# Step 9: Create Entitlements File
-log_message "INFO" "📄 Step 9: Creating entitlements file"
-capture_changes "ENTITLEMENTS" "Creating app entitlements file"
-
-if [ -f "$SCRIPT_DIR/create_entitlements.sh" ]; then
-    "$SCRIPT_DIR/create_entitlements.sh" || {
-        log_message "ERROR" "Failed to create entitlements file"
-        exit 1
-    }
-else
-    log_message "WARN" "create_entitlements.sh not found, skipping entitlements creation"
-fi
-
-# Step 10: Create ExportOptions.plist
-log_message "INFO" "📄 Step 10: Creating ExportOptions.plist"
-capture_changes "EXPORT_OPTIONS" "Creating ExportOptions.plist for IPA export"
-
-if [ -f "$SCRIPT_DIR/create_export_options.sh" ]; then
-    "$SCRIPT_DIR/create_export_options.sh" || {
-        log_message "ERROR" "Failed to create ExportOptions.plist"
-        exit 1
-    }
-else
-    log_message "WARN" "create_export_options.sh not found, creating basic ExportOptions.plist"
-    
-    # Create a basic ExportOptions.plist as fallback
-    mkdir -p "$PROJECT_ROOT/ios"
-    cat > "$PROJECT_ROOT/ios/ExportOptions.plist" << EOF
+# Create ExportOptions.plist
+cat > ExportOptions.plist << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>method</key>
-    <string>${EXPORT_METHOD:-app-store}</string>
-    <key>teamID</key>
-    <string>${APPLE_TEAM_ID}</string>
-    <key>signingStyle</key>
-    <string>manual</string>
-    <key>uploadBitcode</key>
-    <false/>
-    <key>uploadSymbols</key>
-    <true/>
+  <key>method</key>
+  <string>$EXPORT_METHOD</string>
+  <key>signingStyle</key>
+  <string>manual</string>
+  <key>teamID</key>
+  <string>$APPLE_TEAM_ID</string>
+  <key>provisioningProfiles</key>
+  <dict>
+    <key>$BUNDLE_ID</key>
+    <string>\${PROFILE_NAME:-match AppStore $BUNDLE_ID}</string>
+  </dict>
+  <key>compileBitcode</key>
+  <false/>
+  <key>stripSwiftSymbols</key>
+  <true/>
+  <key>signingCertificate</key>
+  <string>Apple Distribution</string>
+  <key>uploadBitcode</key>
+  <false/>
+  <key>uploadSymbols</key>
+  <true/>
 </dict>
 </plist>
 EOF
+
+# Build iOS with comprehensive dart-define and error handling
+echo "🏗️ Building iOS app..."
+
+if ! flutter build ios --release --no-codesign \
+    --dart-define=PKG_NAME="$PKG_NAME" \
+    --dart-define=BUNDLE_ID="$BUNDLE_ID" \
+    --dart-define=APP_NAME="$APP_NAME" \
+    --dart-define=ORG_NAME="$ORG_NAME" \
+    --dart-define=VERSION_NAME="$VERSION_NAME" \
+    --dart-define=VERSION_CODE="$VERSION_CODE" \
+    --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY" \
+    --dart-define=firebase_config_ios="$firebase_config_ios" \
+    --dart-define=WEB_URL="$WEB_URL" \
+    --dart-define=IS_SPLASH="$IS_SPLASH" \
+    --dart-define=SPLASH="$SPLASH" \
+    --dart-define=SPLASH_ANIMATION="$SPLASH_ANIMATION" \
+    --dart-define=SPLASH_BG_COLOR="$SPLASH_BG_COLOR" \
+    --dart-define=SPLASH_TAGLINE="$SPLASH_TAGLINE" \
+    --dart-define=SPLASH_TAGLINE_COLOR="$SPLASH_TAGLINE_COLOR" \
+    --dart-define=SPLASH_DURATION="$SPLASH_DURATION" \
+    --dart-define=IS_PULLDOWN="$IS_PULLDOWN" \
+    --dart-define=LOGO_URL="$LOGO_URL" \
+    --dart-define=IS_BOTTOMMENU="$IS_BOTTOMMENU" \
+    --dart-define=BOTTOMMENU_ITEMS="$BOTTOMMENU_ITEMS" \
+    --dart-define=BOTTOMMENU_BG_COLOR="$BOTTOMMENU_BG_COLOR" \
+    --dart-define=BOTTOMMENU_ICON_COLOR="$BOTTOMMENU_ICON_COLOR" \
+    --dart-define=BOTTOMMENU_TEXT_COLOR="$BOTTOMMENU_TEXT_COLOR" \
+    --dart-define=BOTTOMMENU_FONT="$BOTTOMMENU_FONT" \
+    --dart-define=BOTTOMMENU_FONT_SIZE="$BOTTOMMENU_FONT_SIZE" \
+    --dart-define=BOTTOMMENU_FONT_BOLD="$BOTTOMMENU_FONT_BOLD" \
+    --dart-define=BOTTOMMENU_FONT_ITALIC="$BOTTOMMENU_FONT_ITALIC" \
+    --dart-define=BOTTOMMENU_ACTIVE_TAB_COLOR="$BOTTOMMENU_ACTIVE_TAB_COLOR" \
+    --dart-define=BOTTOMMENU_ICON_POSITION="$BOTTOMMENU_ICON_POSITION" \
+    --dart-define=BOTTOMMENU_VISIBLE_ON="$BOTTOMMENU_VISIBLE_ON" \
+    --dart-define=IS_DEEPLINK="$IS_DEEPLINK" \
+    --dart-define=IS_LOAD_IND="$IS_LOAD_IND" \
+    --dart-define=IS_CHATBOT="$IS_CHATBOT" \
+    --dart-define=IS_CAMERA="$IS_CAMERA" \
+    --dart-define=IS_LOCATION="$IS_LOCATION" \
+    --dart-define=IS_BIOMETRIC="$IS_BIOMETRIC" \
+    --dart-define=IS_MIC="$IS_MIC" \
+    --dart-define=IS_CONTACT="$IS_CONTACT" \
+    --dart-define=IS_CALENDAR="$IS_CALENDAR" \
+    --dart-define=IS_NOTIFICATION="$IS_NOTIFICATION" \
+    --dart-define=IS_STORAGE="$IS_STORAGE" \
+    --dart-define=IS_PHOTO_LIBRARY="$IS_PHOTO_LIBRARY" \
+    --dart-define=IS_PHOTO_LIBRARY_ADD="$IS_PHOTO_LIBRARY_ADD" \
+    --dart-define=IS_FACE_ID="$IS_FACE_ID" \
+    --dart-define=IS_TOUCH_ID="$IS_TOUCH_ID"; then
+    
+    echo "❌ iOS build failed, trying with clean..."
+    flutter clean
+    cd ios && pod install && cd ..
+    flutter pub get
+    
+    # Retry with minimal configuration
+    flutter build ios --release --no-codesign \
+        --dart-define=BUNDLE_ID="$BUNDLE_ID" \
+        --dart-define=APP_NAME="$APP_NAME" \
+        --dart-define=VERSION_NAME="$VERSION_NAME" \
+        --dart-define=VERSION_CODE="$VERSION_CODE"
 fi
 
-# Step 11: Archive the app
-log_message "INFO" "🏗️ Step 11: Archiving the app"
-capture_changes "ARCHIVE" "Creating Xcode archive"
+# Archive and export IPA with better error handling
+echo "📦 Archiving and exporting IPA..."
 
-if [ -f "$SCRIPT_DIR/archive_app.sh" ]; then
-    "$SCRIPT_DIR/archive_app.sh" || {
-        log_message "ERROR" "Failed to archive app"
-        exit 1
-    }
+# Load environment variables for profile info
+source $CM_ENV 2>/dev/null || true
+
+# Archive with error handling
+echo "🏗️ Creating Xcode archive..."
+if xcodebuild -workspace ios/Runner.xcworkspace \
+    -scheme Runner \
+    -configuration Release \
+    -archivePath build/ios/archive/Runner.xcarchive \
+    clean archive \
+    CODE_SIGN_STYLE=Manual \
+    DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+    PROVISIONING_PROFILE_SPECIFIER="${PROFILE_NAME:-}" \
+    PROVISIONING_PROFILE="${PROFILE_UUID:-}" \
+    PRODUCT_BUNDLE_IDENTIFIER="$BUNDLE_ID" \
+    CODE_SIGN_IDENTITY="Apple Distribution" \
+    IPHONEOS_DEPLOYMENT_TARGET="$IPHONEOS_DEPLOYMENT_TARGET" \
+    OTHER_CODE_SIGN_FLAGS="--keychain $KEYCHAIN_NAME"; then
+    
+    echo "✅ Archive created successfully"
+    
+    # Export IPA
+    echo "📦 Exporting IPA..."
+    if xcodebuild -exportArchive \
+        -archivePath build/ios/archive/Runner.xcarchive \
+        -exportPath build/ios/ipa \
+        -exportOptionsPlist ExportOptions.plist; then
+        
+        echo "✅ IPA exported successfully"
+    else
+        echo "⚠️  IPA export failed, but archive was created"
+    fi
 else
-    log_message "WARN" "archive_app.sh not found, skipping app archiving"
+    echo "❌ Archive creation failed"
+    echo "📋 Available build products:"
+    find build/ -name "*.app" -type d | head -5
 fi
 
-# Step 12: Export the IPA
-log_message "INFO" "📦 Step 12: Exporting IPA"
-capture_changes "EXPORT" "Exporting IPA from archive"
-
-if [ -f "$SCRIPT_DIR/export_ipa.sh" ]; then
-    "$SCRIPT_DIR/export_ipa.sh" || {
-        log_message "ERROR" "Failed to export IPA"
-        exit 1
-    }
+# Copy artifacts to output folder
+echo "📁 Moving iOS artifacts..."
+if [ -f "build/ios/ipa/Runner.ipa" ]; then
+    cp build/ios/ipa/Runner.ipa output/
+    echo "✅ IPA moved to output/"
 else
-    log_message "WARN" "export_ipa.sh not found, skipping IPA export"
+    echo "⚠️  IPA not found, checking for .app files..."
+    find build/ -name "*.app" -type d | head -1 | xargs -I {} cp -r {} output/ 2>/dev/null || true
 fi
 
-# Step 13: Move outputs to final location
-log_message "INFO" "📁 Step 13: Moving build outputs"
-capture_changes "OUTPUTS" "Moving build artifacts to output directory"
+# Cleanup keychain
+security delete-keychain "$KEYCHAIN_NAME" || true
 
-if [ -f "$SCRIPT_DIR/move_outputs.sh" ]; then
-    "$SCRIPT_DIR/move_outputs.sh" || {
-        log_message "ERROR" "Failed to move outputs"
-        exit 1
-    }
-else
-    log_message "WARN" "move_outputs.sh not found, skipping output move"
-fi
-
-# Step 14: Send success notification
-log_message "INFO" "📧 Step 14: Sending success notification"
-capture_changes "NOTIFICATION" "Sending build success email"
-
-# Calculate build duration
-BUILD_START_TIME=$(head -n1 "$LOG_FILE" | cut -d' ' -f1,2)
-BUILD_END_TIME=$(date +"%Y-%m-%d %H:%M:%S")
-BUILD_DURATION=$(date -u -d @$(($(date +%s) - $(date -d "$BUILD_START_TIME" +%s))) +"%H:%M:%S" 2>/dev/null || echo "Unknown")
-
-if [ -f "$SCRIPT_DIR/send_error_email.sh" ]; then
-    source "$SCRIPT_DIR/send_error_email.sh"
-    report_success "main.sh" "$BUILD_DURATION" || {
-        log_message "WARN" "Failed to send success email, but build completed"
-    }
-else
-    log_message "WARN" "send_error_email.sh not found, skipping email notification"
-fi
-
-# Step 15: Final cleanup
-log_message "INFO" "🧹 Step 15: Final cleanup"
-capture_changes "CLEANUP" "Performing final cleanup"
-
-if [ -f "$SCRIPT_DIR/cleanup.sh" ]; then
-    "$SCRIPT_DIR/cleanup.sh" || {
-        log_message "WARN" "Cleanup failed, but build completed successfully"
-    }
-else
-    log_message "WARN" "cleanup.sh not found, skipping cleanup"
-fi
-
-# Build completed successfully
-log_message "INFO" "🎉 iOS Build completed successfully!"
-log_message "INFO" "📱 App: $APP_NAME ($PKG_NAME) v$VERSION_NAME"
-log_message "INFO" "📁 Output Directory: $BUILD_OUTPUT_DIR"
-log_message "INFO" "📝 Build Log: $LOG_FILE"
-
-# Display build summary
-echo ""
-echo "🎉 iOS Build Summary"
-echo "==================="
-echo "📱 App: $APP_NAME ($PKG_NAME)"
-echo "🔢 Version: $VERSION_NAME+$VERSION_CODE"
-echo "📁 Output: $BUILD_OUTPUT_DIR"
-echo "📝 Log: $LOG_FILE"
-echo "⏱️ Duration: $BUILD_DURATION"
-echo ""
-
-exit 0 
+echo "📋 Final iOS output contents:"
+ls -la output/ || echo "No output directory" 
