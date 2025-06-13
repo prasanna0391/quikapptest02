@@ -239,69 +239,41 @@ workflows:
           JAVA_VERSION=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}')
           echo "✅ Java version: $JAVA_VERSION"
 
-          # Force update Gradle wrapper to 8.12
-          echo "📦 Updating Gradle wrapper to version 8.12..."
+          # Create gradle wrapper directory if it doesn't exist
+          mkdir -p gradle/wrapper
+
+          # Download gradle-wrapper.jar
+          echo "📥 Downloading gradle-wrapper.jar..."
+          curl -o gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/v8.12.0/gradle/wrapper/gradle-wrapper.jar
+
+          # Create gradle-wrapper.properties
+          echo "📝 Creating gradle-wrapper.properties..."
           cat > gradle/wrapper/gradle-wrapper.properties <<EOF
           distributionBase=GRADLE_USER_HOME
           distributionPath=wrapper/dists
+          distributionUrl=https\://services.gradle.org/distributions/gradle-8.12-bin.zip
+          networkTimeout=10000
+          validateDistributionUrl=true
           zipStoreBase=GRADLE_USER_HOME
           zipStorePath=wrapper/dists
-          distributionUrl=https\://services.gradle.org/distributions/gradle-8.12-all.zip
           EOF
 
-          # Download Gradle wrapper files if they don't exist
+          # Make gradlew executable
+          chmod +x gradlew
+
+          # Verify the wrapper setup
+          echo "🔍 Verifying Gradle wrapper setup..."
           if [ ! -f "gradle/wrapper/gradle-wrapper.jar" ]; then
-            echo "📥 Downloading Gradle wrapper JAR..."
-            curl -L -o gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/v8.12.0/gradle/wrapper/gradle-wrapper.jar
-            
-            # Verify the JAR file
-            if [ ! -s "gradle/wrapper/gradle-wrapper.jar" ]; then
-              echo "❌ Failed to download Gradle wrapper JAR"
+              echo "❌ gradle-wrapper.jar not found"
               exit 1
-            fi
-            echo "✅ Gradle wrapper JAR downloaded successfully"
           fi
 
-          # Create gradlew script if it doesn't exist
-          if [ ! -f "gradlew" ]; then
-            echo "📝 Creating gradlew script..."
-            cat > gradlew <<EOF
-          #!/bin/sh
-
-          # Find Java
-          if [ -n "\$JAVA_HOME" ]; then
-              JAVACMD="\$JAVA_HOME/bin/java"
-          else
-              JAVACMD="java"
+          if [ ! -f "gradle/wrapper/gradle-wrapper.properties" ]; then
+              echo "❌ gradle-wrapper.properties not found"
+              exit 1
           fi
 
-          # Set default JVM options
-          DEFAULT_JVM_OPTS="-Xmx64m -Xms64m"
-
-          # Execute Gradle
-          exec "\$JAVACMD" \$DEFAULT_JVM_OPTS \$JAVA_OPTS \$GRADLE_OPTS \
-            -classpath "\$CLASSPATH" \
-            org.gradle.wrapper.GradleWrapperMain "\$@"
-          EOF
-            chmod +x gradlew
-          fi
-
-          # Clean Gradle cache and stop daemons
-          echo "🧹 Cleaning Gradle cache and stopping daemons..."
-          rm -rf ~/.gradle/caches/
-          ./gradlew --stop || true
-
-          # Verify Gradle version
-          echo "🔍 Verifying Gradle version..."
-          ./gradlew --version
-
-          # Clean project
-          echo "🧹 Cleaning project..."
-          ./gradlew clean
-
-          cd ..
-
-          echo "✅ Android Gradle wrapper initialized successfully"
+          echo "✅ Gradle wrapper initialization complete"
       - name: Validate Android Project Structure
         script: |
           #!/usr/bin/env bash
