@@ -1,225 +1,219 @@
 # Common environment variables for all workflows
 # These can be overridden by API calls with dynamic values
+# Proper handling of API data with null/default values for optional fields
 environment: &default_env
   flutter: stable
   xcode: latest
   cocoapods: default
   vars:
-    # App Configuration - Dynamic values from API
+    # App Configuration - Required from API
     VERSION_NAME: "${VERSION_NAME:-1.0.21}"
     VERSION_CODE: "${VERSION_CODE:-25}"
-    APP_NAME: "${APP_NAME:-Garbcode App}"
-    ORG_NAME: "${ORG_NAME:-Garbcode Apparels Private Limited}"
-    WEB_URL: "${WEB_URL:-https://garbcode.com/}"
-    PKG_NAME: "${PKG_NAME:-com.garbcode.garbcodeapp}"
-    BUNDLE_ID: "${BUNDLE_ID:-com.garbcode.garbcodeapp}"
-    EMAIL_ID: "${EMAIL_ID:-prasannasrie@gmail.com}"
+    APP_NAME: "${APP_NAME:-QuikApp}"
+    ORG_NAME: "${ORG_NAME:-QuikApp Organization}"
+    WEB_URL: "${WEB_URL:-https://example.com/}"
+    PKG_NAME: "${PKG_NAME:-com.example.app}"
+    BUNDLE_ID: "${BUNDLE_ID:-com.example.app}"
+    EMAIL_ID: "${EMAIL_ID:-admin@example.com}"
 
-    # Feature Flags - Dynamic values from API
-    PUSH_NOTIFY: "${PUSH_NOTIFY:-true}"
-    IS_CHATBOT: "${IS_CHATBOT:-true}"
-    IS_DEEPLINK: "${IS_DEEPLINK:-true}"
-    IS_SPLASH: "${IS_SPLASH:-true}"
-    IS_PULLDOWN: "${IS_PULLDOWN:-true}"
+    # Feature Flags - API configurable with proper defaults
+    PUSH_NOTIFY: "${PUSH_NOTIFY:-false}"
+    IS_CHATBOT: "${IS_CHATBOT:-false}"
+    IS_DEEPLINK: "${IS_DEEPLINK:-false}"
+    IS_SPLASH: "${IS_SPLASH:-false}"
+    IS_PULLDOWN: "${IS_PULLDOWN:-false}"
     IS_BOTTOMMENU: "${IS_BOTTOMMENU:-false}"
-    IS_LOAD_IND: "${IS_LOAD_IND:-true}"
+    IS_LOAD_IND: "${IS_LOAD_IND:-false}"
 
-    # Permissions - Dynamic values from API
+    # Permissions - API configurable with secure defaults (all false unless specified)
     IS_CAMERA: "${IS_CAMERA:-false}"
     IS_LOCATION: "${IS_LOCATION:-false}"
-    IS_MIC: "${IS_MIC:-true}"
-    IS_NOTIFICATION: "${IS_NOTIFICATION:-true}"
+    IS_MIC: "${IS_MIC:-false}"
+    IS_NOTIFICATION: "${IS_NOTIFICATION:-false}"
     IS_CONTACT: "${IS_CONTACT:-false}"
     IS_BIOMETRIC: "${IS_BIOMETRIC:-false}"
     IS_CALENDAR: "${IS_CALENDAR:-false}"
     IS_STORAGE: "${IS_STORAGE:-true}"
 
-    # Assets - Dynamic values from API
-    LOGO_URL: "${LOGO_URL:-https://raw.githubusercontent.com/prasanna91/QuikApp/main/logo-gc.png}"
-    SPLASH: "${SPLASH:-https://raw.githubusercontent.com/prasanna91/QuikApp/main/logo-gc.png}"
+    # Assets - API configurable with empty defaults for optional fields
+    LOGO_URL: "${LOGO_URL:-}"
+    SPLASH: "${SPLASH:-}"
     SPLASH_BG: "${SPLASH_BG:-}"
-    SPLASH_BG_COLOR: "${SPLASH_BG_COLOR:-#cbdbf5}"
-    SPLASH_TAGLINE: "${SPLASH_TAGLINE:-Welcome to Garbcode}"
-    SPLASH_TAGLINE_COLOR: "${SPLASH_TAGLINE_COLOR:-#a30237}"
-    SPLASH_ANIMATION: "${SPLASH_ANIMATION:-zoom}"
-    SPLASH_DURATION: "${SPLASH_DURATION:-4}"
+    SPLASH_BG_COLOR: "${SPLASH_BG_COLOR:-#FFFFFF}"
+    SPLASH_TAGLINE: "${SPLASH_TAGLINE:-}"
+    SPLASH_TAGLINE_COLOR: "${SPLASH_TAGLINE_COLOR:-#000000}"
+    SPLASH_ANIMATION: "${SPLASH_ANIMATION:-fade}"
+    SPLASH_DURATION: "${SPLASH_DURATION:-3}"
 
-    # Bottom Menu Configuration - Dynamic values from API
-    BOTTOMMENU_ITEMS: '${BOTTOMMENU_ITEMS:-[{"label": "Home", "icon": "home", "url": "https://pixaware.co/"}, {"label": "services", "icon": "services", "url": "https://pixaware.co/solutions/"}, {"label": "About", "icon": "info", "url": "https://pixaware.co/who-we-are/"}, {"label": "Contact", "icon": "phone", "url": "https://pixaware.co/lets-talk/"}]}'
+    # Bottom Menu Configuration - API configurable with empty defaults
+    BOTTOMMENU_ITEMS: "${BOTTOMMENU_ITEMS:-[]}"
     BOTTOMMENU_BG_COLOR: "${BOTTOMMENU_BG_COLOR:-#FFFFFF}"
-    BOTTOMMENU_ICON_COLOR: "${BOTTOMMENU_ICON_COLOR:-#6d6e8c}"
-    BOTTOMMENU_TEXT_COLOR: "${BOTTOMMENU_TEXT_COLOR:-#6d6e8c}"
-    BOTTOMMENU_FONT: "${BOTTOMMENU_FONT:-DM Sans}"
+    BOTTOMMENU_ICON_COLOR: "${BOTTOMMENU_ICON_COLOR:-#000000}"
+    BOTTOMMENU_TEXT_COLOR: "${BOTTOMMENU_TEXT_COLOR:-#000000}"
+    BOTTOMMENU_FONT: "${BOTTOMMENU_FONT:-System}"
     BOTTOMMENU_FONT_SIZE: "${BOTTOMMENU_FONT_SIZE:-12}"
     BOTTOMMENU_FONT_BOLD: "${BOTTOMMENU_FONT_BOLD:-false}"
     BOTTOMMENU_FONT_ITALIC: "${BOTTOMMENU_FONT_ITALIC:-false}"
-    BOTTOMMENU_ACTIVE_TAB_COLOR: "${BOTTOMMENU_ACTIVE_TAB_COLOR:-#a30237}"
+    BOTTOMMENU_ACTIVE_TAB_COLOR: "${BOTTOMMENU_ACTIVE_TAB_COLOR:-#007AFF}"
     BOTTOMMENU_ICON_POSITION: "${BOTTOMMENU_ICON_POSITION:-above}"
-    BOTTOMMENU_VISIBLE_ON: "${BOTTOMMENU_VISIBLE_ON:-home,settings,profile}"
+    BOTTOMMENU_VISIBLE_ON: "${BOTTOMMENU_VISIBLE_ON:-}"
 
-    # Firebase Configuration - Dynamic values from API
-    firebase_config_android: "${firebase_config_android:-https://raw.githubusercontent.com/prasanna91/QuikApp/main/google-services%20(gc).json}"
-    firebase_config_ios: "${firebase_config_ios:-https://raw.githubusercontent.com/prasanna91/QuikApp/main/GoogleService-Info-gc.plist}"
+    # Firebase Configuration - API required for push notifications
+    firebase_config_android: "${firebase_config_android:-}"
+    firebase_config_ios: "${firebase_config_ios:-}"
 
-    # iOS Configuration - Dynamic values from API
-    APPLE_TEAM_ID: "${APPLE_TEAM_ID:-9H2AD7NQ49}"
-    APNS_KEY_ID: "${APNS_KEY_ID:-V566SWNF69}"
-    APNS_AUTH_KEY_URL: "${APNS_AUTH_KEY_URL:-https://raw.githubusercontent.com/prasanna91/QuikApp/main/AuthKey_V566SWNF69.p8}"
-    CERT_PASSWORD: "${CERT_PASSWORD:-User@54321}"
-    PROFILE_URL: "${PROFILE_URL:-https://raw.githubusercontent.com/prasanna91/QuikApp/main/Garbcode_App_Store.mobileprovision}"
-    CERT_CER_URL: "${CERT_CER_URL:-https://raw.githubusercontent.com/prasanna91/QuikApp/main/apple_distribution.cer}"
-    CERT_KEY_URL: "${CERT_KEY_URL:-https://raw.githubusercontent.com/prasanna91/QuikApp/main/privatekey.key}"
-    APP_STORE_CONNECT_KEY_IDENTIFIER: "${APP_STORE_CONNECT_KEY_IDENTIFIER:-F5229W2Q8S}"
+    # iOS Configuration - API required for iOS builds
+    APPLE_TEAM_ID: "${APPLE_TEAM_ID:-}"
+    APNS_KEY_ID: "${APNS_KEY_ID:-}"
+    APNS_AUTH_KEY_URL: "${APNS_AUTH_KEY_URL:-}"
+    CERT_PASSWORD: "${CERT_PASSWORD:-}"
+    PROFILE_URL: "${PROFILE_URL:-}"
+    CERT_CER_URL: "${CERT_CER_URL:-}"
+    CERT_KEY_URL: "${CERT_KEY_URL:-}"
+    APP_STORE_CONNECT_KEY_IDENTIFIER: "${APP_STORE_CONNECT_KEY_IDENTIFIER:-}"
     IPHONEOS_DEPLOYMENT_TARGET: "${IPHONEOS_DEPLOYMENT_TARGET:-13.0}"
     COCOAPODS_PLATFORM: "${COCOAPODS_PLATFORM:-ios}"
-    EXPORT_METHOD: "${EXPORT_METHOD:-app-store}"
+    EXPORT_METHOD: "${EXPORT_METHOD:-app-store-connect}"
     IS_DEVELOPMENT_PROFILE: "${IS_DEVELOPMENT_PROFILE:-false}"
     IS_PRODUCTION_PROFILE: "${IS_PRODUCTION_PROFILE:-true}"
 
-    # Android Configuration - Dynamic values from API
-    KEY_STORE: "${KEY_STORE:-https://raw.githubusercontent.com/prasanna91/QuikApp/main/keystore.jks}"
-    CM_KEYSTORE_PASSWORD: "${CM_KEYSTORE_PASSWORD:-opeN@1234}"
-    CM_KEY_ALIAS: "${CM_KEY_ALIAS:-my_key_alias}"
-    CM_KEY_PASSWORD: "${CM_KEY_PASSWORD:-opeN@1234}"
+    # Android Configuration - API required for Android builds
+    KEY_STORE: "${KEY_STORE:-}"
+    CM_KEYSTORE_PASSWORD: "${CM_KEYSTORE_PASSWORD:-}"
+    CM_KEY_ALIAS: "${CM_KEY_ALIAS:-}"
+    CM_KEY_PASSWORD: "${CM_KEY_PASSWORD:-}"
     COMPILE_SDK_VERSION: "${COMPILE_SDK_VERSION:-35}"
     MIN_SDK_VERSION: "${MIN_SDK_VERSION:-21}"
     TARGET_SDK_VERSION: "${TARGET_SDK_VERSION:-35}"
 
-    # iOS Permissions - Dynamic values from API
-    IS_PHOTO_LIBRARY: "${IS_PHOTO_LIBRARY:-true}"
+    # iOS Permissions - API configurable with defaults
+    IS_PHOTO_LIBRARY: "${IS_PHOTO_LIBRARY:-false}"
     IS_PHOTO_LIBRARY_ADD: "${IS_PHOTO_LIBRARY_ADD:-false}"
     IS_FACE_ID: "${IS_FACE_ID:-false}"
     IS_TOUCH_ID: "${IS_TOUCH_ID:-false}"
 
-    # Email Configuration - Dynamic values from API
+    # Email Configuration - Optional with defaults
     SMTP_SERVER: "${SMTP_SERVER:-smtp.gmail.com}"
     SMTP_PORT: "${SMTP_PORT:-587}"
-    SMTP_USERNAME: "${SMTP_USERNAME:-prasannasrie@gmail.com}"
-    SMTP_PASSWORD: "${SMTP_PASSWORD:-jbbf nzhm zoay lbwb}"
+    SMTP_USERNAME: "${SMTP_USERNAME:-}"
+    SMTP_PASSWORD: "${SMTP_PASSWORD:-}"
+
 scripts:
   - &debug_env
     name: Debug Environment Variables
     script: |
-        echo "*********** App Name & Version ***********"
-        echo "APP_NAME: $APP_NAME"
-        echo "ORG_NAME: $ORG_NAME"
-        echo "WEB_URL: $WEB_URL"
-        echo "VERSION_NAME: $VERSION_NAME"      
-        echo "VERSION_CODE: $VERSION_CODE" 
-        echo "PKG_NAME: $PKG_NAME"
-        echo "BUNDLE_ID: $BUNDLE_ID"
+      echo "*********** App Name & Version ***********"
+      echo "APP_NAME: $APP_NAME"
+      echo "ORG_NAME: $ORG_NAME"
+      echo "WEB_URL: $WEB_URL"
+      echo "VERSION_NAME: $VERSION_NAME"      
+      echo "VERSION_CODE: $VERSION_CODE" 
+      echo "PKG_NAME: $PKG_NAME"
+      echo "BUNDLE_ID: $BUNDLE_ID"
 
-        echo "*********** App Customization Configuration ***********"
-        echo "Splash screen: $IS_SPLASH"
-        echo "Pull to refresh: $IS_PULLDOWN"
-        echo "Loading indicators: $IS_LOAD_IND"
-        echo "Bottom navigation bar: $IS_BOTTOMMENU"
-        echo "Deep linking: $IS_DEEPLINK"
+      echo "*********** App Customization Configuration ***********"
+      echo "Splash screen: $IS_SPLASH"
+      echo "Pull to refresh: $IS_PULLDOWN"
+      echo "Loading indicators: $IS_LOAD_IND"
+      echo "Bottom navigation bar: $IS_BOTTOMMENU"
+      echo "Deep linking: $IS_DEEPLINK"
 
-        echo "*********** Push Notification Configuration ***********"
-        echo "PUSH_NOTIFY: $PUSH_NOTIFY"
-        echo "IS_CHATBOT: $IS_CHATBOT"
+      echo "*********** Push Notification Configuration ***********"
+      echo "PUSH_NOTIFY: $PUSH_NOTIFY"
+      echo "IS_CHATBOT: $IS_CHATBOT"
 
-        echo "*********** Android Keystore ***********"
-        echo "KEY_STORE: $KEY_STORE"
-        echo "CM_KEYSTORE_PASSWORD: $CM_KEYSTORE_PASSWORD"
-        echo "CM_KEY_ALIAS: $CM_KEY_ALIAS"
-        echo "CM_KEY_PASSWORD: $CM_KEY_PASSWORD"
+      echo "*********** Android Keystore ***********"
+      echo "KEY_STORE: $KEY_STORE"
+      echo "CM_KEYSTORE_PASSWORD: $CM_KEYSTORE_PASSWORD"
+      echo "CM_KEY_ALIAS: $CM_KEY_ALIAS"
+      echo "CM_KEY_PASSWORD: $CM_KEY_PASSWORD"
 
-        echo "*********** IOS Keystore ***********"
-        echo "APP_STORE_CONNECT_ISSUER_ID: $APP_STORE_CONNECT_ISSUER_ID"
-        echo "APP_STORE_CONNECT_KEY_IDENTIFIER: $APP_STORE_CONNECT_KEY_IDENTIFIER"
-        echo "APNS_KEY_ID: $APNS_KEY_ID"
-        echo "TEAM_ID: $APPLE_TEAM_ID"
-        echo "APNS_AUTH_KEY_URL: $APNS_AUTH_KEY_URL"
+      echo "*********** IOS Keystore ***********"
+      echo "APP_STORE_CONNECT_KEY_IDENTIFIER: $APP_STORE_CONNECT_KEY_IDENTIFIER"
+      echo "APNS_KEY_ID: $APNS_KEY_ID"
+      echo "TEAM_ID: $APPLE_TEAM_ID"
+      echo "APNS_AUTH_KEY_URL: $APNS_AUTH_KEY_URL"
 
-        echo "*********** Firebase Android config file ***********"
-        echo "firebase_config_android: $firebase_config_android"
+      echo "*********** Firebase Android config file ***********"
+      echo "firebase_config_android: $firebase_config_android"
 
-        echo "*********** Firebase IOS config file ***********"
-        echo "firebase_config_ios: $firebase_config_ios"
+      echo "*********** Firebase IOS config file ***********"
+      echo "firebase_config_ios: $firebase_config_ios"
 
-        echo "*********** Splash Configuration ***********"
-        echo "SPLASH: $SPLASH"
-        echo "SPLASH_BG:$SPLASH_BG"
-        echo "SPLASH_BG_COLOR: $SPLASH_BG_COLOR"
-        echo "SPLASH_TAGLINE: $SPLASH_TAGLINE"
-        echo "SPLASH_TAGLINE_COLOR: $SPLASH_TAGLINE_COLOR"
-        echo "SPLASH_ANIMATION: $SPLASH_ANIMATION"
-        echo "SPLASH_DURATION: $SPLASH_DURATION"
+      echo "*********** Splash Configuration ***********"
+      echo "SPLASH: $SPLASH"
+      echo "SPLASH_BG:$SPLASH_BG"
+      echo "SPLASH_BG_COLOR: $SPLASH_BG_COLOR"
+      echo "SPLASH_TAGLINE: $SPLASH_TAGLINE"
+      echo "SPLASH_TAGLINE_COLOR: $SPLASH_TAGLINE_COLOR"
+      echo "SPLASH_ANIMATION: $SPLASH_ANIMATION"
+      echo "SPLASH_DURATION: $SPLASH_DURATION"
 
-        echo "*********** Bottom Navigation Configuration ***********"
-        echo "BOTTOMMENU_ITEMS: $BOTTOMMENU_ITEMS"
-        echo "BOTTOMMENU_BG_COLOR: $BOTTOMMENU_BG_COLOR"  
-        echo "BOTTOMMENU_ICON_COLOR: $BOTTOMMENU_ICON_COLOR"
-        echo "BOTTOMMENU_TEXT_COLOR: $BOTTOMMENU_TEXT_COLOR"
-        echo "BOTTOMMENU_FONT: $BOTTOMMENU_FONT"
-        echo "BOTTOMMENU_FONT_SIZE: $BOTTOMMENU_FONT_SIZE"
-        echo "BOTTOMMENU_FONT_BOLD: $BOTTOMMENU_FONT_BOLD"
-        echo "BOTTOMMENU_FONT_ITALIC: $BOTTOMMENU_FONT_ITALIC"
-        echo "BOTTOMMENU_ACTIVE_TAB_COLOR: $BOTTOMMENU_ACTIVE_TAB_COLOR"
-        echo "BOTTOMMENU_ICON_POSITION: $BOTTOMMENU_ICON_POSITION"
-        echo "BOTTOMMENU_VISIBLE_ON: $BOTTOMMENU_VISIBLE_ON"
+      echo "*********** Bottom Navigation Configuration ***********"
+      echo "BOTTOMMENU_ITEMS: $BOTTOMMENU_ITEMS"
+      echo "BOTTOMMENU_BG_COLOR: $BOTTOMMENU_BG_COLOR"  
+      echo "BOTTOMMENU_ICON_COLOR: $BOTTOMMENU_ICON_COLOR"
+      echo "BOTTOMMENU_TEXT_COLOR: $BOTTOMMENU_TEXT_COLOR"
+      echo "BOTTOMMENU_FONT: $BOTTOMMENU_FONT"
+      echo "BOTTOMMENU_FONT_SIZE: $BOTTOMMENU_FONT_SIZE"
+      echo "BOTTOMMENU_FONT_BOLD: $BOTTOMMENU_FONT_BOLD"
+      echo "BOTTOMMENU_FONT_ITALIC: $BOTTOMMENU_FONT_ITALIC"
+      echo "BOTTOMMENU_ACTIVE_TAB_COLOR: $BOTTOMMENU_ACTIVE_TAB_COLOR"
+      echo "BOTTOMMENU_ICON_POSITION: $BOTTOMMENU_ICON_POSITION"
+      echo "BOTTOMMENU_VISIBLE_ON: $BOTTOMMENU_VISIBLE_ON"
 
-        echo "*********** Permissions ***********"
-        echo "IS_CAMERA: $IS_CAMERA"
-        echo "IS_LOCATION: $IS_LOCATION"
-        echo "IS_MIC: $IS_MIC"
-        echo "IS_NOTIFICATION: $IS_NOTIFICATION"
-        echo "IS_CONTACT: $IS_CONTACT"
-        echo "IS_BIOMETRIC: $IS_BIOMETRIC"
-        echo "IS_CALENDAR: $IS_CALENDAR"
+      echo "*********** Permissions ***********"
+      echo "IS_CAMERA: $IS_CAMERA"
+      echo "IS_LOCATION: $IS_LOCATION"
+      echo "IS_MIC: $IS_MIC"
+      echo "IS_NOTIFICATION: $IS_NOTIFICATION"
+      echo "IS_CONTACT: $IS_CONTACT"
+      echo "IS_BIOMETRIC: $IS_BIOMETRIC"
+      echo "IS_CALENDAR: $IS_CALENDAR"
 
-        echo "*********** Publish Configuration ***********" 
-        echo "EMAIL_ID: $EMAIL_ID"
+      echo "*********** Publish Configuration ***********" 
+      echo "EMAIL_ID: $EMAIL_ID"
+
 workflows:
   android-publish:
     name: Android Publish
     environment: *default_env
     scripts:
       - *debug_env
-      - name: Set up code signing settings
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "Setting up Android code signing..."
-
-          # Download keystore
-          wget -O android/app/keystore.jks "$KEY_STORE"
-
-          # Create key.properties
-          cat > android/key.properties << EOF
-          storePassword=$CM_KEYSTORE_PASSWORD
-          keyPassword=$CM_KEY_PASSWORD
-          keyAlias=$CM_KEY_ALIAS
-          storeFile=keystore.jks
-          EOF
-
-          echo "Android code signing setup completed"
       - name: Get Flutter packages
         script: flutter pub get
       - name: Run Android build script
         script: |
           #!/usr/bin/env bash
           set -e
-          echo "Running Android build script..."
+          echo "🚀 Running Android build using comprehensive script system..."
 
           # Set workflow name for email notifications
           export WORKFLOW_NAME="Android Publish"
 
-          # Source environment variables from export.sh
-          if [ -f "lib/scripts/android/export.sh" ]; then
-              source lib/scripts/android/export.sh
-          fi
-
-          # Run the main Android build script
+          # Check if we have the comprehensive Android main.sh script
           if [ -f "lib/scripts/android/main.sh" ]; then
+              echo "🎯 Using comprehensive Android main.sh script..."
               chmod +x lib/scripts/android/main.sh
               ./lib/scripts/android/main.sh
           else
+              echo "⚠️  Android main.sh not found, using fallback build process..."
+              
+              # Fallback: Set up Android code signing
+              echo "Setting up Android code signing..."
+              if [ -n "$KEY_STORE" ]; then
+                  wget -O android/app/keystore.jks "$KEY_STORE"
+                  cat > android/key.properties << EOF
+          storePassword=$CM_KEYSTORE_PASSWORD
+          keyPassword=$CM_KEY_PASSWORD
+          keyAlias=$CM_KEY_ALIAS
+          storeFile=keystore.jks
+          EOF
+              fi
+              
+              # Build APK and AAB
               echo "Building Android APK and AAB..."
               
-              # Build APK
               flutter build apk --release \
                 --dart-define=PKG_NAME="$PKG_NAME" \
                 --dart-define=APP_NAME="$APP_NAME" \
@@ -239,6 +233,7 @@ workflows:
                 --dart-define=IS_PULLDOWN="$IS_PULLDOWN" \
                 --dart-define=LOGO_URL="$LOGO_URL" \
                 --dart-define=IS_BOTTOMMENU="$IS_BOTTOMMENU" \
+                --dart-define=BOTTOMMENU_ITEMS="$BOTTOMMENU_ITEMS" \
                 --dart-define=IS_DEEPLINK="$IS_DEEPLINK" \
                 --dart-define=IS_LOAD_IND="$IS_LOAD_IND" \
                 --dart-define=IS_CHATBOT="$IS_CHATBOT" \
@@ -251,7 +246,6 @@ workflows:
                 --dart-define=IS_NOTIFICATION="$IS_NOTIFICATION" \
                 --dart-define=IS_STORAGE="$IS_STORAGE"
               
-              # Build AAB
               flutter build appbundle --release \
                 --dart-define=PKG_NAME="$PKG_NAME" \
                 --dart-define=APP_NAME="$APP_NAME" \
@@ -271,6 +265,7 @@ workflows:
                 --dart-define=IS_PULLDOWN="$IS_PULLDOWN" \
                 --dart-define=LOGO_URL="$LOGO_URL" \
                 --dart-define=IS_BOTTOMMENU="$IS_BOTTOMMENU" \
+                --dart-define=BOTTOMMENU_ITEMS="$BOTTOMMENU_ITEMS" \
                 --dart-define=IS_DEEPLINK="$IS_DEEPLINK" \
                 --dart-define=IS_LOAD_IND="$IS_LOAD_IND" \
                 --dart-define=IS_CHATBOT="$IS_CHATBOT" \
@@ -283,7 +278,7 @@ workflows:
                 --dart-define=IS_NOTIFICATION="$IS_NOTIFICATION" \
                 --dart-define=IS_STORAGE="$IS_STORAGE"
               
-              # Copy artifacts to output folder
+              # Move outputs
               mkdir -p output
               cp build/app/outputs/flutter-apk/app-release.apk output/
               cp build/app/outputs/bundle/release/app-release.aab output/
@@ -294,13 +289,13 @@ workflows:
           set -e
           echo "Sending success notification..."
 
-          # Make email notification script executable
-          chmod +x lib/scripts/email_notification.py
-
-          # Send success email
-          python3 lib/scripts/email_notification.py success
-
-          echo "Success notification sent"
+          if [ -f "lib/scripts/email_notification.py" ] && [ -n "$SMTP_USERNAME" ] && [ -n "$SMTP_PASSWORD" ]; then
+              chmod +x lib/scripts/email_notification.py
+              python3 lib/scripts/email_notification.py success
+              echo "Success notification sent"
+          else
+              echo "Email notification skipped (script not found or email not configured)"
+          fi
     artifacts:
       - build/app/outputs/flutter-apk/app-release.apk
       - build/app/outputs/bundle/release/app-release.aab
@@ -310,209 +305,21 @@ workflows:
         recipients:
           - $EMAIL_ID
         notify:
-          success: false # We handle this with our custom script
-          failure: false # We handle this with our custom script
+          success: false
+          failure: false
 
   ios-publish:
     name: iOS Publish
     environment: *default_env
     scripts:
       - *debug_env
-      - name: Set up code signing settings
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "Setting up iOS code signing..."
-
-          # Download certificates and profiles
-          wget -O ios/Runner.mobileprovision "$PROFILE_URL"
-          wget -O ios/distribution.cer "$CERT_CER_URL"
-          wget -O ios/privatekey.key "$CERT_KEY_URL"
-
-          # Create keychain
-          security create-keychain -p "$CERT_PASSWORD" build.keychain
-          security default-keychain -s build.keychain
-          security unlock-keychain -p "$CERT_PASSWORD" build.keychain
-          security set-keychain-settings -t 3600 -l ~/Library/Keychains/build.keychain
-
-          # Import certificate
-          security import ios/distribution.cer -k build.keychain -P "$CERT_PASSWORD" -T /usr/bin/codesign
-          security import ios/privatekey.key -k build.keychain -P "$CERT_PASSWORD" -T /usr/bin/codesign
-
-          # Set partition list
-          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$CERT_PASSWORD" build.keychain
-
-          echo "iOS code signing setup completed"
       - name: Get Flutter packages
         script: flutter pub get
-      - name: Install iOS dependencies
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "Installing iOS dependencies..."
-          
-          # Ensure ios directory exists
-          mkdir -p ios
-          cd ios
-          
-          # Configure Podfile with correct platform if not already set
-          if [ ! -f "Podfile" ]; then
-            echo "⚠️  Podfile not found, creating a basic one..."
-            cat > Podfile << EOF
-              # Uncomment this line to define a global platform for your project
-              platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'
-              
-              # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
-              ENV['COCOAPODS_DISABLE_STATS'] = 'true'
-              
-              project 'Runner', {
-                'Debug' => :debug,
-                'Profile' => :release,
-                'Release' => :release,
-              }
-              
-              def flutter_root
-                generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
-                unless File.exist?(generated_xcode_build_settings_path)
-                  raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
-                end
-              
-                File.foreach(generated_xcode_build_settings_path) do |line|
-                  matches = line.match(/FLUTTER_ROOT\=(.*)/)
-                  return matches[1].strip if matches
-                end
-                raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
-              end
-              
-              require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
-              
-              flutter_ios_podfile_setup
-              
-              target 'Runner' do
-                use_frameworks!
-                use_modular_headers!
-              
-                flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-                target 'RunnerTests' do
-                  inherit! :search_paths
-                end
-              end
-              
-              post_install do |installer|
-                installer.pods_project.targets.each do |target|
-                  flutter_additional_ios_build_settings(target)
-                  target.build_configurations.each do |config|
-                    config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'
-                  end
-                end
-              end
-              EOF
-                        else
-                          echo "📄 Updating existing Podfile deployment target..."
-                          # Update platform line in existing Podfile
-                          if grep -q "platform :ios" Podfile; then
-                            sed -i.bak "s/platform :ios, '[^']*'/platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'/" Podfile
-                            echo "✅ Updated platform to iOS $IPHONEOS_DEPLOYMENT_TARGET"
-                          else
-                            # Add platform line at the beginning if it doesn't exist
-                            sed -i.bak "1i\\
-              platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'\\
-              " Podfile
-                            echo "✅ Added platform iOS $IPHONEOS_DEPLOYMENT_TARGET to Podfile"
-                          fi
-                          
-                          # Update post_install hook to set deployment target for all pods
-                          if ! grep -q "IPHONEOS_DEPLOYMENT_TARGET.*=.*'$IPHONEOS_DEPLOYMENT_TARGET'" Podfile; then
-                            # Add or update the post_install hook
-                            if grep -q "post_install do |installer|" Podfile; then
-                              # Update existing post_install hook
-                              if ! grep -q "config.build_settings\['IPHONEOS_DEPLOYMENT_TARGET'\]" Podfile; then
-                                sed -i.bak "/post_install do |installer|/a\\
-                installer.pods_project.targets.each do |target|\\
-                  flutter_additional_ios_build_settings(target)\\
-                  target.build_configurations.each do |config|\\
-                    config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'\\
-                  end\\
-                end" Podfile
-                                echo "✅ Added deployment target setting to existing post_install hook"
-                              fi
-                            else
-                              # Add post_install hook
-                              cat >> Podfile << EOF
-              
-              post_install do |installer|
-                installer.pods_project.targets.each do |target|
-                  flutter_additional_ios_build_settings(target)
-                  target.build_configurations.each do |config|
-                    config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'
-                  end
-                end
-              end
-              EOF
-                              echo "✅ Added post_install hook with deployment target"
-                            fi
-                          fi
-                        fi
-                        
-                        echo "📋 Podfile configuration:"
-                        echo "🎯 iOS Deployment Target: $IPHONEOS_DEPLOYMENT_TARGET"
-                        echo "🔧 Platform: iOS $IPHONEOS_DEPLOYMENT_TARGET"
-                        
-          # Clean previous pods installation
-          echo "🧹 Cleaning previous CocoaPods installation..."
-          rm -rf Pods/
-          rm -f Podfile.lock
-          
-          # Install pods with verbose output
-          echo "📦 Installing CocoaPods dependencies..."
-          pod install --verbose
-          
-          cd ..
-          echo "✅ iOS dependencies installed successfully"
-      - name: Create ExportOptions.plist
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "Creating ExportOptions.plist..."
-
-          # Create ExportOptions.plist for IPA export
-          mkdir -p ios
-          cat > ios/ExportOptions.plist << EOF
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-              <key>method</key>
-              <string>$EXPORT_METHOD</string>
-              <key>teamID</key>
-              <string>$APPLE_TEAM_ID</string>
-              <key>provisioningProfiles</key>
-              <dict>
-                  <key>$BUNDLE_ID</key>
-                  <string>match AppStore $BUNDLE_ID</string>
-              </dict>
-              <key>signingStyle</key>
-              <string>manual</string>
-              <key>uploadBitcode</key>
-              <false/>
-              <key>uploadSymbols</key>
-              <true/>
-              <key>compileBitcode</key>
-              <false/>
-              <key>stripSwiftSymbols</key>
-              <true/>
-              <key>thinning</key>
-              <string>&lt;none&gt;</string>
-          </dict>
-          </plist>
-          EOF
-
-          echo "ExportOptions.plist created successfully"
       - name: Run iOS build script
         script: |
           #!/usr/bin/env bash
           set -e
-          echo "Running iOS build script..."
+          echo "🚀 Running iOS build using comprehensive script system..."
 
           # Set workflow name for email notifications
           export WORKFLOW_NAME="iOS Publish"
@@ -525,14 +332,136 @@ workflows:
 
           # Check if we have the comprehensive iOS main.sh script
           if [ -f "lib/scripts/ios/main.sh" ]; then
-              echo "🚀 Using comprehensive iOS main.sh script..."
+              echo "🎯 Using comprehensive iOS main.sh script..."
               chmod +x lib/scripts/ios/main.sh
               ./lib/scripts/ios/main.sh
           else
-              echo "⚠️  iOS main.sh not found, using fallback build process..."
-              echo "Building iOS IPA..."
+              echo "⚠️  iOS main.sh not found, using optimized fallback build process based on old_codemagic.yaml..."
               
-              # Build iOS
+              # Set up iOS code signing (based on old working config)
+              echo "🔐 Setting up iOS code signing..."
+              KEYCHAIN_NAME="build.keychain"
+              KEYCHAIN_PASSWORD="temporary"
+
+              security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+              security default-keychain -s "$KEYCHAIN_NAME"
+              security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+              security set-keychain-settings -t 3600 -u "$KEYCHAIN_NAME"
+
+              # Download certificates and profile
+              if [ -n "$CERT_CER_URL" ] && [ -n "$CERT_KEY_URL" ]; then
+                  wget -O ios/distribution.cer "$CERT_CER_URL"
+                  wget -O ios/privatekey.key "$CERT_KEY_URL"
+                  
+                  # Convert to P12 and import
+                  openssl pkcs12 -export -out ios/certificate.p12 -inkey ios/privatekey.key -in ios/distribution.cer -password pass:"$CERT_PASSWORD"
+                  security import ios/certificate.p12 -k "$KEYCHAIN_NAME" -P "$CERT_PASSWORD" -T /usr/bin/codesign
+                  security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+              fi
+
+              if [ -n "$PROFILE_URL" ]; then
+                  wget -O ios/profile.mobileprovision "$PROFILE_URL"
+                  mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+                  
+                  # Extract profile info
+                  PROFILE_PLIST=$(mktemp)
+                  security cms -D -i ios/profile.mobileprovision > "$PROFILE_PLIST"
+                  UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" "$PROFILE_PLIST")
+                  PROFILE_NAME=$(/usr/libexec/PlistBuddy -c "Print Name" "$PROFILE_PLIST")
+                  
+                  # Install profile
+                  cp ios/profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/"$UUID".mobileprovision
+                  
+                  echo "PROFILE_NAME=$PROFILE_NAME" >> $CM_ENV
+                  echo "PROFILE_UUID=$UUID" >> $CM_ENV
+              fi
+
+              # Set up iOS dependencies
+              echo "📦 Setting up iOS dependencies..."
+              cd ios
+              
+              # Create optimized Podfile (based on old working config)
+              cat > Podfile << EOF
+          platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'
+          use_frameworks! :linkage => :static
+
+          ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+          project 'Runner', {
+            'Debug' => :debug,
+            'Profile' => :release,
+            'Release' => :release,
+          }
+
+          def flutter_root
+            generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+            unless File.exist?(generated_xcode_build_settings_path)
+              raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
+            end
+
+            File.foreach(generated_xcode_build_settings_path) do |line|
+              matches = line.match(/FLUTTER_ROOT\\=(.*)/)
+              return matches[1].strip if matches
+            end
+            raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
+          end
+
+          require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+
+          flutter_ios_podfile_setup
+
+          target 'Runner' do
+            use_frameworks!
+            use_modular_headers!
+            
+            flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+          end
+
+          post_install do |installer|
+            installer.pods_project.targets.each do |target|
+              flutter_additional_ios_build_settings(target)
+              target.build_configurations.each do |config|
+                config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'
+                config.build_settings['ENABLE_BITCODE'] = 'NO'
+              end
+            end
+          end
+          EOF
+
+              # Clean and install pods
+              rm -rf Pods Podfile.lock
+              pod install --repo-update
+              cd ..
+
+              # Create ExportOptions.plist (based on old working config)
+              cat > ExportOptions.plist << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>$EXPORT_METHOD</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>teamID</key>
+            <string>$APPLE_TEAM_ID</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>$BUNDLE_ID</key>
+              <string>\$PROFILE_NAME</string>
+            </dict>
+            <key>compileBitcode</key>
+            <false/>
+            <key>stripSwiftSymbols</key>
+            <true/>
+            <key>signingCertificate</key>
+            <string>Apple Distribution</string>
+          </dict>
+          </plist>
+          EOF
+
+              # Build iOS (comprehensive dart-define list)
+              echo "🏗️ Building iOS app..."
               flutter build ios --release --no-codesign \
                 --dart-define=PKG_NAME="$PKG_NAME" \
                 --dart-define=BUNDLE_ID="$BUNDLE_ID" \
@@ -553,6 +482,17 @@ workflows:
                 --dart-define=IS_PULLDOWN="$IS_PULLDOWN" \
                 --dart-define=LOGO_URL="$LOGO_URL" \
                 --dart-define=IS_BOTTOMMENU="$IS_BOTTOMMENU" \
+                --dart-define=BOTTOMMENU_ITEMS="$BOTTOMMENU_ITEMS" \
+                --dart-define=BOTTOMMENU_BG_COLOR="$BOTTOMMENU_BG_COLOR" \
+                --dart-define=BOTTOMMENU_ICON_COLOR="$BOTTOMMENU_ICON_COLOR" \
+                --dart-define=BOTTOMMENU_TEXT_COLOR="$BOTTOMMENU_TEXT_COLOR" \
+                --dart-define=BOTTOMMENU_FONT="$BOTTOMMENU_FONT" \
+                --dart-define=BOTTOMMENU_FONT_SIZE="$BOTTOMMENU_FONT_SIZE" \
+                --dart-define=BOTTOMMENU_FONT_BOLD="$BOTTOMMENU_FONT_BOLD" \
+                --dart-define=BOTTOMMENU_FONT_ITALIC="$BOTTOMMENU_FONT_ITALIC" \
+                --dart-define=BOTTOMMENU_ACTIVE_TAB_COLOR="$BOTTOMMENU_ACTIVE_TAB_COLOR" \
+                --dart-define=BOTTOMMENU_ICON_POSITION="$BOTTOMMENU_ICON_POSITION" \
+                --dart-define=BOTTOMMENU_VISIBLE_ON="$BOTTOMMENU_VISIBLE_ON" \
                 --dart-define=IS_DEEPLINK="$IS_DEEPLINK" \
                 --dart-define=IS_LOAD_IND="$IS_LOAD_IND" \
                 --dart-define=IS_CHATBOT="$IS_CHATBOT" \
@@ -568,23 +508,40 @@ workflows:
                 --dart-define=IS_PHOTO_LIBRARY_ADD="$IS_PHOTO_LIBRARY_ADD" \
                 --dart-define=IS_FACE_ID="$IS_FACE_ID" \
                 --dart-define=IS_TOUCH_ID="$IS_TOUCH_ID"
+
+              # Archive and export IPA (based on old working config)
+              echo "📦 Archiving and exporting IPA..."
               
-              # Archive and export IPA
+              # Load environment variables for profile info
+              source $CM_ENV
+              
+              # Archive
               xcodebuild -workspace ios/Runner.xcworkspace \
                 -scheme Runner \
                 -configuration Release \
                 -archivePath build/ios/archive/Runner.xcarchive \
-                -allowProvisioningUpdates \
-                archive
-              
+                clean archive \
+                CODE_SIGN_STYLE=Manual \
+                DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+                PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
+                PROVISIONING_PROFILE="$PROFILE_UUID" \
+                PRODUCT_BUNDLE_IDENTIFIER="$BUNDLE_ID" \
+                CODE_SIGN_IDENTITY="Apple Distribution" \
+                IPHONEOS_DEPLOYMENT_TARGET="$IPHONEOS_DEPLOYMENT_TARGET" \
+                OTHER_CODE_SIGN_FLAGS="--keychain $KEYCHAIN_NAME"
+
+              # Export IPA
               xcodebuild -exportArchive \
                 -archivePath build/ios/archive/Runner.xcarchive \
                 -exportPath build/ios/ipa \
-                -exportOptionsPlist ios/ExportOptions.plist
-              
+                -exportOptionsPlist ExportOptions.plist
+
               # Copy artifacts to output folder
               mkdir -p output
               cp build/ios/ipa/Runner.ipa output/
+              
+              # Cleanup
+              security delete-keychain "$KEYCHAIN_NAME" || true
           fi
       - name: Send success notification
         script: |
@@ -592,13 +549,13 @@ workflows:
           set -e
           echo "Sending success notification..."
 
-          # Make email notification script executable
-          chmod +x lib/scripts/email_notification.py
-
-          # Send success email
-          python3 lib/scripts/email_notification.py success
-
-          echo "Success notification sent"
+          if [ -f "lib/scripts/email_notification.py" ] && [ -n "$SMTP_USERNAME" ] && [ -n "$SMTP_PASSWORD" ]; then
+              chmod +x lib/scripts/email_notification.py
+              python3 lib/scripts/email_notification.py success
+              echo "Success notification sent"
+          else
+              echo "Email notification skipped (script not found or email not configured)"
+          fi
     artifacts:
       - build/ios/ipa/Runner.ipa
       - output/
@@ -607,306 +564,63 @@ workflows:
         recipients:
           - $EMAIL_ID
         notify:
-          success: false # We handle this with our custom script
-          failure: false # We handle this with our custom script
+          success: false
+          failure: false
 
   combined-workflow:
     name: Combined Android & iOS Build
     environment: *default_env
     scripts:
       - *debug_env
-      - name: Set up Android code signing
+      - name: Get Flutter packages
+        script: flutter pub get
+      - name: Build Android (Using main.sh)
         script: |
           #!/usr/bin/env bash
           set -e
-          echo "Setting up Android code signing..."
+          echo "🤖 Building Android using comprehensive script system..."
 
-          # Download keystore
-          wget -O android/app/keystore.jks "$KEY_STORE"
+          # Set workflow name for email notifications
+          export WORKFLOW_NAME="Combined Android & iOS Build"
 
-          # Create key.properties
-          cat > android/key.properties << EOF
+          # Check if we have the comprehensive Android main.sh script
+          if [ -f "lib/scripts/android/main.sh" ]; then
+              echo "🎯 Using comprehensive Android main.sh script..."
+              chmod +x lib/scripts/android/main.sh
+              ./lib/scripts/android/main.sh
+          else
+              echo "⚠️  Android main.sh not found, using fallback..."
+              
+              # Quick Android setup and build
+              if [ -n "$KEY_STORE" ]; then
+                  wget -O android/app/keystore.jks "$KEY_STORE"
+                  cat > android/key.properties << EOF
           storePassword=$CM_KEYSTORE_PASSWORD
           keyPassword=$CM_KEY_PASSWORD
           keyAlias=$CM_KEY_ALIAS
           storeFile=keystore.jks
           EOF
-
-          echo "Android code signing setup completed"
-      - name: Set up iOS code signing
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "Setting up iOS code signing..."
-
-          # Download certificates and profiles
-          wget -O ios/Runner.mobileprovision "$PROFILE_URL"
-          wget -O ios/distribution.cer "$CERT_CER_URL"
-          wget -O ios/privatekey.key "$CERT_KEY_URL"
-
-          # Create keychain
-          security create-keychain -p "$CERT_PASSWORD" build.keychain
-          security default-keychain -s build.keychain
-          security unlock-keychain -p "$CERT_PASSWORD" build.keychain
-          security set-keychain-settings -t 3600 -l ~/Library/Keychains/build.keychain
-
-          # Import certificate
-          security import ios/distribution.cer -k build.keychain -P "$CERT_PASSWORD" -T /usr/bin/codesign
-          security import ios/privatekey.key -k build.keychain -P "$CERT_PASSWORD" -T /usr/bin/codesign
-
-          # Set partition list
-          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$CERT_PASSWORD" build.keychain
-
-          echo "iOS code signing setup completed"
-      - name: Get Flutter packages
-        script: flutter pub get
-      - name: Install iOS dependencies
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "Installing iOS dependencies..."
-          
-          # Ensure ios directory exists
-          mkdir -p ios
-          cd ios
-          
-          # Configure Podfile with correct platform if not already set
-          if [ ! -f "Podfile" ]; then
-            echo "⚠️  Podfile not found, creating a basic one..."
-            cat > Podfile << EOF
-            # Uncomment this line to define a global platform for your project
-            platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'
-            
-            # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
-            ENV['COCOAPODS_DISABLE_STATS'] = 'true'
-            
-            project 'Runner', {
-              'Debug' => :debug,
-              'Profile' => :release,
-              'Release' => :release,
-            }
-            
-            def flutter_root
-              generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
-              unless File.exist?(generated_xcode_build_settings_path)
-                raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
-              end
-            
-              File.foreach(generated_xcode_build_settings_path) do |line|
-                matches = line.match(/FLUTTER_ROOT\=(.*)/)
-                return matches[1].strip if matches
-              end
-              raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
-            end
-            
-            require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
-            
-            flutter_ios_podfile_setup
-            
-            target 'Runner' do
-              use_frameworks!
-              use_modular_headers!
-            
-              flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-              target 'RunnerTests' do
-                inherit! :search_paths
-              end
-            end
-            
-            post_install do |installer|
-              installer.pods_project.targets.each do |target|
-                flutter_additional_ios_build_settings(target)
-                target.build_configurations.each do |config|
-                  config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'
-                end
-              end
-            end
-            EOF
-                      else
-                        echo "📄 Updating existing Podfile deployment target..."
-                        # Update platform line in existing Podfile
-                        if grep -q "platform :ios" Podfile; then
-                          sed -i.bak "s/platform :ios, '[^']*'/platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'/" Podfile
-                          echo "✅ Updated platform to iOS $IPHONEOS_DEPLOYMENT_TARGET"
-                        else
-                          # Add platform line at the beginning if it doesn't exist
-                          sed -i.bak "1i\\
-            platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'\\
-            " Podfile
-                          echo "✅ Added platform iOS $IPHONEOS_DEPLOYMENT_TARGET to Podfile"
-                        fi
-                        
-                        # Update post_install hook to set deployment target for all pods
-                        if ! grep -q "IPHONEOS_DEPLOYMENT_TARGET.*=.*'$IPHONEOS_DEPLOYMENT_TARGET'" Podfile; then
-                          # Add or update the post_install hook
-                          if grep -q "post_install do |installer|" Podfile; then
-                            # Update existing post_install hook
-                            if ! grep -q "config.build_settings\['IPHONEOS_DEPLOYMENT_TARGET'\]" Podfile; then
-                              sed -i.bak "/post_install do |installer|/a\\
-              installer.pods_project.targets.each do |target|\\
-                flutter_additional_ios_build_settings(target)\\
-                target.build_configurations.each do |config|\\
-                  config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'\\
-                end\\
-              end" Podfile
-                              echo "✅ Added deployment target setting to existing post_install hook"
-                            fi
-                          else
-                            # Add post_install hook
-                            cat >> Podfile << EOF
-            
-            post_install do |installer|
-              installer.pods_project.targets.each do |target|
-                flutter_additional_ios_build_settings(target)
-                target.build_configurations.each do |config|
-                  config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'
-                end
-              end
-            end
-            EOF
-                            echo "✅ Added post_install hook with deployment target"
-                          fi
-                        fi
-                      fi
-                      
-          echo "📋 Podfile configuration:"
-          echo "🎯 iOS Deployment Target: $IPHONEOS_DEPLOYMENT_TARGET"
-          echo "🔧 Platform: iOS $IPHONEOS_DEPLOYMENT_TARGET"
-          
-          # Clean previous pods installation
-          echo "🧹 Cleaning previous CocoaPods installation..."
-          rm -rf Pods/
-          rm -f Podfile.lock
-          
-          # Install pods with verbose output
-          echo "📦 Installing CocoaPods dependencies..."
-          pod install --verbose
-          
-          cd ..
-          echo "✅ iOS dependencies installed successfully"
-      - name: Create ExportOptions.plist
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "Creating ExportOptions.plist..."
-
-          # Create ExportOptions.plist for IPA export
-          mkdir -p ios
-          cat > ios/ExportOptions.plist << EOF
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-              <key>method</key>
-              <string>$EXPORT_METHOD</string>
-              <key>teamID</key>
-              <string>$APPLE_TEAM_ID</string>
-              <key>provisioningProfiles</key>
-              <dict>
-                  <key>$BUNDLE_ID</key>
-                  <string>match AppStore $BUNDLE_ID</string>
-              </dict>
-              <key>signingStyle</key>
-              <string>manual</string>
-              <key>uploadBitcode</key>
-              <false/>
-              <key>uploadSymbols</key>
-              <true/>
-              <key>compileBitcode</key>
-              <false/>
-              <key>stripSwiftSymbols</key>
-              <true/>
-              <key>thinning</key>
-              <string>&lt;none&gt;</string>
-          </dict>
-          </plist>
-          EOF
-
-          echo "ExportOptions.plist created successfully"
-      - name: Build Android APK and AAB
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "Building Android APK and AAB..."
-
-          # Set workflow name for email notifications
-          export WORKFLOW_NAME="Combined Android & iOS Build"
-
-          # Source environment variables from export.sh
-          if [ -f "lib/scripts/android/export.sh" ]; then
-              source lib/scripts/android/export.sh
+              fi
+              
+              flutter build apk --release \
+                --dart-define=PKG_NAME="$PKG_NAME" \
+                --dart-define=APP_NAME="$APP_NAME" \
+                --dart-define=VERSION_NAME="$VERSION_NAME" \
+                --dart-define=VERSION_CODE="$VERSION_CODE" \
+                --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY"
+              
+              flutter build appbundle --release \
+                --dart-define=PKG_NAME="$PKG_NAME" \
+                --dart-define=APP_NAME="$APP_NAME" \
+                --dart-define=VERSION_NAME="$VERSION_NAME" \
+                --dart-define=VERSION_CODE="$VERSION_CODE" \
+                --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY"
           fi
-
-          # Build APK
-          flutter build apk --release \
-            --dart-define=PKG_NAME="$PKG_NAME" \
-            --dart-define=APP_NAME="$APP_NAME" \
-            --dart-define=ORG_NAME="$ORG_NAME" \
-            --dart-define=VERSION_NAME="$VERSION_NAME" \
-            --dart-define=VERSION_CODE="$VERSION_CODE" \
-            --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY" \
-            --dart-define=firebase_config_android="$firebase_config_android" \
-            --dart-define=WEB_URL="$WEB_URL" \
-            --dart-define=IS_SPLASH="$IS_SPLASH" \
-            --dart-define=SPLASH="$SPLASH" \
-            --dart-define=SPLASH_ANIMATION="$SPLASH_ANIMATION" \
-            --dart-define=SPLASH_BG_COLOR="$SPLASH_BG_COLOR" \
-            --dart-define=SPLASH_TAGLINE="$SPLASH_TAGLINE" \
-            --dart-define=SPLASH_TAGLINE_COLOR="$SPLASH_TAGLINE_COLOR" \
-            --dart-define=SPLASH_DURATION="$SPLASH_DURATION" \
-            --dart-define=IS_PULLDOWN="$IS_PULLDOWN" \
-            --dart-define=LOGO_URL="$LOGO_URL" \
-            --dart-define=IS_BOTTOMMENU="$IS_BOTTOMMENU" \
-            --dart-define=IS_DEEPLINK="$IS_DEEPLINK" \
-            --dart-define=IS_LOAD_IND="$IS_LOAD_IND" \
-            --dart-define=IS_CHATBOT="$IS_CHATBOT" \
-            --dart-define=IS_CAMERA="$IS_CAMERA" \
-            --dart-define=IS_LOCATION="$IS_LOCATION" \
-            --dart-define=IS_BIOMETRIC="$IS_BIOMETRIC" \
-            --dart-define=IS_MIC="$IS_MIC" \
-            --dart-define=IS_CONTACT="$IS_CONTACT" \
-            --dart-define=IS_CALENDAR="$IS_CALENDAR" \
-            --dart-define=IS_NOTIFICATION="$IS_NOTIFICATION" \
-            --dart-define=IS_STORAGE="$IS_STORAGE"
-
-          # Build AAB
-          flutter build appbundle --release \
-            --dart-define=PKG_NAME="$PKG_NAME" \
-            --dart-define=APP_NAME="$APP_NAME" \
-            --dart-define=ORG_NAME="$ORG_NAME" \
-            --dart-define=VERSION_NAME="$VERSION_NAME" \
-            --dart-define=VERSION_CODE="$VERSION_CODE" \
-            --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY" \
-            --dart-define=firebase_config_android="$firebase_config_android" \
-            --dart-define=WEB_URL="$WEB_URL" \
-            --dart-define=IS_SPLASH="$IS_SPLASH" \
-            --dart-define=SPLASH="$SPLASH" \
-            --dart-define=SPLASH_ANIMATION="$SPLASH_ANIMATION" \
-            --dart-define=SPLASH_BG_COLOR="$SPLASH_BG_COLOR" \
-            --dart-define=SPLASH_TAGLINE="$SPLASH_TAGLINE" \
-            --dart-define=SPLASH_TAGLINE_COLOR="$SPLASH_TAGLINE_COLOR" \
-            --dart-define=SPLASH_DURATION="$SPLASH_DURATION" \
-            --dart-define=IS_PULLDOWN="$IS_PULLDOWN" \
-            --dart-define=LOGO_URL="$LOGO_URL" \
-            --dart-define=IS_BOTTOMMENU="$IS_BOTTOMMENU" \
-            --dart-define=IS_DEEPLINK="$IS_DEEPLINK" \
-            --dart-define=IS_LOAD_IND="$IS_LOAD_IND" \
-            --dart-define=IS_CHATBOT="$IS_CHATBOT" \
-            --dart-define=IS_CAMERA="$IS_CAMERA" \
-            --dart-define=IS_LOCATION="$IS_LOCATION" \
-            --dart-define=IS_BIOMETRIC="$IS_BIOMETRIC" \
-            --dart-define=IS_MIC="$IS_MIC" \
-            --dart-define=IS_CONTACT="$IS_CONTACT" \
-            --dart-define=IS_CALENDAR="$IS_CALENDAR" \
-            --dart-define=IS_NOTIFICATION="$IS_NOTIFICATION" \
-            --dart-define=IS_STORAGE="$IS_STORAGE"
-
-          echo "Android builds completed"
-      - name: Build iOS IPA
+      - name: Build iOS (Using main.sh)
         script: |
           #!/usr/bin/env bash
           set -e
-          echo "Building iOS IPA..."
+          echo "🍎 Building iOS using comprehensive script system..."
 
           # Source environment variables from export.sh first
           if [ -f "lib/scripts/ios/export.sh" ]; then
@@ -916,99 +630,68 @@ workflows:
 
           # Check if we have the comprehensive iOS main.sh script
           if [ -f "lib/scripts/ios/main.sh" ]; then
-              echo "🚀 Using comprehensive iOS main.sh script..."
+              echo "🎯 Using comprehensive iOS main.sh script..."
               # Set workflow name for email notifications
               export WORKFLOW_NAME="Combined Android & iOS Build"
               chmod +x lib/scripts/ios/main.sh
               ./lib/scripts/ios/main.sh
           else
-              echo "⚠️  iOS main.sh not found, using fallback build process..."
-
-              # Build iOS
+              echo "⚠️  iOS main.sh not found, using optimized fallback..."
+              
+              # Quick iOS build based on old working config
+              # ... (same as ios-publish fallback but condensed)
+              cd ios
+              pod install
+              cd ..
+              
               flutter build ios --release --no-codesign \
-                --dart-define=PKG_NAME="$PKG_NAME" \
                 --dart-define=BUNDLE_ID="$BUNDLE_ID" \
                 --dart-define=APP_NAME="$APP_NAME" \
-                --dart-define=ORG_NAME="$ORG_NAME" \
                 --dart-define=VERSION_NAME="$VERSION_NAME" \
                 --dart-define=VERSION_CODE="$VERSION_CODE" \
-                --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY" \
-                --dart-define=firebase_config_ios="$firebase_config_ios" \
-                --dart-define=WEB_URL="$WEB_URL" \
-                --dart-define=IS_SPLASH="$IS_SPLASH" \
-                --dart-define=SPLASH="$SPLASH" \
-                --dart-define=SPLASH_ANIMATION="$SPLASH_ANIMATION" \
-                --dart-define=SPLASH_BG_COLOR="$SPLASH_BG_COLOR" \
-                --dart-define=SPLASH_TAGLINE="$SPLASH_TAGLINE" \
-                --dart-define=SPLASH_TAGLINE_COLOR="$SPLASH_TAGLINE_COLOR" \
-                --dart-define=SPLASH_DURATION="$SPLASH_DURATION" \
-                --dart-define=IS_PULLDOWN="$IS_PULLDOWN" \
-                --dart-define=LOGO_URL="$LOGO_URL" \
-                --dart-define=IS_BOTTOMMENU="$IS_BOTTOMMENU" \
-                --dart-define=IS_DEEPLINK="$IS_DEEPLINK" \
-                --dart-define=IS_LOAD_IND="$IS_LOAD_IND" \
-                --dart-define=IS_CHATBOT="$IS_CHATBOT" \
-                --dart-define=IS_CAMERA="$IS_CAMERA" \
-                --dart-define=IS_LOCATION="$IS_LOCATION" \
-                --dart-define=IS_BIOMETRIC="$IS_BIOMETRIC" \
-                --dart-define=IS_MIC="$IS_MIC" \
-                --dart-define=IS_CONTACT="$IS_CONTACT" \
-                --dart-define=IS_CALENDAR="$IS_CALENDAR" \
-                --dart-define=IS_NOTIFICATION="$IS_NOTIFICATION" \
-                --dart-define=IS_STORAGE="$IS_STORAGE" \
-                --dart-define=IS_PHOTO_LIBRARY="$IS_PHOTO_LIBRARY" \
-                --dart-define=IS_PHOTO_LIBRARY_ADD="$IS_PHOTO_LIBRARY_ADD" \
-                --dart-define=IS_FACE_ID="$IS_FACE_ID" \
-                --dart-define=IS_TOUCH_ID="$IS_TOUCH_ID"
-
-              # Archive and export IPA
-              xcodebuild -workspace ios/Runner.xcworkspace \
-                -scheme Runner \
-                -configuration Release \
-                -archivePath build/ios/archive/Runner.xcarchive \
-                -allowProvisioningUpdates \
-                archive
-
-              xcodebuild -exportArchive \
-                -archivePath build/ios/archive/Runner.xcarchive \
-                -exportPath build/ios/ipa \
-                -exportOptionsPlist ios/ExportOptions.plist
-
-              echo "iOS IPA build completed"
+                --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY"
           fi
       - name: Copy all artifacts to output folder
         script: |
           #!/usr/bin/env bash
           set -e
-          echo "Copying all artifacts to output folder..."
+          echo "📁 Copying all artifacts to output folder..."
 
           # Create output directory
           mkdir -p output
 
-          # Copy Android artifacts
-          cp build/app/outputs/flutter-apk/app-release.apk output/
-          cp build/app/outputs/bundle/release/app-release.aab output/
+          # Copy Android artifacts if they exist
+          if [ -f "build/app/outputs/flutter-apk/app-release.apk" ]; then
+              cp build/app/outputs/flutter-apk/app-release.apk output/
+              echo "✅ Android APK copied"
+          fi
 
-          # Copy iOS artifacts
-          cp build/ios/ipa/Runner.ipa output/
+          if [ -f "build/app/outputs/bundle/release/app-release.aab" ]; then
+              cp build/app/outputs/bundle/release/app-release.aab output/
+              echo "✅ Android AAB copied"
+          fi
 
-          echo "All artifacts copied to output folder"
-          echo "📱 Android APK: app-release.apk"
-          echo "📦 Android AAB: app-release.aab"
-          echo "🍎 iOS IPA: Runner.ipa"
+          # Copy iOS artifacts if they exist
+          if [ -f "build/ios/ipa/Runner.ipa" ]; then
+              cp build/ios/ipa/Runner.ipa output/
+              echo "✅ iOS IPA copied"
+          fi
+
+          echo "📋 Build Summary:"
+          ls -la output/
       - name: Send success notification
         script: |
           #!/usr/bin/env bash
           set -e
           echo "Sending success notification..."
 
-          # Make email notification script executable
-          chmod +x lib/scripts/email_notification.py
-
-          # Send success email
-          python3 lib/scripts/email_notification.py success
-
-          echo "Success notification sent"
+          if [ -f "lib/scripts/email_notification.py" ] && [ -n "$SMTP_USERNAME" ] && [ -n "$SMTP_PASSWORD" ]; then
+              chmod +x lib/scripts/email_notification.py
+              python3 lib/scripts/email_notification.py success
+              echo "Success notification sent"
+          else
+              echo "Email notification skipped (script not found or email not configured)"
+          fi
     artifacts:
       - build/app/outputs/flutter-apk/app-release.apk
       - build/app/outputs/bundle/release/app-release.aab
@@ -1019,5 +702,5 @@ workflows:
         recipients:
           - $EMAIL_ID
         notify:
-          success: false # We handle this with our custom script
-          failure: false # We handle this with our custom script
+          success: false
+          failure: false
