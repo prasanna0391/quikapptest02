@@ -96,10 +96,10 @@ environment: &default_env
     SMTP_PORT: "${SMTP_PORT:-587}"
     SMTP_USERNAME: "${SMTP_USERNAME:-prasannasrie@gmail.com}"
     SMTP_PASSWORD: "${SMTP_PASSWORD:-jbbf nzhm zoay lbwb}"
-  scripts:
-    - &debug_env
-      name: Debug Environment Variables
-      script: |
+scripts:
+  - &debug_env
+    name: Debug Environment Variables
+    script: |
         echo "*********** App Name & Version ***********"
         echo "APP_NAME: $APP_NAME"
         echo "ORG_NAME: $ORG_NAME"
