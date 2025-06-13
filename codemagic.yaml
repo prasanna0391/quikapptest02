@@ -1176,21 +1176,21 @@ workflows:
 
           # Verify all components are present
           echo "🔍 Verifying Gradle wrapper setup..."
-          
+
           MISSING_FILES=()
-          
+
           if [ ! -f "gradle/wrapper/gradle-wrapper.jar" ]; then
               MISSING_FILES+=("gradle-wrapper.jar")
           fi
-          
+
           if [ ! -f "gradle/wrapper/gradle-wrapper.properties" ]; then
               MISSING_FILES+=("gradle-wrapper.properties")
           fi
-          
+
           if [ ! -f "gradlew" ]; then
               MISSING_FILES+=("gradlew")
           fi
-          
+
           if [ ${#MISSING_FILES[@]} -gt 0 ]; then
               echo "❌ Missing files: ${MISSING_FILES[*]}"
               echo "📋 Current gradle/wrapper contents:"
@@ -1220,7 +1220,7 @@ workflows:
 
           # Detect Flutter SDK path
           FLUTTER_SDK_PATH=""
-          
+
           # Method 1: Check FLUTTER_ROOT environment variable
           if [ -n "$FLUTTER_ROOT" ] && [ -d "$FLUTTER_ROOT" ]; then
               FLUTTER_SDK_PATH="$FLUTTER_ROOT"
@@ -1263,6 +1263,49 @@ workflows:
           echo "✅ Flutter SDK path configured: $FLUTTER_SDK_PATH"
           echo "📋 local.properties contents:"
           cat local.properties
+      - name: Fix Gradle Wrapper Permissions
+        script: |
+          #!/usr/bin/env bash
+          set -e
+          echo "🔧 Fixing Gradle wrapper permissions..."
+
+          # Ensure gradlew is executable
+          if [ -f "android/gradlew" ]; then
+              chmod +x android/gradlew
+              echo "✅ Made android/gradlew executable"
+          else
+              echo "⚠️  android/gradlew not found"
+          fi
+
+          # Also check project root gradlew
+          if [ -f "gradlew" ]; then
+              chmod +x gradlew
+              echo "✅ Made root gradlew executable"
+          else
+              echo "⚠️  root gradlew not found"
+          fi
+
+          # Verify permissions
+          echo "📋 Checking gradlew permissions:"
+          ls -la android/gradlew 2>/dev/null || echo "android/gradlew not found"
+          ls -la gradlew 2>/dev/null || echo "root gradlew not found"
+
+          # Test gradlew execution
+          cd android
+          if [ -f "gradlew" ]; then
+              echo "🔍 Testing gradlew execution..."
+              if ./gradlew --version >/dev/null 2>&1; then
+                  echo "✅ gradlew is working correctly"
+              else
+                  echo "⚠️  gradlew test failed, but permissions are set"
+                  echo "📋 gradlew file info:"
+                  file gradlew 2>/dev/null || echo "Cannot determine file type"
+                  head -1 gradlew 2>/dev/null || echo "Cannot read first line"
+              fi
+          else
+              echo "❌ gradlew not found in android directory"
+          fi
+          cd ..
       - name: Build Android (Using main.sh)
         script: |
           #!/usr/bin/env bash
