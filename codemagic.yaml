@@ -25,16 +25,7 @@ environment: &default_env
     IS_BOTTOMMENU: "${IS_BOTTOMMENU}"
     IS_LOAD_IND: "${IS_LOAD_IND}"
 
-    # Permissions - API configurable with secure defaults (all false unless specified)
-    IS_CAMERA: "${IS_CAMERA}"
-    IS_LOCATION: "${IS_LOCATION}"
-    IS_MIC: "${IS_MIC}"
-    IS_NOTIFICATION: "${IS_NOTIFICATION}"
-    IS_CONTACT: "${IS_CONTACT}"
-    IS_BIOMETRIC: "${IS_BIOMETRIC}"
-    IS_CALENDAR: "${IS_CALENDAR}"
-    IS_STORAGE: "${IS_STORAGE}"
-
+   
     # Assets - API configurable with empty defaults for optional fields
     LOGO_URL: "${LOGO_URL}"
     SPLASH: "${SPLASH}"
@@ -71,20 +62,30 @@ environment: &default_env
     CERT_CER_URL: "${CERT_CER_URL}"
     CERT_KEY_URL: "${CERT_KEY_URL}"
     APP_STORE_CONNECT_KEY_IDENTIFIER: "${APP_STORE_CONNECT_KEY_IDENTIFIER}"
-    IPHONEOS_DEPLOYMENT_TARGET: "${IPHONEOS_DEPLOYMENT_TARGET}"
-    COCOAPODS_PLATFORM: "${COCOAPODS_PLATFORM}"
-    EXPORT_METHOD: "${EXPORT_METHOD}"
-    IS_DEVELOPMENT_PROFILE: "${IS_DEVELOPMENT_PROFILE}"
-    IS_PRODUCTION_PROFILE: "${IS_PRODUCTION_PROFILE}"
+    IPHONEOS_DEPLOYMENT_TARGET: "13.0"
+    COCOAPODS_PLATFORM: "ios"
+    EXPORT_METHOD: "app-store"
+    IS_DEVELOPMENT_PROFILE: "false"
+    IS_PRODUCTION_PROFILE: "true"
 
     # Android Configuration - API required for Android builds
     KEY_STORE: "${KEY_STORE}"
     CM_KEYSTORE_PASSWORD: "${CM_KEYSTORE_PASSWORD}"
     CM_KEY_ALIAS: "${CM_KEY_ALIAS}"
     CM_KEY_PASSWORD: "${CM_KEY_PASSWORD}"
-    COMPILE_SDK_VERSION: "${COMPILE_SDK_VERSION}"
-    MIN_SDK_VERSION: "${MIN_SDK_VERSION}"
-    TARGET_SDK_VERSION: "${TARGET_SDK_VERSION}"
+    COMPILE_SDK_VERSION: "35"
+    MIN_SDK_VERSION: "21"
+    TARGET_SDK_VERSION: "35"
+
+ # Permissions - API configurable with secure defaults (all false unless specified)
+    IS_CAMERA: "${IS_CAMERA}"
+    IS_LOCATION: "${IS_LOCATION}"
+    IS_MIC: "${IS_MIC}"
+    IS_NOTIFICATION: "${IS_NOTIFICATION}"
+    IS_CONTACT: "${IS_CONTACT}"
+    IS_BIOMETRIC: "${IS_BIOMETRIC}"
+    IS_CALENDAR: "${IS_CALENDAR}"
+    IS_STORAGE: "${IS_STORAGE}"
 
     # iOS Permissions - API configurable with defaults
     IS_PHOTO_LIBRARY: "${IS_PHOTO_LIBRARY}"
@@ -93,10 +94,10 @@ environment: &default_env
     IS_TOUCH_ID: "${IS_TOUCH_ID}"
 
     # Email Configuration - Optional with defaults
-    SMTP_SERVER: "${SMTP_SERVER}"
-    SMTP_PORT: "${SMTP_PORT}"
-    SMTP_USERNAME: "${SMTP_USERNAME}"
-    SMTP_PASSWORD: "${SMTP_PASSWORD}"
+    SMTP_SERVER: "smtp.gmail.com"
+    SMTP_PORT: "587"
+    SMTP_USERNAME: "prasannasrie@gmail.com"
+    SMTP_PASSWORD: "jbbf nzhm zoay lbwb"
 
 scripts:
   - &debug_env
@@ -903,99 +904,8 @@ workflows:
       java: 17
       groups:
         - google_credentials
-        - appstore_credentials
-      vars:
-        # App Configuration - Required from API
-        VERSION_NAME: "${VERSION_NAME}"
-        VERSION_CODE: "${VERSION_CODE}"
-        APP_NAME: "${APP_NAME}"
-        ORG_NAME: "${ORG_NAME}"
-        WEB_URL: "${WEB_URL}"
-        PKG_NAME: "${PKG_NAME}"
-        BUNDLE_ID: "${BUNDLE_ID}"
-        EMAIL_ID: "${EMAIL_ID}"
-
-        # Feature Flags - API configurable
-        PUSH_NOTIFY: "${PUSH_NOTIFY}"
-        IS_CHATBOT: "${IS_CHATBOT}"
-        IS_DEEPLINK: "${IS_DEEPLINK}"
-        IS_SPLASH: "${IS_SPLASH}"
-        IS_PULLDOWN: "${IS_PULLDOWN}"
-        IS_BOTTOMMENU: "${IS_BOTTOMMENU}"
-        IS_LOAD_IND: "${IS_LOAD_IND}"
-
-        # Permissions - API configurable
-        IS_CAMERA: "${IS_CAMERA}"
-        IS_LOCATION: "${IS_LOCATION}"
-        IS_MIC: "${IS_MIC}"
-        IS_NOTIFICATION: "${IS_NOTIFICATION}"
-        IS_CONTACT: "${IS_CONTACT}"
-        IS_BIOMETRIC: "${IS_BIOMETRIC}"
-        IS_CALENDAR: "${IS_CALENDAR}"
-        IS_STORAGE: "${IS_STORAGE}"
-
-        # Assets - API configurable
-        LOGO_URL: "${LOGO_URL}"
-        SPLASH: "${SPLASH}"
-        SPLASH_BG: "${SPLASH_BG}"
-        SPLASH_BG_COLOR: "${SPLASH_BG_COLOR}"
-        SPLASH_TAGLINE: "${SPLASH_TAGLINE}"
-        SPLASH_TAGLINE_COLOR: "${SPLASH_TAGLINE_COLOR}"
-        SPLASH_ANIMATION: "${SPLASH_ANIMATION}"
-        SPLASH_DURATION: "${SPLASH_DURATION}"
-
-        # Bottom Menu Configuration - API configurable
-        BOTTOMMENU_ITEMS: "${BOTTOMMENU_ITEMS}"
-        BOTTOMMENU_BG_COLOR: "${BOTTOMMENU_BG_COLOR}"
-        BOTTOMMENU_ICON_COLOR: "${BOTTOMMENU_ICON_COLOR}"
-        BOTTOMMENU_TEXT_COLOR: "${BOTTOMMENU_TEXT_COLOR}"
-        BOTTOMMENU_FONT: "${BOTTOMMENU_FONT}"
-        BOTTOMMENU_FONT_SIZE: "${BOTTOMMENU_FONT_SIZE}"
-        BOTTOMMENU_FONT_BOLD: "${BOTTOMMENU_FONT_BOLD}"
-        BOTTOMMENU_FONT_ITALIC: "${BOTTOMMENU_FONT_ITALIC}"
-        BOTTOMMENU_ACTIVE_TAB_COLOR: "${BOTTOMMENU_ACTIVE_TAB_COLOR}"
-        BOTTOMMENU_ICON_POSITION: "${BOTTOMMENU_ICON_POSITION}"
-        BOTTOMMENU_VISIBLE_ON: "${BOTTOMMENU_VISIBLE_ON}"
-
-        # Firebase Configuration - API required for push notifications
-        firebase_config_android: "${firebase_config_android}"
-        firebase_config_ios: "${firebase_config_ios}"
-
-        # iOS Configuration - API required for iOS builds
-        APPLE_TEAM_ID: "${APPLE_TEAM_ID}"
-        APNS_KEY_ID: "${APNS_KEY_ID}"
-        APNS_AUTH_KEY_URL: "${APNS_AUTH_KEY_URL}"
-        CERT_PASSWORD: "${CERT_PASSWORD}"
-        PROFILE_URL: "${PROFILE_URL}"
-        CERT_CER_URL: "${CERT_CER_URL}"
-        CERT_KEY_URL: "${CERT_KEY_URL}"
-        APP_STORE_CONNECT_KEY_IDENTIFIER: "${APP_STORE_CONNECT_KEY_IDENTIFIER}"
-        IPHONEOS_DEPLOYMENT_TARGET: "${IPHONEOS_DEPLOYMENT_TARGET}"
-        COCOAPODS_PLATFORM: "${COCOAPODS_PLATFORM}"
-        EXPORT_METHOD: "${EXPORT_METHOD}"
-        IS_DEVELOPMENT_PROFILE: "${IS_DEVELOPMENT_PROFILE}"
-        IS_PRODUCTION_PROFILE: "${IS_PRODUCTION_PROFILE}"
-
-        # Android Configuration - API required for Android builds
-        KEY_STORE: "${KEY_STORE}"
-        CM_KEYSTORE_PASSWORD: "${CM_KEYSTORE_PASSWORD}"
-        CM_KEY_ALIAS: "${CM_KEY_ALIAS}"
-        CM_KEY_PASSWORD: "${CM_KEY_PASSWORD}"
-        COMPILE_SDK_VERSION: "${COMPILE_SDK_VERSION}"
-        MIN_SDK_VERSION: "${MIN_SDK_VERSION}"
-        TARGET_SDK_VERSION: "${TARGET_SDK_VERSION}"
-
-        # iOS Permissions - API configurable
-        IS_PHOTO_LIBRARY: "${IS_PHOTO_LIBRARY}"
-        IS_PHOTO_LIBRARY_ADD: "${IS_PHOTO_LIBRARY_ADD}"
-        IS_FACE_ID: "${IS_FACE_ID}"
-        IS_TOUCH_ID: "${IS_TOUCH_ID}"
-
-        # Email Configuration - Optional with defaults
-        SMTP_SERVER: "${SMTP_SERVER}"
-        SMTP_PORT: "${SMTP_PORT}"
-        SMTP_USERNAME: "${SMTP_USERNAME}"
-        SMTP_PASSWORD: "${SMTP_PASSWORD}"
+xx        - appstore_credentials
+      vars: *default_env
     scripts:
       - name: Initialize Gradle Wrapper
         script: |
