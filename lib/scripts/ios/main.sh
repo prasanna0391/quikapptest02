@@ -214,8 +214,42 @@ else
     log_message "WARN" "create_entitlements.sh not found, skipping entitlements creation"
 fi
 
-# Step 10: Archive the app
-log_message "INFO" "🏗️ Step 10: Archiving the app"
+# Step 10: Create ExportOptions.plist
+log_message "INFO" "📄 Step 10: Creating ExportOptions.plist"
+capture_changes "EXPORT_OPTIONS" "Creating ExportOptions.plist for IPA export"
+
+if [ -f "$SCRIPT_DIR/create_export_options.sh" ]; then
+    "$SCRIPT_DIR/create_export_options.sh" || {
+        log_message "ERROR" "Failed to create ExportOptions.plist"
+        exit 1
+    }
+else
+    log_message "WARN" "create_export_options.sh not found, creating basic ExportOptions.plist"
+    
+    # Create a basic ExportOptions.plist as fallback
+    mkdir -p "$PROJECT_ROOT/ios"
+    cat > "$PROJECT_ROOT/ios/ExportOptions.plist" << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>method</key>
+    <string>${EXPORT_METHOD:-app-store}</string>
+    <key>teamID</key>
+    <string>${APPLE_TEAM_ID}</string>
+    <key>signingStyle</key>
+    <string>manual</string>
+    <key>uploadBitcode</key>
+    <false/>
+    <key>uploadSymbols</key>
+    <true/>
+</dict>
+</plist>
+EOF
+fi
+
+# Step 11: Archive the app
+log_message "INFO" "🏗️ Step 11: Archiving the app"
 capture_changes "ARCHIVE" "Creating Xcode archive"
 
 if [ -f "$SCRIPT_DIR/archive_app.sh" ]; then
@@ -227,8 +261,8 @@ else
     log_message "WARN" "archive_app.sh not found, skipping app archiving"
 fi
 
-# Step 11: Export the IPA
-log_message "INFO" "📦 Step 11: Exporting IPA"
+# Step 12: Export the IPA
+log_message "INFO" "📦 Step 12: Exporting IPA"
 capture_changes "EXPORT" "Exporting IPA from archive"
 
 if [ -f "$SCRIPT_DIR/export_ipa.sh" ]; then
@@ -240,8 +274,8 @@ else
     log_message "WARN" "export_ipa.sh not found, skipping IPA export"
 fi
 
-# Step 12: Move outputs to final location
-log_message "INFO" "📁 Step 12: Moving build outputs"
+# Step 13: Move outputs to final location
+log_message "INFO" "📁 Step 13: Moving build outputs"
 capture_changes "OUTPUTS" "Moving build artifacts to output directory"
 
 if [ -f "$SCRIPT_DIR/move_outputs.sh" ]; then
@@ -253,8 +287,8 @@ else
     log_message "WARN" "move_outputs.sh not found, skipping output move"
 fi
 
-# Step 13: Send success notification
-log_message "INFO" "📧 Step 13: Sending success notification"
+# Step 14: Send success notification
+log_message "INFO" "📧 Step 14: Sending success notification"
 capture_changes "NOTIFICATION" "Sending build success email"
 
 # Calculate build duration
@@ -271,8 +305,8 @@ else
     log_message "WARN" "send_error_email.sh not found, skipping email notification"
 fi
 
-# Step 14: Final cleanup
-log_message "INFO" "🧹 Step 14: Final cleanup"
+# Step 15: Final cleanup
+log_message "INFO" "🧹 Step 15: Final cleanup"
 capture_changes "CLEANUP" "Performing final cleanup"
 
 if [ -f "$SCRIPT_DIR/cleanup.sh" ]; then
