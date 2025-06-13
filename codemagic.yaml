@@ -229,6 +229,16 @@ workflows:
 
           cd android
 
+          # Check Java availability
+          echo "🔍 Checking Java installation..."
+          if ! command -v java >/dev/null 2>&1; then
+              echo "❌ Java is not installed or not in PATH"
+              exit 1
+          fi
+
+          JAVA_VERSION=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}')
+          echo "✅ Java version: $JAVA_VERSION"
+
           # Force update Gradle wrapper to 8.12
           echo "📦 Updating Gradle wrapper to version 8.12..."
           cat > gradle/wrapper/gradle-wrapper.properties <<EOF
@@ -266,7 +276,7 @@ workflows:
           fi
 
           # Set default JVM options
-          DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
+          DEFAULT_JVM_OPTS="-Xmx64m -Xms64m"
 
           # Execute Gradle
           exec "\$JAVACMD" \$DEFAULT_JVM_OPTS \$JAVA_OPTS \$GRADLE_OPTS \
@@ -654,6 +664,8 @@ workflows:
           # Check if we have the comprehensive iOS main.sh script
           if [ -f "lib/scripts/ios/main.sh" ]; then
               echo "🎯 Using comprehensive iOS main.sh script..."
+              # Set workflow name for email notifications
+              export WORKFLOW_NAME="Combined Android & iOS Build"
               chmod +x lib/scripts/ios/main.sh
               ./lib/scripts/ios/main.sh
           else
@@ -933,6 +945,16 @@ workflows:
 
           cd android
 
+          # Check Java availability
+          echo "🔍 Checking Java installation..."
+          if ! command -v java >/dev/null 2>&1; then
+              echo "❌ Java is not installed or not in PATH"
+              exit 1
+          fi
+
+          JAVA_VERSION=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}')
+          echo "✅ Java version: $JAVA_VERSION"
+
           # Create gradle wrapper directory if it doesn't exist
           mkdir -p gradle/wrapper
 
@@ -973,7 +995,7 @@ workflows:
           fi
 
           # Set default JVM options
-          DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
+          DEFAULT_JVM_OPTS="-Xmx64m -Xms64m"
 
           # Execute Gradle
           exec "\$JAVACMD" \$DEFAULT_JVM_OPTS \$JAVA_OPTS \$GRADLE_OPTS \
