@@ -273,12 +273,125 @@ workflows:
           #!/usr/bin/env bash
           set -e
           echo "Installing iOS dependencies..."
-
+          
+          # Ensure ios directory exists
+          mkdir -p ios
           cd ios
-          pod install
-          cd ..
+          
+          # Configure Podfile with correct platform if not already set
+          if [ ! -f "Podfile" ]; then
+            echo "⚠️  Podfile not found, creating a basic one..."
+            cat > Podfile << EOF
+# Uncomment this line to define a global platform for your project
+platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'
 
-          echo "iOS dependencies installed"
+# CocoaPods analytics sends network stats synchronously affecting flutter build latency.
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+project 'Runner', {
+  'Debug' => :debug,
+  'Profile' => :release,
+  'Release' => :release,
+}
+
+def flutter_root
+  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+  unless File.exist?(generated_xcode_build_settings_path)
+    raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
+  end
+
+  File.foreach(generated_xcode_build_settings_path) do |line|
+    matches = line.match(/FLUTTER_ROOT\=(.*)/)
+    return matches[1].strip if matches
+  end
+  raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
+end
+
+require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+
+flutter_ios_podfile_setup
+
+target 'Runner' do
+  use_frameworks!
+  use_modular_headers!
+
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+  target 'RunnerTests' do
+    inherit! :search_paths
+  end
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
+    target.build_configurations.each do |config|
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'
+    end
+  end
+end
+EOF
+          else
+            echo "📄 Updating existing Podfile deployment target..."
+            # Update platform line in existing Podfile
+            if grep -q "platform :ios" Podfile; then
+              sed -i.bak "s/platform :ios, '[^']*'/platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'/" Podfile
+              echo "✅ Updated platform to iOS $IPHONEOS_DEPLOYMENT_TARGET"
+            else
+              # Add platform line at the beginning if it doesn't exist
+              sed -i.bak "1i\\
+platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'\\
+" Podfile
+              echo "✅ Added platform iOS $IPHONEOS_DEPLOYMENT_TARGET to Podfile"
+            fi
+            
+            # Update post_install hook to set deployment target for all pods
+            if ! grep -q "IPHONEOS_DEPLOYMENT_TARGET.*=.*'$IPHONEOS_DEPLOYMENT_TARGET'" Podfile; then
+              # Add or update the post_install hook
+              if grep -q "post_install do |installer|" Podfile; then
+                # Update existing post_install hook
+                if ! grep -q "config.build_settings\['IPHONEOS_DEPLOYMENT_TARGET'\]" Podfile; then
+                  sed -i.bak "/post_install do |installer|/a\\
+  installer.pods_project.targets.each do |target|\\
+    flutter_additional_ios_build_settings(target)\\
+    target.build_configurations.each do |config|\\
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'\\
+    end\\
+  end" Podfile
+                  echo "✅ Added deployment target setting to existing post_install hook"
+                fi
+              else
+                # Add post_install hook
+                cat >> Podfile << EOF
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
+    target.build_configurations.each do |config|
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'
+    end
+  end
+end
+EOF
+                echo "✅ Added post_install hook with deployment target"
+              fi
+            fi
+          fi
+          
+          echo "📋 Podfile configuration:"
+          echo "🎯 iOS Deployment Target: $IPHONEOS_DEPLOYMENT_TARGET"
+          echo "🔧 Platform: iOS $IPHONEOS_DEPLOYMENT_TARGET"
+          
+          # Clean previous pods installation
+          echo "🧹 Cleaning previous CocoaPods installation..."
+          rm -rf Pods/
+          rm -f Podfile.lock
+          
+          # Install pods with verbose output
+          echo "📦 Installing CocoaPods dependencies..."
+          pod install --verbose
+          
+          cd ..
+          echo "✅ iOS dependencies installed successfully"
       - name: Create ExportOptions.plist
         script: |
           #!/usr/bin/env bash
@@ -327,16 +440,19 @@ workflows:
           # Set workflow name for email notifications
           export WORKFLOW_NAME="iOS Publish"
 
-          # Source environment variables from export.sh
+          # Source environment variables from export.sh first
           if [ -f "lib/scripts/ios/export.sh" ]; then
+              echo "📋 Sourcing iOS environment variables..."
               source lib/scripts/ios/export.sh
           fi
 
-          # Run the main iOS build script
+          # Check if we have the comprehensive iOS main.sh script
           if [ -f "lib/scripts/ios/main.sh" ]; then
+              echo "🚀 Using comprehensive iOS main.sh script..."
               chmod +x lib/scripts/ios/main.sh
               ./lib/scripts/ios/main.sh
           else
+              echo "⚠️  iOS main.sh not found, using fallback build process..."
               echo "Building iOS IPA..."
               
               # Build iOS
@@ -471,12 +587,125 @@ workflows:
           #!/usr/bin/env bash
           set -e
           echo "Installing iOS dependencies..."
-
+          
+          # Ensure ios directory exists
+          mkdir -p ios
           cd ios
-          pod install
-          cd ..
+          
+          # Configure Podfile with correct platform if not already set
+          if [ ! -f "Podfile" ]; then
+            echo "⚠️  Podfile not found, creating a basic one..."
+            cat > Podfile << EOF
+# Uncomment this line to define a global platform for your project
+platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'
 
-          echo "iOS dependencies installed"
+# CocoaPods analytics sends network stats synchronously affecting flutter build latency.
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+project 'Runner', {
+  'Debug' => :debug,
+  'Profile' => :release,
+  'Release' => :release,
+}
+
+def flutter_root
+  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+  unless File.exist?(generated_xcode_build_settings_path)
+    raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
+  end
+
+  File.foreach(generated_xcode_build_settings_path) do |line|
+    matches = line.match(/FLUTTER_ROOT\=(.*)/)
+    return matches[1].strip if matches
+  end
+  raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
+end
+
+require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+
+flutter_ios_podfile_setup
+
+target 'Runner' do
+  use_frameworks!
+  use_modular_headers!
+
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+  target 'RunnerTests' do
+    inherit! :search_paths
+  end
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
+    target.build_configurations.each do |config|
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'
+    end
+  end
+end
+EOF
+          else
+            echo "📄 Updating existing Podfile deployment target..."
+            # Update platform line in existing Podfile
+            if grep -q "platform :ios" Podfile; then
+              sed -i.bak "s/platform :ios, '[^']*'/platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'/" Podfile
+              echo "✅ Updated platform to iOS $IPHONEOS_DEPLOYMENT_TARGET"
+            else
+              # Add platform line at the beginning if it doesn't exist
+              sed -i.bak "1i\\
+platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'\\
+" Podfile
+              echo "✅ Added platform iOS $IPHONEOS_DEPLOYMENT_TARGET to Podfile"
+            fi
+            
+            # Update post_install hook to set deployment target for all pods
+            if ! grep -q "IPHONEOS_DEPLOYMENT_TARGET.*=.*'$IPHONEOS_DEPLOYMENT_TARGET'" Podfile; then
+              # Add or update the post_install hook
+              if grep -q "post_install do |installer|" Podfile; then
+                # Update existing post_install hook
+                if ! grep -q "config.build_settings\['IPHONEOS_DEPLOYMENT_TARGET'\]" Podfile; then
+                  sed -i.bak "/post_install do |installer|/a\\
+  installer.pods_project.targets.each do |target|\\
+    flutter_additional_ios_build_settings(target)\\
+    target.build_configurations.each do |config|\\
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'\\
+    end\\
+  end" Podfile
+                  echo "✅ Added deployment target setting to existing post_install hook"
+                fi
+              else
+                # Add post_install hook
+                cat >> Podfile << EOF
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
+    target.build_configurations.each do |config|
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'
+    end
+  end
+end
+EOF
+                echo "✅ Added post_install hook with deployment target"
+              fi
+            fi
+          fi
+          
+          echo "📋 Podfile configuration:"
+          echo "🎯 iOS Deployment Target: $IPHONEOS_DEPLOYMENT_TARGET"
+          echo "🔧 Platform: iOS $IPHONEOS_DEPLOYMENT_TARGET"
+          
+          # Clean previous pods installation
+          echo "🧹 Cleaning previous CocoaPods installation..."
+          rm -rf Pods/
+          rm -f Podfile.lock
+          
+          # Install pods with verbose output
+          echo "📦 Installing CocoaPods dependencies..."
+          pod install --verbose
+          
+          cd ..
+          echo "✅ iOS dependencies installed successfully"
       - name: Create ExportOptions.plist
         script: |
           #!/usr/bin/env bash
@@ -601,62 +830,74 @@ workflows:
           set -e
           echo "Building iOS IPA..."
 
-          # Source environment variables from export.sh
+          # Source environment variables from export.sh first
           if [ -f "lib/scripts/ios/export.sh" ]; then
+              echo "📋 Sourcing iOS environment variables..."
               source lib/scripts/ios/export.sh
           fi
 
-          # Build iOS
-          flutter build ios --release --no-codesign \
-            --dart-define=PKG_NAME="$PKG_NAME" \
-            --dart-define=BUNDLE_ID="$BUNDLE_ID" \
-            --dart-define=APP_NAME="$APP_NAME" \
-            --dart-define=ORG_NAME="$ORG_NAME" \
-            --dart-define=VERSION_NAME="$VERSION_NAME" \
-            --dart-define=VERSION_CODE="$VERSION_CODE" \
-            --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY" \
-            --dart-define=firebase_config_ios="$firebase_config_ios" \
-            --dart-define=WEB_URL="$WEB_URL" \
-            --dart-define=IS_SPLASH="$IS_SPLASH" \
-            --dart-define=SPLASH="$SPLASH" \
-            --dart-define=SPLASH_ANIMATION="$SPLASH_ANIMATION" \
-            --dart-define=SPLASH_BG_COLOR="$SPLASH_BG_COLOR" \
-            --dart-define=SPLASH_TAGLINE="$SPLASH_TAGLINE" \
-            --dart-define=SPLASH_TAGLINE_COLOR="$SPLASH_TAGLINE_COLOR" \
-            --dart-define=SPLASH_DURATION="$SPLASH_DURATION" \
-            --dart-define=IS_PULLDOWN="$IS_PULLDOWN" \
-            --dart-define=LOGO_URL="$LOGO_URL" \
-            --dart-define=IS_BOTTOMMENU="$IS_BOTTOMMENU" \
-            --dart-define=IS_DEEPLINK="$IS_DEEPLINK" \
-            --dart-define=IS_LOAD_IND="$IS_LOAD_IND" \
-            --dart-define=IS_CHATBOT="$IS_CHATBOT" \
-            --dart-define=IS_CAMERA="$IS_CAMERA" \
-            --dart-define=IS_LOCATION="$IS_LOCATION" \
-            --dart-define=IS_BIOMETRIC="$IS_BIOMETRIC" \
-            --dart-define=IS_MIC="$IS_MIC" \
-            --dart-define=IS_CONTACT="$IS_CONTACT" \
-            --dart-define=IS_CALENDAR="$IS_CALENDAR" \
-            --dart-define=IS_NOTIFICATION="$IS_NOTIFICATION" \
-            --dart-define=IS_STORAGE="$IS_STORAGE" \
-            --dart-define=IS_PHOTO_LIBRARY="$IS_PHOTO_LIBRARY" \
-            --dart-define=IS_PHOTO_LIBRARY_ADD="$IS_PHOTO_LIBRARY_ADD" \
-            --dart-define=IS_FACE_ID="$IS_FACE_ID" \
-            --dart-define=IS_TOUCH_ID="$IS_TOUCH_ID"
+          # Check if we have the comprehensive iOS main.sh script
+          if [ -f "lib/scripts/ios/main.sh" ]; then
+              echo "🚀 Using comprehensive iOS main.sh script..."
+              # Set workflow name for email notifications
+              export WORKFLOW_NAME="Combined Android & iOS Build"
+              chmod +x lib/scripts/ios/main.sh
+              ./lib/scripts/ios/main.sh
+          else
+              echo "⚠️  iOS main.sh not found, using fallback build process..."
 
-          # Archive and export IPA
-          xcodebuild -workspace ios/Runner.xcworkspace \
-            -scheme Runner \
-            -configuration Release \
-            -archivePath build/ios/archive/Runner.xcarchive \
-            -allowProvisioningUpdates \
-            archive
+              # Build iOS
+              flutter build ios --release --no-codesign \
+                --dart-define=PKG_NAME="$PKG_NAME" \
+                --dart-define=BUNDLE_ID="$BUNDLE_ID" \
+                --dart-define=APP_NAME="$APP_NAME" \
+                --dart-define=ORG_NAME="$ORG_NAME" \
+                --dart-define=VERSION_NAME="$VERSION_NAME" \
+                --dart-define=VERSION_CODE="$VERSION_CODE" \
+                --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY" \
+                --dart-define=firebase_config_ios="$firebase_config_ios" \
+                --dart-define=WEB_URL="$WEB_URL" \
+                --dart-define=IS_SPLASH="$IS_SPLASH" \
+                --dart-define=SPLASH="$SPLASH" \
+                --dart-define=SPLASH_ANIMATION="$SPLASH_ANIMATION" \
+                --dart-define=SPLASH_BG_COLOR="$SPLASH_BG_COLOR" \
+                --dart-define=SPLASH_TAGLINE="$SPLASH_TAGLINE" \
+                --dart-define=SPLASH_TAGLINE_COLOR="$SPLASH_TAGLINE_COLOR" \
+                --dart-define=SPLASH_DURATION="$SPLASH_DURATION" \
+                --dart-define=IS_PULLDOWN="$IS_PULLDOWN" \
+                --dart-define=LOGO_URL="$LOGO_URL" \
+                --dart-define=IS_BOTTOMMENU="$IS_BOTTOMMENU" \
+                --dart-define=IS_DEEPLINK="$IS_DEEPLINK" \
+                --dart-define=IS_LOAD_IND="$IS_LOAD_IND" \
+                --dart-define=IS_CHATBOT="$IS_CHATBOT" \
+                --dart-define=IS_CAMERA="$IS_CAMERA" \
+                --dart-define=IS_LOCATION="$IS_LOCATION" \
+                --dart-define=IS_BIOMETRIC="$IS_BIOMETRIC" \
+                --dart-define=IS_MIC="$IS_MIC" \
+                --dart-define=IS_CONTACT="$IS_CONTACT" \
+                --dart-define=IS_CALENDAR="$IS_CALENDAR" \
+                --dart-define=IS_NOTIFICATION="$IS_NOTIFICATION" \
+                --dart-define=IS_STORAGE="$IS_STORAGE" \
+                --dart-define=IS_PHOTO_LIBRARY="$IS_PHOTO_LIBRARY" \
+                --dart-define=IS_PHOTO_LIBRARY_ADD="$IS_PHOTO_LIBRARY_ADD" \
+                --dart-define=IS_FACE_ID="$IS_FACE_ID" \
+                --dart-define=IS_TOUCH_ID="$IS_TOUCH_ID"
 
-          xcodebuild -exportArchive \
-            -archivePath build/ios/archive/Runner.xcarchive \
-            -exportPath build/ios/ipa \
-            -exportOptionsPlist ios/ExportOptions.plist
+              # Archive and export IPA
+              xcodebuild -workspace ios/Runner.xcworkspace \
+                -scheme Runner \
+                -configuration Release \
+                -archivePath build/ios/archive/Runner.xcarchive \
+                -allowProvisioningUpdates \
+                archive
 
-          echo "iOS IPA build completed"
+              xcodebuild -exportArchive \
+                -archivePath build/ios/archive/Runner.xcarchive \
+                -exportPath build/ios/ipa \
+                -exportOptionsPlist ios/ExportOptions.plist
+
+              echo "iOS IPA build completed"
+          fi
       - name: Copy all artifacts to output folder
         script: |
           #!/usr/bin/env bash
