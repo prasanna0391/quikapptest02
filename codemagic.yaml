@@ -924,8 +924,6 @@ workflows:
     name: Combined Android & iOS Build
     max_build_duration: 120
     instance_type: mac_mini_m2
-    integrations:
-      codemagic_ssh_access: codemagic_ssh_access
     environment:
       flutter: stable
       xcode: latest
@@ -934,7 +932,6 @@ workflows:
       groups:
         - google_credentials
         - appstore_credentials
-        - codemagic_ssh_access
       vars:
         PKG_NAME: "com.garbcode.garbcodeapp"
         APP_NAME: "GarbCode"
