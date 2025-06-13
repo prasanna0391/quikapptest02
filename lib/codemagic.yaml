@@ -1,0 +1,848 @@
+workflows:
+  ios-workflow: # Name of your workflow
+    name: iOS Build and Distribution
+    # Define environment variables (from your script's exports)
+    environment:
+      # Add variables here, especially sensitive ones like passwords as secure environment variables in Codemagic UI
+      # groups:
+      #   - apple_credentials # Link to your secure variables group in CM UI
+      vars:
+        # Non-sensitive variables from your script
+        BUNDLE_ID: "com.garbcode.garbcodeapp"
+        PROFILE_URL: "https://raw.githubusercontent.com/prasanna91/QuikApp/main/Garbcode_App_Production_Profile.mobileprovision" # Keep if still downloading profile for verification
+        APPLE_TEAM_ID: "9H2AD7NQ49"
+        CER_URL: "https://raw.githubusercontent.com/prasanna91/QuikApp/main/distribution_pixa.cer" # Can remove if using .p12 upload
+        KEY_URL: "https://raw.githubusercontent.com/prasanna91/QuikApp/main/privatekey.key" # Can remove if using .p12 upload
+        WEB_URL: "https://garbcode.com/"
+        PKG_NAME: "com.garbcode.garbcodeapp"
+        APP_NAME: "Garbcode App"
+        ORG_NAME: "Garbcode Apparels Private Limited"
+        VERSION_NAME: "1.0.10"
+        VERSION_CODE: "14"
+        EMAIL_ID: "prasannasrie@gmail.com"
+        IS_SPLASH: "true"
+        SPLASH: "https://raw.githubusercontent.com/prasanna91/QuikApp/main/logo-gc.png"
+        SPLASH_BG: ""
+        SPLASH_ANIMATION: "zoom"
+        SPLASH_BG_COLOR: "#cbdbf5"
+        SPLASH_TAGLINE: "Welcome to Garbcode"
+        SPLASH_TAGLINE_COLOR: "#a30237"
+        SPLASH_DURATION: "4"
+        IS_PULLDOWN: "true"
+        LOGO_URL: "https://raw.githubusercontent.com/prasanna91/QuikApp/main/logo-gc.png"
+        IS_BOTTOMMENU: "false"
+        IS_DEEPLINK: "true"
+        IS_LOAD_IND: "true"
+        IS_CHATBOT: "true"
+        PUSH_NOTIFY: "false"
+        IS_CAMERA: "false"
+        IS_LOCATION: "false"
+        IS_BIOMETRIC: "false"
+        IS_MIC: "true"
+        IS_CONTACT: "false"
+        IS_CALENDAR: "false"
+        IS_NOTIFICATION: "true"
+        IS_STORAGE: "true"
+        APNS_KEY_ID: "2W22S6AY3Q"
+        APNS_AUTH_KEY_URL: "https://raw.githubusercontent.com/prasanna91/QuikApp/main/AuthKey_2W22S6AY3Q.p8"
+        firebase_config_android: "https://raw.githubusercontent.com/prasanna91/QuikApp/main/google-services (gc).json"
+        firebase_config_ios: "https://raw.githubusercontent.com/prasanna91/QuikApp/main/GoogleService-Info-gc.plist"
+        # Passwords for .p12 and keychain are handled by Codemagic UI, not needed as script variables
+        # KEYCHAIN_PASSWORD: CM_KEYCHAIN_PASSWORD
+        # CERT_PASSWORD: CM_CERTIFICATE_PASSWORD
+
+
+    # Define the steps to run
+    scripts:
+      - name: Create build directory and set paths
+        script: |
+          set -euo pipefail
+          trap 'echo "❌ Error on line $LINENO"' ERR
+
+          # Set these variables (already in environment, but good to reference)
+          # export BUNDLE_ID="..."
+          # export CERT_PASSWORD="..." # Handled via secure env var
+          # export PROFILE_URL="..."
+          # export APPLE_TEAM_ID="..."
+          # export CER_URL="..."
+          # export KEY_URL="..."
+
+          # Keychain variables
+          export KEYCHAIN_NAME="ios-build.keychain"
+          # KEYCHAIN_PASSWORD handled via secure env var
+          export CM_BUILD_DIR="$(pwd)/build"
+          export PROFILE_PLIST_PATH="$CM_BUILD_DIR/profile.plist"
+
+          # Define paths for downloaded/generated files
+          export CERT_CER_PATH="$CM_BUILD_DIR/certificate.cer"
+          export PRIVATE_KEY_PATH="$CM_BUILD_DIR/private.key"
+          export GENERATED_P12_PATH="$CM_BUILD_DIR/generated_certificate.p12"
+          export PROFILE_PATH="$CM_BUILD_DIR/profile.mobileprovision"
+          export CERT_PATH="$GENERATED_P12_PATH" # CERT_PATH will now point to the generated .p12
+
+          # Create build directory
+          mkdir -p "$CM_BUILD_DIR"
+
+          echo "🔧 Running in CI environment, downloading all files from URLs"
+          echo "🔐 iOS Code Signing Requirements:"
+          echo "1. Distribution Certificate (.cer) and its matching Private Key (.key)"
+          echo "2. Provisioning Profile (.mobileprovision) matching the App ID and certificate"
+          echo ""
+          echo "⚠️ Using certificate from URL: $CER_URL"
+          echo "⚠️ Using private key from URL: $KEY_URL"
+          echo "⚠️ Using profile from URL: $PROFILE_URL"
+          echo ""
+
+      - name: Download certificate, key, and profile files
+        script: |
+          set -euo pipefail
+          trap 'echo "❌ Error on line $LINENO"' ERR
+
+          echo "🔐 Starting file handling and verification..."
+
+          # Always download certificate and key files
+          echo "📥 Downloading certificate from $CER_URL..."
+          if ! curl -f -L -o "$CERT_CER_PATH" "$CER_URL"; then
+              echo "❌ Failed to download certificate (.cer)"
+              exit 1
+          fi
+
+          echo "📥 Downloading private key from $KEY_URL..."
+          if ! curl -f -L -o "$PRIVATE_KEY_PATH" "$KEY_URL"; then
+              echo "❌ Failed to download private key (.key)"
+              exit 1
+          fi
+
+          # Always download profile file
+          echo "📥 Downloading provisioning profile from $PROFILE_URL..."
+          if ! curl -f -L -o "$PROFILE_PATH" "$PROFILE_URL"; then
+              echo "❌ Failed to download provisioning profile"
+              exit 1
+          fi
+
+          echo "✅ Successfully downloaded all required files"
+
+      - name: Verify provisioning profile
+        script: |
+          set -euo pipefail
+          trap 'echo "❌ Error on line $LINENO"' ERR
+
+          local profile_path="$PROFILE_PATH"
+          local profile_plist_path="$PROFILE_PLIST_PATH"
+          local bundle_id="$BUNDLE_ID"
+          local apple_team_id="$APPLE_TEAM_ID"
+
+          echo "🔍 Verifying provisioning profile: $profile_path"
+
+          # Check file size
+          local profile_size
+          profile_size=$(stat -f%z "$profile_path")
+          if [ "$profile_size" -lt 1000 ]; then
+              echo "❌ Provisioning profile appears to be too small or corrupted"
+              exit 1
+          fi
+
+          # Convert profile to plist for verification
+          if ! security cms -D -i "$profile_path" > "$profile_plist_path" 2>/dev/null; then
+              echo "❌ Failed to read provisioning profile"
+              exit 1
+          fi
+
+          # Verify profile details
+          if ! /usr/libexec/PlistBuddy -c "Print :UUID" "$profile_plist_path" > /dev/null 2>&1; then
+              echo "❌ Invalid provisioning profile format"
+              exit 1
+          fi
+
+          # Check profile type (Support multiple distribution profile types)
+          local profile_type
+          local is_distribution=false
+
+          # Check for Enterprise Distribution (ProvisionsAllDevices)
+          profile_type=$(/usr/libexec/PlistBuddy -c "Print :ProvisionsAllDevices" "$profile_plist_path" 2>/dev/null || echo "false")
+          if [ "$profile_type" = "true" ]; then
+              echo "✅ Verified as Enterprise Distribution profile"
+              is_distribution=true
+          fi
+
+          # Check for App Store Distribution
+          if ! $is_distribution; then
+              profile_type=$(/usr/libexec/PlistBuddy -c "Print :ProvisionsAllDevices" "$profile_plist_path" 2>/dev/null || echo "false")
+              # Check for a common App Store entitlement (e.g., icloud-container-identifiers)
+              local has_app_store=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:com.apple.developer.icloud-container-identifiers" "$profile_plist_path" 2>/dev/null || echo "false")
+              # Or check for absence of ProvisionedDevices key, which is present in Ad Hoc/Development
+               local has_provisioned_devices=$(/usr/libexec/PlistBuddy -c "Print :ProvisionedDevices" "$profile_plist_path" 2>/dev/null || echo "false")
+
+              if [ "$profile_type" = "false" ] && [ "$has_app_store" != "false" ] && [ "$has_provisioned_devices" = "false" ]; then
+                   echo "✅ Verified as App Store Distribution profile"
+                   is_distribution=true
+               fi
+           fi
+
+          # Check for Ad Hoc Distribution
+          if ! $is_distribution; then
+              local has_provisioned_devices=$(/usr/libexec/PlistBuddy -c "Print :ProvisionedDevices" "$profile_plist_path" 2>/dev/null || echo "false")
+              if [ "$has_provisioned_devices" != "false" ]; then
+                  echo "✅ Verified as Ad Hoc Distribution profile"
+                  is_distribution=true
+              fi
+          fi
+
+
+          if ! $is_distribution; then
+              echo "❌ Profile is not a distribution profile (not Enterprise, App Store, or Ad Hoc)"
+              exit 1
+          fi
+
+          # Check team identifier
+          local profile_team_id
+          profile_team_id=$(/usr/libexec/PlistBuddy -c "Print :TeamIdentifier:0" "$profile_plist_path" 2>/dev/null)
+          if [ "$profile_team_id" != "$apple_team_id" ]; then
+              echo "❌ Profile team ID ($profile_team_id) does not match expected team ID ($apple_team_id)"
+              exit 1
+          fi
+
+          # Check bundle identifier (prefix match for wildcard, exact match otherwise)
+          local profile_bundle_id_entitlement
+          profile_bundle_id_entitlement=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:application-identifier" "$profile_plist_path" 2>/dev/null)
+
+          local expected_app_id_prefix="$apple_team_id."
+          if [[ "$profile_bundle_id_entitlement" == "$expected_app_id_prefix"* ]]; then
+              local profile_bundle_id_no_prefix=$(echo "$profile_bundle_id_entitlement" | sed "s/$expected_app_id_prefix//")
+              if [ "$profile_bundle_id_no_prefix" != "$bundle_id" ] && [ "$profile_bundle_id_no_prefix" != "*" ]; then
+                  echo "❌ Profile bundle ID ($profile_bundle_id_no_prefix) does not match expected bundle ID ($bundle_id) and is not a wildcard profile"
+                  exit 1
+              fi
+          else
+              echo "❌ Profile application-identifier entitlement ($profile_bundle_id_entitlement) does not match expected Team ID prefix ($expected_app_id_prefix)"
+              exit 1
+          fi
+
+          # Check expiration
+          local profile_expiry
+          local current_date
+          local profile_expiry_seconds
+
+          profile_expiry=$(/usr/libexec/PlistBuddy -c "Print :ExpirationDate" "$profile_plist_path" 2>/dev/null)
+          current_date=$(date +%s)
+          # Note: macOS date command format might differ slightly in CI. Adjust if needed.
+          profile_expiry_seconds=$(date -j -f "%Y-%m-%dT%H:%M:%SZ" "$profile_expiry" +%s 2>/dev/null || date -j -f "%a %b %d %H:%M:%S %Z %Y" "$profile_expiry" +%s 2>/dev/null) # Added alternative format
+
+          if [ -z "$profile_expiry_seconds" ]; then
+             echo "❌ Could not parse profile expiration date: $profile_expiry"
+             exit 1
+          fi
+
+
+          if [ "$current_date" -ge "$profile_expiry_seconds" ]; then
+              echo "❌ Provisioning profile has expired on $profile_expiry"
+              exit 1
+          fi
+
+          # Display profile information
+          echo "📋 Profile Information:"
+          echo "------------------------"
+          echo "UUID: $(/usr/libexec/PlistBuddy -c "Print :UUID" "$profile_plist_path")"
+          echo "Name: $(/usr/libexec/PlistBuddy -c "Print :Name" "$profile_plist_path")"
+          echo "Expiration: $profile_expiry"
+          echo "Team ID: $profile_team_id"
+          echo "Bundle ID: $profile_bundle_id_entitlement"
+          echo "------------------------"
+
+          echo "✅ Provisioning profile verification successful"
+
+      - name: Generate and verify .p12 file
+        script: |
+          set -euo pipefail
+          trap 'echo "❌ Error on line $LINENO"' ERR
+
+          local cert_password="$CERT_PASSWORD" # Use the provided CERT_PASSWORD for the private key
+          local keychain_password="$KEYCHAIN_PASSWORD" # Use the simplified password for the .p12 container
+
+          echo "📦 Generating .p12 file from .cer and .key..."
+          # Use -aes256 to ensure compatible encryption
+          # Using the simplified KEYCHAIN_PASSWORD for the .p12 file container password
+          # Using CERT_PASSWORD for the private key password if it's encrypted
+          openssl pkcs12 -export \
+            -inkey "$PRIVATE_KEY_PATH" \
+            -in "$CERT_CER_PATH" \
+            -out "$GENERATED_P12_PATH" \
+            -name "Apple Distribution" \
+            -passin "pass:$cert_password" \
+            -passout "pass:$keychain_password" \
+            -aes256 || {
+              echo "❌ Failed to generate .p12"
+              echo "Possible reasons:"
+              echo "1. Private key ($PRIVATE_KEY_PATH) does not match certificate ($CERT_CER_PATH)"
+              echo "2. Passphrase for the private key (if encrypted) is incorrect (check CERT_PASSWORD)"
+              echo "3. OpenSSL command syntax error"
+              echo "4. Certificate or key file is corrupted"
+              exit 1
+          }
+
+          echo "✅ .p12 file created at: $GENERATED_P12_PATH"
+
+          # === STEP 3: Verify .p12 ===
+          echo "🔍 Verifying .p12 file..."
+          # Use the password set during export ($KEYCHAIN_PASSWORD)
+          openssl pkcs12 -info -in "$GENERATED_P12_PATH" -passin "pass:$keychain_password" -nokeys -noout || {
+            echo "❌ Verification failed: .p12 password is incorrect or file is corrupt"
+            echo "The password used for verification ('$keychain_password') does not work."
+            echo "This indicates an issue with the openssl export process or the password."
+            exit 1
+          }
+
+          echo "✅ .p12 verified successfully and password works"
+
+          # Clean up temporary public key files (if they exist from previous runs)
+          rm -f "$CM_BUILD_DIR/cert_pubkey.pem" "$CM_BUILD_DIR/key_pubkey.pem" 2>/dev/null
+
+          echo "✅ All file verifications passed successfully"
+
+      - name: Update Project Configuration (Name, Bundle ID, Version)
+        script: |
+          set -euo pipefail
+          trap 'echo "❌ Error on line $LINENO"' ERR
+
+          local app_name="$APP_NAME"
+          local pkg_name="$PKG_NAME"
+          local version_name="$VERSION_NAME"
+          local version_code="$VERSION_CODE"
+
+          echo "*********** App Name & Version ***********"
+          echo "APP_NAME: $app_name"
+          echo "ORG_NAME: $ORG_NAME" # Keep for info, not directly used in this block
+          echo "WEB_URL: $WEB_URL"   # Keep for info, not directly used in this block
+          echo "VERSION_NAME: $version_name"
+          echo "VERSION_CODE: $version_code"
+          echo "PKG_NAME: $pkg_name"
+          echo "BUNDLE_ID: $BUNDLE_ID" # Should be same as PKG_NAME for iOS
+
+          echo "App Name: $app_name"
+          # 2️⃣ Sanitize: lowercase, remove special characters, replace spaces with underscores
+          SANITIZED_NAME=$(echo "$app_name" | tr '[:upper:]' '[:lower:]' | tr -cd 'a-z0-9 ' | tr ' ' '_')
+
+          # 3️⃣ Extract old name from pubspec.yaml
+          OLD_NAME_LINE=$(grep '^name: ' pubspec.yaml)
+          # Check if OLD_NAME_LINE is found to avoid errors
+          if [ -z "$OLD_NAME_LINE" ]; then
+              echo "❌ Could not find 'name:' in pubspec.yaml. Cannot rename project."
+              exit 1
+          fi
+          OLD_NAME=$(echo "$OLD_NAME_LINE" | cut -d ' ' -f2)
+
+          echo "🔁 Renaming project from '$OLD_NAME' to '$SANITIZED_NAME'..."
+
+          # Update pubspec.yaml
+          # Using | as delimiter for sed to handle potential slashes in paths (though unlikely here)
+          sed -i '' "s|^name: .*|name: $SANITIZED_NAME|" pubspec.yaml
+
+          # Update Dart imports
+          echo "🔄 Updating Dart package imports..."
+          # Use a different delimiter (like @) for sed to avoid issues with slashes in package names
+          grep -rl "package:$OLD_NAME" lib/ | xargs sed -i '' "s@package:$OLD_NAME@package:$SANITIZED_NAME@g" || true # Allow grep/sed to fail if no matches
+
+          # iOS: Update CFBundleName in Info.plist
+          echo "🛠️ Updating iOS CFBundleName..."
+          # Using || true in case the key doesn't exist initially, plutil -replace will add it.
+          plutil -replace CFBundleName -string "$app_name" ios/Runner/Info.plist || true
+
+          # Note: Renaming the actual project folder is typically not done in CI
+
+          echo "✅ Project name, Dart imports, and iOS CFBundleName updated."
+
+          echo "🔧 Updating Android and iOS package name (bundle ID)..."
+
+          # Validate package/bundle ID format (Java-style, dot-separated)
+          if [[ ! "$pkg_name" =~ ^[a-zA-Z_][a-zA-Z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)+$ ]]; then
+            echo "❌ ERROR: Invalid package/bundle identifier: $pkg_name"
+            exit 1
+          fi
+
+          echo "✔ Package name / Bundle ID: $pkg_name"
+
+          echo "────────────── ANDROID UPDATE ──────────────"
+          echo "📦 Updating Android package..."
+
+          # Update using rename package (if installed) - ensure it's in pubspec.yaml dev_dependencies
+          # This command might require flutter pub get before running.
+          # We'll assume flutter pub get is run later or done implicitly by a build step.
+          # If 'rename' is not used or causes issues, manual sed commands are alternatives.
+          # flutter pub run rename setBundleId --value "$pkg_name" || { echo "⚠️ 'flutter pub run rename setBundleId' failed or not found. Skipping automated rename package update."; }
+
+          # Update package name in AndroidManifest.xml
+          # Using @ as delimiter for sed
+          sed -i.bak "s@package=\"[^\"]*\"@package=\"$pkg_name\"@g" android/app/src/main/AndroidManifest.xml
+
+          # Update applicationId in Kotlin DSL (build.gradle.kts)
+          BUILD_FILE="android/app/build.gradle.kts"
+          if [ -f "$BUILD_FILE" ]; then
+            # Use a different delimiter for sed to handle potential dots in package names
+            sed -i.bak -E "s@applicationId\\s*=\\s*\"[^\"]+\"@applicationId = \"$pkg_name\"@" "$BUILD_FILE"
+            echo "✅ Updated applicationId in Kotlin DSL"
+          else
+            echo "⚠️ build.gradle.kts not found. Skipping Android applicationId update."
+          fi
+
+          echo "✅ Android package updated."
+
+          echo "────────────── iOS UPDATE ──────────────"
+          echo "🍏 Updating iOS bundle identifier..."
+
+          IOS_PROJECT_FILE="ios/Runner.xcodeproj/project.pbxproj"
+          if [ -f "$IOS_PROJECT_FILE" ]; then
+            # Use a different delimiter for sed
+            sed -i.bak "s@PRODUCT_BUNDLE_IDENTIFIER = .*@PRODUCT_BUNDLE_IDENTIFIER = $pkg_name;@g" "$IOS_PROJECT_FILE"
+            echo "✅ iOS bundle identifier updated."
+          else
+            echo "❌ iOS project file not found at $IOS_PROJECT_FILE"
+            exit 1
+          fi
+
+          echo "✅ App name changed and package/bundle ID set successfully"
+
+
+          echo "🔢 Updating app version to: $version_name+$version_code"
+          # Default values - already handled by environment vars, but defensive
+          local default_version_name="1.0.0"
+          local default_version_code="100"
+
+          # Check if VERSION_NAME is empty or not set
+          if [ -z "$version_name" ]; then
+            version_name=$default_version_name
+            echo "🔢 Setting DEFAULT_VERSION_NAME: $version_name"
+          fi
+
+          # Check if VERSION_CODE is empty or not set
+          if [ -z "$version_code" ]; then
+            version_code=$default_version_code
+            echo "🔢 Setting DEFAULT_VERSION_CODE: $version_code"
+          fi
+
+          echo "🔢 Using version: $version_name+$version_code"
+
+          echo "🔧 Ensuring valid version in pubspec.yaml: $version_name+$version_code"
+          # Replace or add version line in pubspec.yaml
+          if grep -q "^version: " pubspec.yaml; then
+            # Using | as delimiter for sed
+            sed -i.bak -E "s|^version: .*|version: $version_name+$version_code|" pubspec.yaml
+          else
+            # If version line doesn't exist, add it below the name line
+            # Use a different delimiter for sed
+            sed -i.bak "/^name: /a\\
+  version: $version_name+$version_code" pubspec.yaml
+            echo "Added version line to pubspec.yaml"
+          fi
+
+          # Clean up sed backup files
+          find . -name "*.bak" -delete
+          echo "✅ App version set successfully"
+
+
+      - name: Handle Assets (Logo, Splash, Icons)
+        script: |
+          set -euo pipefail
+          trap 'echo "❌ Error on line $LINENO"' ERR
+
+          local logo_url="$LOGO_URL"
+          local is_splash="$IS_SPLASH"
+          local splash_url="$SPLASH"
+          local splash_bg_url="$SPLASH_BG"
+
+          echo "🧹 Deleting old splash and logo assets..."
+
+          # Use find with -delete for robustness
+          find assets/images/ -name "logo.png" -delete || true # Allow failure if file not found
+          find assets/images/ -name "splash.png" -delete || true # Allow failure if file not found
+          find assets/images/ -name "splash_bg.png" -delete || true # Allow failure if file not found
+          echo "✅ Deleted old assets (if they existed)."
+
+          echo "🚀 Started: Downloading logo from $logo_url"
+          mkdir -p assets/images/
+
+          # Use curl as it's generally preferred in CI environments
+          if ! curl -f -L -o assets/images/logo.png "$logo_url"; then
+              echo "❌ Error: Failed to download logo from $logo_url"
+              exit 1
+          fi
+          echo "✅ Completed: Logo downloaded to assets/images/logo.png"
+
+          echo "🚀 Generating launcher icons"
+          # Assumes flutter_launcher_icons is in dev_dependencies and configured in pubspec.yaml
+          flutter pub run flutter_launcher_icons || {
+              echo "❌ Failed to generate launcher icons. Is flutter_launcher_icons configured correctly in pubspec.yaml?"
+              exit 1
+          }
+          echo "✅ Launcher icons generated successfully"
+
+          if [ "$is_splash" = "true" ]; then
+              echo "🚀 Started: Downloading splash assets"
+              mkdir -p assets/images/ # Ensure directory exists
+
+              # Download splash logo
+              echo "⬇️ Downloading splash logo from: $splash_url"
+              if ! curl -f -L -o assets/images/splash.png "$splash_url"; then
+                echo "❌ Error: Failed to download SPLASH logo from $splash_url"
+                exit 1
+              fi
+              echo "✅ Splash logo downloaded."
+
+              # Download splash background (optional)
+              if [ -n "$splash_bg_url" ]; then
+                echo "⬇️ Downloading splash background from: $splash_bg_url"
+                if ! curl -f -L -o assets/images/splash_bg.png "$splash_bg_url"; then
+                  echo "❌ Error: Failed to download SPLASH background from $splash_bg_url"
+                   # This might not be a fatal error depending on splash implementation, but report it.
+                   echo "⚠️ Warning: Failed to download splash background."
+                else
+                   echo "✅ Splash background downloaded."
+                fi
+              else
+                echo "ℹ️ No SPLASH_BG provided, skipping background download"
+              fi
+
+              echo "✅ Completed: Splash assets handled"
+          else
+              echo "⏭️ Skipping splash asset download (IS_SPLASH != true)"
+          fi
+
+          # Ensure pubspec.yaml changes and downloaded assets are picked up
+          flutter pub get # Running this again after file changes/downloads
+
+      - name: Clean and Install CocoaPods
+        script: |
+          set -euo pipefail
+          trap 'echo "❌ Error on line $LINENO"' ERR
+
+          echo "🧹 Deleting old CocoaPods artifacts..."
+          # Use find with -delete for robustness
+          find ios/ -name "Pods" -exec rm -rf {} + || true
+          find ios/ -name "Podfile.lock" -delete || true
+          find ios/ -name ".symlinks" -delete || true
+          find ios/Flutter/ -name "Flutter.podspec" -delete || true
+          echo "✅ Deleted old CocoaPods artifacts (if they existed)."
+
+          cd ios
+
+          # Generate Podfile
+          echo "📄 Generating Podfile..."
+          cat > Podfile <<EOF
+platform :ios, '13.0'
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+project 'Runner', {
+  'Debug' => :debug,
+  'Profile' => :release,
+  'Release' => :release,
+}
+
+def flutter_root
+  File.foreach(File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)) do |line|
+    matches = line.match(/FLUTTER_ROOT=(.*)/)
+    return matches[1].strip if matches
+  end
+  raise "FLUTTER_ROOT not found"
+end
+
+require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+
+flutter_ios_podfile_setup
+
+target 'Runner' do
+  use_frameworks!
+  use_modular_headers!
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+
+  post_install do |installer|
+    installer.pods_project.targets.each do |target|
+      flutter_additional_ios_build_settings(target)
+      target.build_configurations.each do |config|
+        # Set automatic code signing for all pod targets or inherit
+        # Codemagic's automatic code signing should handle this
+        config.build_settings.delete('CODE_SIGN_STYLE')
+        config.build_settings.delete('DEVELOPMENT_TEAM') # Should be handled by CM
+        config.build_settings.delete('PROVISIONING_PROFILE_SPECIFIER') # Should be handled by CM
+        config.build_settings.delete('CODE_SIGN_IDENTITY') # Should be handled by CM
+        config.build_settings['CODE_SIGNING_REQUIRED'] = 'YES'
+        config.build_settings['CODE_SIGNING_ALLOWED'] = 'YES'
+        config.build_settings.delete('EXPANDED_CODE_SIGN_IDENTITY')
+        config.build_settings.delete('CODE_SIGN_ENTITLEMENTS') # Handled by Runner target entitlements
+        # Ensure Pods do NOT have OTHER_CODE_SIGN_FLAGS pointing to a specific keychain
+        config.build_settings.delete('OTHER_CODE_SIGN_FLAGS')
+
+        # Other common settings
+        config.build_settings['ENABLE_BITCODE'] = 'NO'
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
+        if config.build_settings['SDKROOT'] == 'iphoneos'
+          config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
+        end
+      end
+    end
+  end
+end
+EOF
+echo "✅ Podfile generated."
+
+          # Install CocoaPods dependencies
+          echo "📥 Installing CocoaPods dependencies..."
+          # Clean pod cache for a fresh start
+          pod cache clean --all || true # Allow failure if cache is empty
+          # Deintegrate and Install
+          pod deintegrate || true # Allow failure if not integrated
+          pod install --repo-update || {
+              echo "❌ pod install failed"
+              exit 1
+          }
+          echo "✅ CocoaPods installation complete."
+          cd ..
+
+      - name: Update Xcode Project Settings via Ruby
+        script: |
+          set -euo pipefail
+          trap 'echo "❌ Error on line $LINENO"' ERR
+
+          local apple_team_id="$APPLE_TEAM_ID"
+          local bundle_id="$BUNDLE_ID"
+          # Get PROFILE_NAME and CODE_SIGN_IDENTITY from environment (set by Codemagic's signing)
+          # Need to confirm if CM sets these or if we need to derive them.
+          # If using CM's automatic signing, these variables might be implicitly handled or available differently.
+          # Assuming CM sets relevant variables or xcodebuild picks up from CM's keychain/profile setup.
+          # We can pass TEAM_ID, PROVISIONING_PROFILE, and CODE_SIGN_IDENTITY to xcodebuild directly later.
+
+          echo "🛠️ Updating Xcode project settings for code signing..."
+          cd ios
+ruby <<EOF
+require 'xcodeproj'
+project = Xcodeproj::Project.open('Runner.xcodeproj')
+project.targets.each do |target|
+  if target.name == 'Runner'
+    target.build_configurations.each do |config|
+      # Set manual code signing for Runner target (aligns with CM manual setup)
+      config.build_settings['CODE_SIGN_STYLE'] = 'Manual'
+      # Use environment variables for dynamic values
+      config.build_settings['DEVELOPMENT_TEAM'] = ENV['APPLE_TEAM_ID']
+      # PROVISIONING_PROFILE_SPECIFIER: Can set this if PROFILE_NAME is available, or rely on xcodebuild parameter
+      # config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = ENV['PROFILE_NAME']
+      # CODE_SIGN_IDENTITY: Can set this if CODE_SIGN_IDENTITY is available, or rely on xcodebuild parameter
+      # config.build_settings['CODE_SIGN_IDENTITY'] = ENV['CODE_SIGN_IDENTITY']
+      config.build_settings['CODE_SIGNING_REQUIRED'] = 'YES'
+      config.build_settings['CODE_SIGNING_ALLOWED'] = 'YES'
+      config.build_settings.delete('EXPANDED_CODE_SIGN_IDENTITY') # Clean up
+      config.build_settings['CODE_SIGN_INJECT_BASE_ENTITLEMENTS'] = 'YES'
+      config.build_settings['CODE_SIGN_ENTITLEMENTS'] = 'Runner/Runner.entitlements'
+      # OTHER_CODE_SIGN_FLAGS: Remove manual keychain flag if using CM's keychain
+      config.build_settings.delete('OTHER_CODE_SIGN_FLAGS')
+    end
+  else
+    # Ensure Pod targets use automatic signing or inherit from the project
+    target.build_configurations.each do |config|
+      config.build_settings.delete('CODE_SIGN_STYLE') # Use project default/CM handling
+      config.build_settings.delete('DEVELOPMENT_TEAM') # Should be handled by CM
+      config.build_settings.delete('PROVISIONING_PROFILE_SPECIFIER') # Should be handled by CM
+      config.build_settings.delete('CODE_SIGN_IDENTITY') # Should be handled by CM
+      # No, do not require signing for pods - let Xcode/Cocoapods handle based on parent target
+      # config.build_settings['CODE_SIGNING_REQUIRED'] = 'YES'
+      # config.build_settings['CODE_SIGNING_ALLOWED'] = 'YES'
+      config.build_settings.delete('CODE_SIGNING_REQUIRED')
+      config.build_settings.delete('CODE_SIGNING_ALLOWED')
+      config.build_settings.delete('EXPANDED_CODE_SIGN_IDENTITY') # Clean up
+      config.build_settings.delete('CODE_SIGN_ENTITLEMENTS') # Pods don't usually need entitlements
+      config.build_settings.delete('OTHER_CODE_SIGN_FLAGS') # Explicitly remove to prevent interference
+    end
+  end
+end
+project.save
+EOF
+          cd ..
+          echo "✅ Xcode project settings updated."
+
+      - name: Create Entitlements File
+        script: |
+          set -euo pipefail
+          trap 'echo "❌ Error on line $LINENO"' ERR
+
+          local apple_team_id="$APPLE_TEAM_ID"
+          local bundle_id="$BUNDLE_ID"
+
+          echo "📄 Ensuring entitlements file exists..."
+          mkdir -p ios/Runner
+          ENTITLEMENTS_FILE="ios/Runner/Runner.entitlements"
+          cat > "$ENTITLEMENTS_FILE" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>com.apple.security.app-sandbox</key>
+    <false/> # Typically false for distribution apps that access user files etc.
+    <key>com.apple.security.network.client</key>
+    <true/>
+    <key>com.apple.developer.team-identifier</key>
+    <string>${apple_team_id}</string>
+    <key>keychain-access-groups</key>
+    <array>
+        <string>${apple_team_id}.*</string>
+    </array>
+    <key>get-task-allow</key>
+    <false/> # Should be false for Release builds
+    <key>application-identifier</key>
+    <string>${apple_team_id}.${bundle_id}</string>
+
+    # Add other entitlements here as needed (e.g., push notifications, associated domains, etc.)
+    # <key>aps-environment</key>
+    # <string>production</string>
+    # <key>com.apple.developer.associated-domains</key>
+    # <array>
+    #   <string>applinks:yourwebsite.com</string>
+    # </array>
+
+</dict>
+</plist>
+EOF
+
+          # Validate entitlements file
+          if ! plutil -lint "$ENTITLEMENTS_FILE" > /dev/null; then
+              echo "❌ Entitlements file has a syntax error: $ENTITLEMENTS_FILE"
+              exit 1
+          fi
+          echo "✅ Entitlements file created and checked."
+
+      - name: Archive the app
+        script: |
+          set -euo pipefail
+          trap 'echo "❌ Error on line $LINENO"' ERR
+
+          local cm_build_dir="$CM_BUILD_DIR"
+
+          echo "🏗️ Archiving the app..."
+          cd ios
+          # Using CM_BUILD_DIR for archive path as defined earlier
+          # Relying on Codemagic's App Signing features to handle CODE_SIGN_IDENTITY, etc.
+          xcodebuild -workspace Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -archivePath "$cm_build_dir/Runner.xcarchive" \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -allowProvisioningUpdates \
+            archive || {
+              echo "❌ Xcode archive failed"
+              exit 1
+            }
+          cd ..
+          echo "✅ Archive created at $cm_build_dir/Runner.xcarchive."
+
+      - name: Export the IPA
+        script: |
+          set -euo pipefail
+          trap 'echo "❌ Error on line $LINENO"' ERR
+
+          local cm_build_dir="$CM_BUILD_DIR"
+          # PROFILE_NAME is likely needed for ExportOptions.plist generation if not hardcoded
+          # Or, better, let Codemagic generate ExportOptions.plist for you.
+          # If using CM's automatic signing, ExportOptions.plist is often automatically handled.
+          # If you need a custom ExportOptions.plist, ensure it's generated or available.
+          # Assuming for now a simple ExportOptions.plist is needed, let's create a basic one.
+
+          echo "📦 Exporting IPA from archive..."
+          # Create a basic ExportOptions.plist
+          # This needs to be adjusted based on your distribution method (app-store, ad-hoc, enterprise, development)
+          # Based on your profile verification saying Ad Hoc, let's create an Ad Hoc plist.
+          cat > "$cm_build_dir/ExportOptions.plist" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>method</key>
+    <string>ad-hoc</string> # Change to app-store, enterprise, or development as needed
+    <key>provisioningProfiles</key>
+    <dict>
+        # If using manual provisioning, map bundle ID to profile name
+        # <key>$(BUNDLE_ID)</key>
+        # <string>$(PROFILE_NAME)</string>
+        # Or, rely on automatic signing which doesn't need this map
+    </dict>
+    <key>signingCertificate</key>
+    <string>Apple Distribution</string> # Or the exact name of your signing cert if needed
+    <key>signingStyle</key>
+    <string>manual</string> # Matches the manual style set in Ruby script
+    <key>stripSwiftSymbols</key>
+    <true/>
+    <key>teamID</key>
+    <string>$(APPLE_TEAM_ID)</string>
+    <key>uploadBitcode</key>
+    <false/>
+    <key>uploadSymbols</key>
+    <true/>
+</dict>
+</plist>
+EOF
+          # Validate ExportOptions.plist
+          if ! plutil -lint "$cm_build_dir/ExportOptions.plist" > /dev/null; then
+              echo "❌ ExportOptions.plist has a syntax error: $cm_build_dir/ExportOptions.plist"
+              exit 1
+          fi
+          echo "✅ ExportOptions.plist created and checked."
+
+
+          xcodebuild -exportArchive \
+            -archivePath "$cm_build_dir/Runner.xcarchive" \
+            -exportOptionsPlist "$cm_build_dir/ExportOptions.plist" \
+            -exportPath "$cm_build_dir/export" \
+            -allowProvisioningUpdates || {
+              echo "❌ Xcode export failed"
+              exit 1
+          }
+          echo "✅ IPA exported to $cm_build_dir/export."
+
+      - name: Final Cleanup
+        script: |
+          set -euo pipefail
+          trap 'echo "❌ Error on line $LINENO"' ERR
+
+          local cm_build_dir="$CM_BUILD_DIR"
+
+          echo "🧹 Performing final cleanup..."
+
+          # Remove temporary profile plist
+          if [ -f "$cm_build_dir/profile.plist" ]; then
+              rm "$cm_build_dir/profile.plist"
+              echo "🧹 Removed temporary profile plist file."
+          fi
+
+          # Remove temporary code signing env file (if it was created)
+          if [ -f "$cm_build_dir/code_signing_env.sh" ]; then
+              rm "$cm_build_dir/code_signing_env.sh"
+              echo "🧹 Removed temporary code signing env file."
+          fi
+
+          # Remove downloaded certificate and key files (if they exist)
+           if [ -f "$cm_build_dir/certificate.cer" ]; then
+              rm "$cm_build_dir/certificate.cer"
+              echo "🧹 Removed downloaded certificate file."
+           fi
+            if [ -f "$cm_build_dir/private.key" ]; then
+              rm "$cm_build_dir/private.key"
+              echo "🧹 Removed downloaded private key file."
+           fi
+           # Remove generated .p12 file
+            if [ -f "$cm_build_dir/generated_certificate.p12" ]; then
+              rm "$cm_build_dir/generated_certificate.p12"
+              echo "🧹 Removed generated .p12 file."
+           fi
+            # Remove downloaded provisioning profile (if not using CM's upload)
+            if [ -f "$cm_build_dir/profile.mobileprovision" ]; then
+              rm "$cm_build_dir/profile.mobileprovision"
+              echo "🧹 Removed downloaded provisioning profile file."
+           fi
+
+          # Temporary keychain cleanup is handled by Codemagic
+
+          echo "✅ Final cleanup complete."
+
+    # Define artifacts to collect (like the IPA file)
+    artifacts:
+      - build/export/**/*.ipa
+
+    # Define publishing steps (e.g., App Store Connect, Firebase App Distribution)
+    publishing:
+      # Configure publishing here (optional)

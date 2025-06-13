@@ -1,0 +1,642 @@
+# Common environment variables for all workflows
+# These can be overridden by API calls with dynamic values
+environment:
+  flutter: stable
+  xcode: latest
+  cocoapods: default
+  flutter_version: "3.24.5"
+  vars:
+    # App Configuration - Dynamic values from API
+    VERSION_NAME: "${VERSION_NAME:-1.0.21}"
+    VERSION_CODE: "${VERSION_CODE:-25}"
+    APP_NAME: "${APP_NAME:-Garbcode App}"
+    ORG_NAME: "${ORG_NAME:-Garbcode Apparels Private Limited}"
+    WEB_URL: "${WEB_URL:-https://garbcode.com/}"
+    PKG_NAME: "${PKG_NAME:-com.garbcode.garbcodeapp}"
+    BUNDLE_ID: "${BUNDLE_ID:-com.garbcode.garbcodeapp}"
+    EMAIL_ID: "${EMAIL_ID:-prasannasrie@gmail.com}"
+    
+    # Feature Flags - Dynamic values from API
+    PUSH_NOTIFY: "${PUSH_NOTIFY:-true}"
+    IS_CHATBOT: "${IS_CHATBOT:-true}"
+    IS_DEEPLINK: "${IS_DEEPLINK:-true}"
+    IS_SPLASH: "${IS_SPLASH:-true}"
+    IS_PULLDOWN: "${IS_PULLDOWN:-true}"
+    IS_BOTTOMMENU: "${IS_BOTTOMMENU:-false}"
+    IS_LOAD_IND: "${IS_LOAD_IND:-true}"
+    
+    # Permissions - Dynamic values from API
+    IS_CAMERA: "${IS_CAMERA:-false}"
+    IS_LOCATION: "${IS_LOCATION:-false}"
+    IS_MIC: "${IS_MIC:-true}"
+    IS_NOTIFICATION: "${IS_NOTIFICATION:-true}"
+    IS_CONTACT: "${IS_CONTACT:-false}"
+    IS_BIOMETRIC: "${IS_BIOMETRIC:-false}"
+    IS_CALENDAR: "${IS_CALENDAR:-false}"
+    IS_STORAGE: "${IS_STORAGE:-true}"
+    
+    # Assets - Dynamic values from API
+    LOGO_URL: "${LOGO_URL:-https://raw.githubusercontent.com/prasanna91/QuikApp/main/logo-gc.png}"
+    SPLASH: "${SPLASH:-https://raw.githubusercontent.com/prasanna91/QuikApp/main/logo-gc.png}"
+    SPLASH_BG: "${SPLASH_BG:-}"
+    SPLASH_BG_COLOR: "${SPLASH_BG_COLOR:-#cbdbf5}"
+    SPLASH_TAGLINE: "${SPLASH_TAGLINE:-Welcome to Garbcode}"
+    SPLASH_TAGLINE_COLOR: "${SPLASH_TAGLINE_COLOR:-#a30237}"
+    SPLASH_ANIMATION: "${SPLASH_ANIMATION:-zoom}"
+    SPLASH_DURATION: "${SPLASH_DURATION:-4}"
+    
+    # Bottom Menu Configuration - Dynamic values from API
+    BOTTOMMENU_ITEMS: "${BOTTOMMENU_ITEMS:-[{\"label\": \"Home\", \"icon\": \"home\", \"url\": \"https://pixaware.co/\"}, {\"label\": \"services\", \"icon\": \"services\", \"url\": \"https://pixaware.co/solutions/\"}, {\"label\": \"About\", \"icon\": \"info\", \"url\": \"https://pixaware.co/who-we-are/\"}, {\"label\": \"Contact\", \"icon\": \"phone\", \"url\": \"https://pixaware.co/lets-talk/\"}]}"
+    BOTTOMMENU_BG_COLOR: "${BOTTOMMENU_BG_COLOR:-#FFFFFF}"
+    BOTTOMMENU_ICON_COLOR: "${BOTTOMMENU_ICON_COLOR:-#6d6e8c}"
+    BOTTOMMENU_TEXT_COLOR: "${BOTTOMMENU_TEXT_COLOR:-#6d6e8c}"
+    BOTTOMMENU_FONT: "${BOTTOMMENU_FONT:-DM Sans}"
+    BOTTOMMENU_FONT_SIZE: "${BOTTOMMENU_FONT_SIZE:-12}"
+    BOTTOMMENU_FONT_BOLD: "${BOTTOMMENU_FONT_BOLD:-false}"
+    BOTTOMMENU_FONT_ITALIC: "${BOTTOMMENU_FONT_ITALIC:-false}"
+    BOTTOMMENU_ACTIVE_TAB_COLOR: "${BOTTOMMENU_ACTIVE_TAB_COLOR:-#a30237}"
+    BOTTOMMENU_ICON_POSITION: "${BOTTOMMENU_ICON_POSITION:-above}"
+    BOTTOMMENU_VISIBLE_ON: "${BOTTOMMENU_VISIBLE_ON:-home,settings,profile}"
+    
+    # Firebase Configuration - Dynamic values from API
+    firebase_config_android: "${firebase_config_android:-https://raw.githubusercontent.com/prasanna91/QuikApp/main/google-services%20(gc).json}"
+    firebase_config_ios: "${firebase_config_ios:-https://raw.githubusercontent.com/prasanna91/QuikApp/main/GoogleService-Info-gc.plist}"
+    
+    # iOS Configuration - Dynamic values from API
+    APPLE_TEAM_ID: "${APPLE_TEAM_ID:-9H2AD7NQ49}"
+    APNS_KEY_ID: "${APNS_KEY_ID:-V566SWNF69}"
+    APNS_AUTH_KEY_URL: "${APNS_AUTH_KEY_URL:-https://raw.githubusercontent.com/prasanna91/QuikApp/main/AuthKey_V566SWNF69.p8}"
+    CERT_PASSWORD: "${CERT_PASSWORD:-User@54321}"
+    PROFILE_URL: "${PROFILE_URL:-https://raw.githubusercontent.com/prasanna91/QuikApp/main/Garbcode_App_Store.mobileprovision}"
+    CERT_CER_URL: "${CERT_CER_URL:-https://raw.githubusercontent.com/prasanna91/QuikApp/main/apple_distribution.cer}"
+    CERT_KEY_URL: "${CERT_KEY_URL:-https://raw.githubusercontent.com/prasanna91/QuikApp/main/privatekey.key}"
+    APP_STORE_CONNECT_KEY_IDENTIFIER: "${APP_STORE_CONNECT_KEY_IDENTIFIER:-F5229W2Q8S}"
+    IPHONEOS_DEPLOYMENT_TARGET: "${IPHONEOS_DEPLOYMENT_TARGET:-13.0}"
+    COCOAPODS_PLATFORM: "${COCOAPODS_PLATFORM:-ios}"
+    EXPORT_METHOD: "${EXPORT_METHOD:-app-store}"
+    IS_DEVELOPMENT_PROFILE: "${IS_DEVELOPMENT_PROFILE:-false}"
+    IS_PRODUCTION_PROFILE: "${IS_PRODUCTION_PROFILE:-true}"
+    
+    # Android Configuration - Dynamic values from API
+    KEY_STORE: "${KEY_STORE:-https://raw.githubusercontent.com/prasanna91/QuikApp/main/keystore.jks}"
+    CM_KEYSTORE_PASSWORD: "${CM_KEYSTORE_PASSWORD:-opeN@1234}"
+    CM_KEY_ALIAS: "${CM_KEY_ALIAS:-my_key_alias}"
+    CM_KEY_PASSWORD: "${CM_KEY_PASSWORD:-opeN@1234}"
+    COMPILE_SDK_VERSION: "${COMPILE_SDK_VERSION:-35}"
+    MIN_SDK_VERSION: "${MIN_SDK_VERSION:-21}"
+    TARGET_SDK_VERSION: "${TARGET_SDK_VERSION:-35}"
+    
+    # iOS Permissions - Dynamic values from API
+    IS_PHOTO_LIBRARY: "${IS_PHOTO_LIBRARY:-true}"
+    IS_PHOTO_LIBRARY_ADD: "${IS_PHOTO_LIBRARY_ADD:-false}"
+    IS_FACE_ID: "${IS_FACE_ID:-false}"
+    IS_TOUCH_ID: "${IS_TOUCH_ID:-false}"
+    
+    # Email Configuration - Dynamic values from API
+    SMTP_SERVER: "${SMTP_SERVER:-smtp.gmail.com}"
+    SMTP_PORT: "${SMTP_PORT:-587}"
+    SMTP_USERNAME: "${SMTP_USERNAME:-prasannasrie@gmail.com}"
+    SMTP_PASSWORD: "${SMTP_PASSWORD:-jbbf nzhm zoay lbwb}"
+
+workflows:
+  android-publish:
+    name: Android Publish
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+      vars: *environment.vars
+      flutter_version: "3.24.5"
+    scripts:
+      - name: Set up code signing settings
+        script: |
+          #!/usr/bin/env bash
+          set -e
+          echo "Setting up Android code signing..."
+          
+          # Download keystore
+          wget -O android/app/keystore.jks "$KEY_STORE"
+          
+          # Create key.properties
+          cat > android/key.properties << EOF
+          storePassword=$CM_KEYSTORE_PASSWORD
+          keyPassword=$CM_KEY_PASSWORD
+          keyAlias=$CM_KEY_ALIAS
+          storeFile=keystore.jks
+          EOF
+          
+          echo "Android code signing setup completed"
+      - name: Get Flutter packages
+        script: flutter pub get
+      - name: Run Android build script
+        script: |
+          #!/usr/bin/env bash
+          set -e
+          echo "Running Android build script..."
+          
+          # Set workflow name for email notifications
+          export WORKFLOW_NAME="Android Publish"
+          
+          # Source environment variables from export.sh
+          if [ -f "lib/scripts/android/export.sh" ]; then
+              source lib/scripts/android/export.sh
+          fi
+          
+          # Run the main Android build script
+          if [ -f "lib/scripts/android/main.sh" ]; then
+              chmod +x lib/scripts/android/main.sh
+              ./lib/scripts/android/main.sh
+          else
+              echo "Building Android APK and AAB..."
+              
+              # Build APK
+              flutter build apk --release \
+                --dart-define=PKG_NAME="$PKG_NAME" \
+                --dart-define=APP_NAME="$APP_NAME" \
+                --dart-define=ORG_NAME="$ORG_NAME" \
+                --dart-define=VERSION_NAME="$VERSION_NAME" \
+                --dart-define=VERSION_CODE="$VERSION_CODE" \
+                --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY" \
+                --dart-define=firebase_config_android="$firebase_config_android" \
+                --dart-define=WEB_URL="$WEB_URL" \
+                --dart-define=IS_SPLASH="$IS_SPLASH" \
+                --dart-define=SPLASH="$SPLASH" \
+                --dart-define=SPLASH_ANIMATION="$SPLASH_ANIMATION" \
+                --dart-define=SPLASH_BG_COLOR="$SPLASH_BG_COLOR" \
+                --dart-define=SPLASH_TAGLINE="$SPLASH_TAGLINE" \
+                --dart-define=SPLASH_TAGLINE_COLOR="$SPLASH_TAGLINE_COLOR" \
+                --dart-define=SPLASH_DURATION="$SPLASH_DURATION" \
+                --dart-define=IS_PULLDOWN="$IS_PULLDOWN" \
+                --dart-define=LOGO_URL="$LOGO_URL" \
+                --dart-define=IS_BOTTOMMENU="$IS_BOTTOMMENU" \
+                --dart-define=IS_DEEPLINK="$IS_DEEPLINK" \
+                --dart-define=IS_LOAD_IND="$IS_LOAD_IND" \
+                --dart-define=IS_CHATBOT="$IS_CHATBOT" \
+                --dart-define=IS_CAMERA="$IS_CAMERA" \
+                --dart-define=IS_LOCATION="$IS_LOCATION" \
+                --dart-define=IS_BIOMETRIC="$IS_BIOMETRIC" \
+                --dart-define=IS_MIC="$IS_MIC" \
+                --dart-define=IS_CONTACT="$IS_CONTACT" \
+                --dart-define=IS_CALENDAR="$IS_CALENDAR" \
+                --dart-define=IS_NOTIFICATION="$IS_NOTIFICATION" \
+                --dart-define=IS_STORAGE="$IS_STORAGE"
+              
+              # Build AAB
+              flutter build appbundle --release \
+                --dart-define=PKG_NAME="$PKG_NAME" \
+                --dart-define=APP_NAME="$APP_NAME" \
+                --dart-define=ORG_NAME="$ORG_NAME" \
+                --dart-define=VERSION_NAME="$VERSION_NAME" \
+                --dart-define=VERSION_CODE="$VERSION_CODE" \
+                --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY" \
+                --dart-define=firebase_config_android="$firebase_config_android" \
+                --dart-define=WEB_URL="$WEB_URL" \
+                --dart-define=IS_SPLASH="$IS_SPLASH" \
+                --dart-define=SPLASH="$SPLASH" \
+                --dart-define=SPLASH_ANIMATION="$SPLASH_ANIMATION" \
+                --dart-define=SPLASH_BG_COLOR="$SPLASH_BG_COLOR" \
+                --dart-define=SPLASH_TAGLINE="$SPLASH_TAGLINE" \
+                --dart-define=SPLASH_TAGLINE_COLOR="$SPLASH_TAGLINE_COLOR" \
+                --dart-define=SPLASH_DURATION="$SPLASH_DURATION" \
+                --dart-define=IS_PULLDOWN="$IS_PULLDOWN" \
+                --dart-define=LOGO_URL="$LOGO_URL" \
+                --dart-define=IS_BOTTOMMENU="$IS_BOTTOMMENU" \
+                --dart-define=IS_DEEPLINK="$IS_DEEPLINK" \
+                --dart-define=IS_LOAD_IND="$IS_LOAD_IND" \
+                --dart-define=IS_CHATBOT="$IS_CHATBOT" \
+                --dart-define=IS_CAMERA="$IS_CAMERA" \
+                --dart-define=IS_LOCATION="$IS_LOCATION" \
+                --dart-define=IS_BIOMETRIC="$IS_BIOMETRIC" \
+                --dart-define=IS_MIC="$IS_MIC" \
+                --dart-define=IS_CONTACT="$IS_CONTACT" \
+                --dart-define=IS_CALENDAR="$IS_CALENDAR" \
+                --dart-define=IS_NOTIFICATION="$IS_NOTIFICATION" \
+                --dart-define=IS_STORAGE="$IS_STORAGE"
+              
+              # Copy artifacts to output folder
+              mkdir -p output
+              cp build/app/outputs/flutter-apk/app-release.apk output/
+              cp build/app/outputs/bundle/release/app-release.aab output/
+          fi
+      - name: Send success notification
+        script: |
+          #!/usr/bin/env bash
+          set -e
+          echo "Sending success notification..."
+          
+          # Make email notification script executable
+          chmod +x lib/scripts/email_notification.py
+          
+          # Send success email
+          python3 lib/scripts/email_notification.py success
+          
+          echo "Success notification sent"
+    artifacts:
+      - build/app/outputs/flutter-apk/app-release.apk
+      - build/app/outputs/bundle/release/app-release.aab
+      - output/
+    publishing:
+      email:
+        recipients:
+          - $EMAIL_ID
+        notify:
+          success: false  # We handle this with our custom script
+          failure: false  # We handle this with our custom script
+
+  ios-publish:
+    name: iOS Publish
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+      vars: *environment.vars
+      flutter_version: "3.24.5"
+    scripts:
+      - name: Set up code signing settings
+        script: |
+          #!/usr/bin/env bash
+          set -e
+          echo "Setting up iOS code signing..."
+          
+          # Download certificates and profiles
+          wget -O ios/Runner.mobileprovision "$PROFILE_URL"
+          wget -O ios/distribution.cer "$CERT_CER_URL"
+          wget -O ios/privatekey.key "$CERT_KEY_URL"
+          
+          # Create keychain
+          security create-keychain -p "$CERT_PASSWORD" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "$CERT_PASSWORD" build.keychain
+          security set-keychain-settings -t 3600 -l ~/Library/Keychains/build.keychain
+          
+          # Import certificate
+          security import ios/distribution.cer -k build.keychain -P "$CERT_PASSWORD" -T /usr/bin/codesign
+          security import ios/privatekey.key -k build.keychain -P "$CERT_PASSWORD" -T /usr/bin/codesign
+          
+          # Set partition list
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$CERT_PASSWORD" build.keychain
+          
+          echo "iOS code signing setup completed"
+      - name: Get Flutter packages
+        script: flutter pub get
+      - name: Install iOS dependencies
+        script: |
+          #!/usr/bin/env bash
+          set -e
+          echo "Installing iOS dependencies..."
+          
+          cd ios
+          pod install
+          cd ..
+          
+          echo "iOS dependencies installed"
+      - name: Run iOS build script
+        script: |
+          #!/usr/bin/env bash
+          set -e
+          echo "Running iOS build script..."
+          
+          # Set workflow name for email notifications
+          export WORKFLOW_NAME="iOS Publish"
+          
+          # Source environment variables from export.sh
+          if [ -f "lib/scripts/ios/export.sh" ]; then
+              source lib/scripts/ios/export.sh
+          fi
+          
+          # Run the main iOS build script
+          if [ -f "lib/scripts/ios/main.sh" ]; then
+              chmod +x lib/scripts/ios/main.sh
+              ./lib/scripts/ios/main.sh
+          else
+              echo "Building iOS IPA..."
+              
+              # Build iOS
+              flutter build ios --release --no-codesign \
+                --dart-define=PKG_NAME="$PKG_NAME" \
+                --dart-define=BUNDLE_ID="$BUNDLE_ID" \
+                --dart-define=APP_NAME="$APP_NAME" \
+                --dart-define=ORG_NAME="$ORG_NAME" \
+                --dart-define=VERSION_NAME="$VERSION_NAME" \
+                --dart-define=VERSION_CODE="$VERSION_CODE" \
+                --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY" \
+                --dart-define=firebase_config_ios="$firebase_config_ios" \
+                --dart-define=WEB_URL="$WEB_URL" \
+                --dart-define=IS_SPLASH="$IS_SPLASH" \
+                --dart-define=SPLASH="$SPLASH" \
+                --dart-define=SPLASH_ANIMATION="$SPLASH_ANIMATION" \
+                --dart-define=SPLASH_BG_COLOR="$SPLASH_BG_COLOR" \
+                --dart-define=SPLASH_TAGLINE="$SPLASH_TAGLINE" \
+                --dart-define=SPLASH_TAGLINE_COLOR="$SPLASH_TAGLINE_COLOR" \
+                --dart-define=SPLASH_DURATION="$SPLASH_DURATION" \
+                --dart-define=IS_PULLDOWN="$IS_PULLDOWN" \
+                --dart-define=LOGO_URL="$LOGO_URL" \
+                --dart-define=IS_BOTTOMMENU="$IS_BOTTOMMENU" \
+                --dart-define=IS_DEEPLINK="$IS_DEEPLINK" \
+                --dart-define=IS_LOAD_IND="$IS_LOAD_IND" \
+                --dart-define=IS_CHATBOT="$IS_CHATBOT" \
+                --dart-define=IS_CAMERA="$IS_CAMERA" \
+                --dart-define=IS_LOCATION="$IS_LOCATION" \
+                --dart-define=IS_BIOMETRIC="$IS_BIOMETRIC" \
+                --dart-define=IS_MIC="$IS_MIC" \
+                --dart-define=IS_CONTACT="$IS_CONTACT" \
+                --dart-define=IS_CALENDAR="$IS_CALENDAR" \
+                --dart-define=IS_NOTIFICATION="$IS_NOTIFICATION" \
+                --dart-define=IS_STORAGE="$IS_STORAGE" \
+                --dart-define=IS_PHOTO_LIBRARY="$IS_PHOTO_LIBRARY" \
+                --dart-define=IS_PHOTO_LIBRARY_ADD="$IS_PHOTO_LIBRARY_ADD" \
+                --dart-define=IS_FACE_ID="$IS_FACE_ID" \
+                --dart-define=IS_TOUCH_ID="$IS_TOUCH_ID"
+              
+              # Archive and export IPA
+              xcodebuild -workspace ios/Runner.xcworkspace \
+                -scheme Runner \
+                -configuration Release \
+                -archivePath build/ios/archive/Runner.xcarchive \
+                -allowProvisioningUpdates \
+                archive
+              
+              xcodebuild -exportArchive \
+                -archivePath build/ios/archive/Runner.xcarchive \
+                -exportPath build/ios/ipa \
+                -exportOptionsPlist ios/ExportOptions.plist
+              
+              # Copy artifacts to output folder
+              mkdir -p output
+              cp build/ios/ipa/Runner.ipa output/
+          fi
+      - name: Send success notification
+        script: |
+          #!/usr/bin/env bash
+          set -e
+          echo "Sending success notification..."
+          
+          # Make email notification script executable
+          chmod +x lib/scripts/email_notification.py
+          
+          # Send success email
+          python3 lib/scripts/email_notification.py success
+          
+          echo "Success notification sent"
+    artifacts:
+      - build/ios/ipa/Runner.ipa
+      - output/
+    publishing:
+      email:
+        recipients:
+          - $EMAIL_ID
+        notify:
+          success: false  # We handle this with our custom script
+          failure: false  # We handle this with our custom script
+
+  combined-workflow:
+    name: Combined Android & iOS Build
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+      vars: *environment.vars
+      flutter_version: "3.24.5"
+    scripts:
+      - name: Set up Android code signing
+        script: |
+          #!/usr/bin/env bash
+          set -e
+          echo "Setting up Android code signing..."
+          
+          # Download keystore
+          wget -O android/app/keystore.jks "$KEY_STORE"
+          
+          # Create key.properties
+          cat > android/key.properties << EOF
+          storePassword=$CM_KEYSTORE_PASSWORD
+          keyPassword=$CM_KEY_PASSWORD
+          keyAlias=$CM_KEY_ALIAS
+          storeFile=keystore.jks
+          EOF
+          
+          echo "Android code signing setup completed"
+      - name: Set up iOS code signing
+        script: |
+          #!/usr/bin/env bash
+          set -e
+          echo "Setting up iOS code signing..."
+          
+          # Download certificates and profiles
+          wget -O ios/Runner.mobileprovision "$PROFILE_URL"
+          wget -O ios/distribution.cer "$CERT_CER_URL"
+          wget -O ios/privatekey.key "$CERT_KEY_URL"
+          
+          # Create keychain
+          security create-keychain -p "$CERT_PASSWORD" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "$CERT_PASSWORD" build.keychain
+          security set-keychain-settings -t 3600 -l ~/Library/Keychains/build.keychain
+          
+          # Import certificate
+          security import ios/distribution.cer -k build.keychain -P "$CERT_PASSWORD" -T /usr/bin/codesign
+          security import ios/privatekey.key -k build.keychain -P "$CERT_PASSWORD" -T /usr/bin/codesign
+          
+          # Set partition list
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$CERT_PASSWORD" build.keychain
+          
+          echo "iOS code signing setup completed"
+      - name: Get Flutter packages
+        script: flutter pub get
+      - name: Install iOS dependencies
+        script: |
+          #!/usr/bin/env bash
+          set -e
+          echo "Installing iOS dependencies..."
+          
+          cd ios
+          pod install
+          cd ..
+          
+          echo "iOS dependencies installed"
+      - name: Build Android APK and AAB
+        script: |
+          #!/usr/bin/env bash
+          set -e
+          echo "Building Android APK and AAB..."
+          
+          # Set workflow name for email notifications
+          export WORKFLOW_NAME="Combined Android & iOS Build"
+          
+          # Source environment variables from export.sh
+          if [ -f "lib/scripts/android/export.sh" ]; then
+              source lib/scripts/android/export.sh
+          fi
+          
+          # Build APK
+          flutter build apk --release \
+            --dart-define=PKG_NAME="$PKG_NAME" \
+            --dart-define=APP_NAME="$APP_NAME" \
+            --dart-define=ORG_NAME="$ORG_NAME" \
+            --dart-define=VERSION_NAME="$VERSION_NAME" \
+            --dart-define=VERSION_CODE="$VERSION_CODE" \
+            --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY" \
+            --dart-define=firebase_config_android="$firebase_config_android" \
+            --dart-define=WEB_URL="$WEB_URL" \
+            --dart-define=IS_SPLASH="$IS_SPLASH" \
+            --dart-define=SPLASH="$SPLASH" \
+            --dart-define=SPLASH_ANIMATION="$SPLASH_ANIMATION" \
+            --dart-define=SPLASH_BG_COLOR="$SPLASH_BG_COLOR" \
+            --dart-define=SPLASH_TAGLINE="$SPLASH_TAGLINE" \
+            --dart-define=SPLASH_TAGLINE_COLOR="$SPLASH_TAGLINE_COLOR" \
+            --dart-define=SPLASH_DURATION="$SPLASH_DURATION" \
+            --dart-define=IS_PULLDOWN="$IS_PULLDOWN" \
+            --dart-define=LOGO_URL="$LOGO_URL" \
+            --dart-define=IS_BOTTOMMENU="$IS_BOTTOMMENU" \
+            --dart-define=IS_DEEPLINK="$IS_DEEPLINK" \
+            --dart-define=IS_LOAD_IND="$IS_LOAD_IND" \
+            --dart-define=IS_CHATBOT="$IS_CHATBOT" \
+            --dart-define=IS_CAMERA="$IS_CAMERA" \
+            --dart-define=IS_LOCATION="$IS_LOCATION" \
+            --dart-define=IS_BIOMETRIC="$IS_BIOMETRIC" \
+            --dart-define=IS_MIC="$IS_MIC" \
+            --dart-define=IS_CONTACT="$IS_CONTACT" \
+            --dart-define=IS_CALENDAR="$IS_CALENDAR" \
+            --dart-define=IS_NOTIFICATION="$IS_NOTIFICATION" \
+            --dart-define=IS_STORAGE="$IS_STORAGE"
+          
+          # Build AAB
+          flutter build appbundle --release \
+            --dart-define=PKG_NAME="$PKG_NAME" \
+            --dart-define=APP_NAME="$APP_NAME" \
+            --dart-define=ORG_NAME="$ORG_NAME" \
+            --dart-define=VERSION_NAME="$VERSION_NAME" \
+            --dart-define=VERSION_CODE="$VERSION_CODE" \
+            --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY" \
+            --dart-define=firebase_config_android="$firebase_config_android" \
+            --dart-define=WEB_URL="$WEB_URL" \
+            --dart-define=IS_SPLASH="$IS_SPLASH" \
+            --dart-define=SPLASH="$SPLASH" \
+            --dart-define=SPLASH_ANIMATION="$SPLASH_ANIMATION" \
+            --dart-define=SPLASH_BG_COLOR="$SPLASH_BG_COLOR" \
+            --dart-define=SPLASH_TAGLINE="$SPLASH_TAGLINE" \
+            --dart-define=SPLASH_TAGLINE_COLOR="$SPLASH_TAGLINE_COLOR" \
+            --dart-define=SPLASH_DURATION="$SPLASH_DURATION" \
+            --dart-define=IS_PULLDOWN="$IS_PULLDOWN" \
+            --dart-define=LOGO_URL="$LOGO_URL" \
+            --dart-define=IS_BOTTOMMENU="$IS_BOTTOMMENU" \
+            --dart-define=IS_DEEPLINK="$IS_DEEPLINK" \
+            --dart-define=IS_LOAD_IND="$IS_LOAD_IND" \
+            --dart-define=IS_CHATBOT="$IS_CHATBOT" \
+            --dart-define=IS_CAMERA="$IS_CAMERA" \
+            --dart-define=IS_LOCATION="$IS_LOCATION" \
+            --dart-define=IS_BIOMETRIC="$IS_BIOMETRIC" \
+            --dart-define=IS_MIC="$IS_MIC" \
+            --dart-define=IS_CONTACT="$IS_CONTACT" \
+            --dart-define=IS_CALENDAR="$IS_CALENDAR" \
+            --dart-define=IS_NOTIFICATION="$IS_NOTIFICATION" \
+            --dart-define=IS_STORAGE="$IS_STORAGE"
+          
+          echo "Android builds completed"
+      - name: Build iOS IPA
+        script: |
+          #!/usr/bin/env bash
+          set -e
+          echo "Building iOS IPA..."
+          
+          # Source environment variables from export.sh
+          if [ -f "lib/scripts/ios/export.sh" ]; then
+              source lib/scripts/ios/export.sh
+          fi
+          
+          # Build iOS
+          flutter build ios --release --no-codesign \
+            --dart-define=PKG_NAME="$PKG_NAME" \
+            --dart-define=BUNDLE_ID="$BUNDLE_ID" \
+            --dart-define=APP_NAME="$APP_NAME" \
+            --dart-define=ORG_NAME="$ORG_NAME" \
+            --dart-define=VERSION_NAME="$VERSION_NAME" \
+            --dart-define=VERSION_CODE="$VERSION_CODE" \
+            --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY" \
+            --dart-define=firebase_config_ios="$firebase_config_ios" \
+            --dart-define=WEB_URL="$WEB_URL" \
+            --dart-define=IS_SPLASH="$IS_SPLASH" \
+            --dart-define=SPLASH="$SPLASH" \
+            --dart-define=SPLASH_ANIMATION="$SPLASH_ANIMATION" \
+            --dart-define=SPLASH_BG_COLOR="$SPLASH_BG_COLOR" \
+            --dart-define=SPLASH_TAGLINE="$SPLASH_TAGLINE" \
+            --dart-define=SPLASH_TAGLINE_COLOR="$SPLASH_TAGLINE_COLOR" \
+            --dart-define=SPLASH_DURATION="$SPLASH_DURATION" \
+            --dart-define=IS_PULLDOWN="$IS_PULLDOWN" \
+            --dart-define=LOGO_URL="$LOGO_URL" \
+            --dart-define=IS_BOTTOMMENU="$IS_BOTTOMMENU" \
+            --dart-define=IS_DEEPLINK="$IS_DEEPLINK" \
+            --dart-define=IS_LOAD_IND="$IS_LOAD_IND" \
+            --dart-define=IS_CHATBOT="$IS_CHATBOT" \
+            --dart-define=IS_CAMERA="$IS_CAMERA" \
+            --dart-define=IS_LOCATION="$IS_LOCATION" \
+            --dart-define=IS_BIOMETRIC="$IS_BIOMETRIC" \
+            --dart-define=IS_MIC="$IS_MIC" \
+            --dart-define=IS_CONTACT="$IS_CONTACT" \
+            --dart-define=IS_CALENDAR="$IS_CALENDAR" \
+            --dart-define=IS_NOTIFICATION="$IS_NOTIFICATION" \
+            --dart-define=IS_STORAGE="$IS_STORAGE" \
+            --dart-define=IS_PHOTO_LIBRARY="$IS_PHOTO_LIBRARY" \
+            --dart-define=IS_PHOTO_LIBRARY_ADD="$IS_PHOTO_LIBRARY_ADD" \
+            --dart-define=IS_FACE_ID="$IS_FACE_ID" \
+            --dart-define=IS_TOUCH_ID="$IS_TOUCH_ID"
+          
+          # Archive and export IPA
+          xcodebuild -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -archivePath build/ios/archive/Runner.xcarchive \
+            -allowProvisioningUpdates \
+            archive
+          
+          xcodebuild -exportArchive \
+            -archivePath build/ios/archive/Runner.xcarchive \
+            -exportPath build/ios/ipa \
+            -exportOptionsPlist ios/ExportOptions.plist
+          
+          echo "iOS IPA build completed"
+      - name: Copy all artifacts to output folder
+        script: |
+          #!/usr/bin/env bash
+          set -e
+          echo "Copying all artifacts to output folder..."
+          
+          # Create output directory
+          mkdir -p output
+          
+          # Copy Android artifacts
+          cp build/app/outputs/flutter-apk/app-release.apk output/
+          cp build/app/outputs/bundle/release/app-release.aab output/
+          
+          # Copy iOS artifacts
+          cp build/ios/ipa/Runner.ipa output/
+          
+          echo "All artifacts copied to output folder"
+          echo "📱 Android APK: app-release.apk"
+          echo "📦 Android AAB: app-release.aab"
+          echo "🍎 iOS IPA: Runner.ipa"
+      - name: Send success notification
+        script: |
+          #!/usr/bin/env bash
+          set -e
+          echo "Sending success notification..."
+          
+          # Make email notification script executable
+          chmod +x lib/scripts/email_notification.py
+          
+          # Send success email
+          python3 lib/scripts/email_notification.py success
+          
+          echo "Success notification sent"
+    artifacts:
+      - build/app/outputs/flutter-apk/app-release.apk
+      - build/app/outputs/bundle/release/app-release.aab
+      - build/ios/ipa/Runner.ipa
+      - output/
+    publishing:
+      email:
+        recipients:
+          - $EMAIL_ID
+        notify:
+          success: false  # We handle this with our custom script
+          failure: false  # We handle this with our custom script

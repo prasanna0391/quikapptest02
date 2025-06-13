@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Build Failed - {{APP_NAME}}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .error-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .greeting {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+        
+        .error-summary {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            border-left: 4px solid #dc3545;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .error-summary h3 {
+            color: #721c24;
+            font-size: 20px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .error-summary h3::before {
+            content: "❌";
+            margin-right: 10px;
+            font-size: 24px;
+        }
+        
+        .error-summary p {
+            color: #721c24;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        .error-details {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .error-details h3 {
+            color: #856404;
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .error-details h3::before {
+            content: "🔍";
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .error-code {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #495057;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .resolve-steps {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .resolve-steps h3 {
+            color: #0c5460;
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .resolve-steps h3::before {
+            content: "🔧";
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .steps-list {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+        
+        .step-item {
+            counter-increment: step-counter;
+            padding: 12px 0;
+            border-bottom: 1px solid #bee5eb;
+            position: relative;
+            padding-left: 40px;
+        }
+        
+        .step-item:last-child {
+            border-bottom: none;
+        }
+        
+        .step-item::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 12px;
+            background-color: #0c5460;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .project-details {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .project-details h3 {
+            color: #495057;
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .project-details h3::before {
+            content: "📱";
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #6c757d;
+            min-width: 120px;
+            font-size: 14px;
+        }
+        
+        .detail-value {
+            color: #495057;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .contact-support {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .contact-support h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .contact-support h3::before {
+            content: "💬";
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+        
+        .contact-item::before {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+        
+        .contact-email::before {
+            content: "📧";
+        }
+        
+        .contact-phone::before {
+            content: "📞";
+        }
+        
+        .contact-website::before {
+            content: "🌐";
+        }
+        
+        .footer {
+            background-color: #343a40;
+            color: #adb5bd;
+            padding: 30px;
+            text-align: center;
+            font-size: 12px;
+        }
+        
+        .footer p {
+            margin-bottom: 10px;
+        }
+        
+        .footer-logo {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 15px;
+        }
+        
+        .social-links {
+            margin-top: 15px;
+        }
+        
+        .social-links a {
+            color: #adb5bd;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 14px;
+        }
+        
+        .social-links a:hover {
+            color: #ffffff;
+        }
+        
+        @media (max-width: 600px) {
+            .email-container {
+                margin: 10px;
+                border-radius: 8px;
+            }
+            
+            .header, .content {
+                padding: 20px;
+            }
+            
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .contact-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <div class="header-content">
+                <span class="error-icon">🚨</span>
+                <h1>Build Failed</h1>
+                <p>{{APP_NAME}} - {{WORKFLOW_NAME}} Workflow</p>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="greeting">
+                <strong>Hello {{RECIPIENT_NAME}},</strong><br>
+                We're sorry to inform you that your {{APP_NAME}} build has encountered an error and failed to complete.
+            </div>
+            
+            <div class="error-summary">
+                <h3>Build Failed</h3>
+                <p>{{ERROR_MESSAGE}}</p>
+            </div>
+            
+            <div class="error-details">
+                <h3>Error Details</h3>
+                <div class="error-code">{{ERROR_DETAILS}}</div>
+            </div>
+            
+            <div class="resolve-steps">
+                <h3>Steps to Fix</h3>
+                <ol class="steps-list">
+                    {{RESOLVE_STEPS}}
+                </ol>
+            </div>
+            
+            <div class="project-details">
+                <h3>Project Details</h3>
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <span class="detail-label">Project Name:</span>
+                        <span class="detail-value">{{APP_NAME}}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Package Name:</span>
+                        <span class="detail-value">{{PKG_NAME}}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Bundle ID:</span>
+                        <span class="detail-value">{{BUNDLE_ID}}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Version Name:</span>
+                        <span class="detail-value">{{VERSION_NAME}}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Version Code:</span>
+                        <span class="detail-value">{{VERSION_CODE}}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Build Time:</span>
+                        <span class="detail-value">{{BUILD_TIME}}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Workflow:</span>
+                        <span class="detail-value">{{WORKFLOW_NAME}}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Build ID:</span>
+                        <span class="detail-value">{{BUILD_ID}}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Error Type:</span>
+                        <span class="detail-value">{{ERROR_TYPE}}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="contact-support">
+                <h3>Need Help?</h3>
+                <p>Our support team is here to help you resolve this issue quickly.</p>
+                <div class="contact-info">
+                    <div class="contact-item contact-email">
+                        <a href="mailto:support@quikapp.co" style="color: white; text-decoration: none;">support@quikapp.co</a>
+                    </div>
+                    <div class="contact-item contact-phone">
+                        <a href="tel:+1234567890" style="color: white; text-decoration: none;">+1 (234) 567-890</a>
+                    </div>
+                    <div class="contact-item contact-website">
+                        <a href="https://quikapp.co" style="color: white; text-decoration: none;">quikapp.co</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div class="footer-logo">QuikApp Build System</div>
+            <p>This is an automated notification from the QuikApp build system.</p>
+            <p>Build failed at {{BUILD_TIME}} | Build ID: {{BUILD_ID}}</p>
+            <div class="social-links">
+                <a href="https://github.com/quikapp">GitHub</a> |
+                <a href="https://docs.quikapp.co">Documentation</a> |
+                <a href="https://quikapp.co">Website</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
