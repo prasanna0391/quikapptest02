@@ -242,9 +242,9 @@ workflows:
           # Create gradle wrapper directory if it doesn't exist
           mkdir -p gradle/wrapper
 
-          # Download gradle-wrapper.jar
-          echo "📥 Downloading gradle-wrapper.jar..."
-          curl -o gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/v8.12.0/gradle/wrapper/gradle-wrapper.jar
+          # Try GitHub first, then fallback to Maven Central
+          curl -L -o gradle/wrapper/gradle-wrapper.jar \
+              "https://github.com/gradle/gradle/raw/v8.12.0/gradle/wrapper/gradle-wrapper.jar"
 
           # Create gradle-wrapper.properties
           echo "📝 Creating gradle-wrapper.properties..."
@@ -1024,28 +1024,8 @@ workflows:
 
           # Method 2: Download gradle-wrapper.jar directly from GitHub
           echo "📥 Downloading gradle-wrapper.jar from GitHub..."
-          if curl -L -o gradle/wrapper/gradle-wrapper.jar \
-              "https://github.com/gradle/gradle/raw/v8.12.0/gradle/wrapper/gradle-wrapper.jar"; then
-              echo "✅ Downloaded gradle-wrapper.jar from GitHub"
-          else
-              echo "⚠️  GitHub download failed, trying alternative method..."
-              
-              # Method 3: Use gradle wrapper task if gradle is available
-              if command -v gradle >/dev/null 2>&1; then
-                  echo "🔧 Using system Gradle to generate wrapper..."
-                  gradle wrapper --gradle-version 8.12 --distribution-type bin
-                  echo "✅ Wrapper generated using system Gradle"
-              else
-                  # Method 4: Manual JAR creation as last resort
-                  echo "🔧 Creating minimal wrapper setup..."
-                  
-                  # Download just the wrapper JAR from Maven Central
-                  curl -L -o gradle/wrapper/gradle-wrapper.jar \
-                      "https://repo1.maven.org/maven2/org/gradle/gradle-wrapper/8.12/gradle-wrapper-8.12.jar" || \
-                  curl -L -o gradle/wrapper/gradle-wrapper.jar \
-                      "https://services.gradle.org/distributions-snapshots/gradle-wrapper.jar"
-              fi
-          fi
+          curl -L -o gradle/wrapper/gradle-wrapper.jar \
+              "https://github.com/gradle/gradle/raw/v8.12.0/gradle/wrapper/gradle-wrapper.jar"
 
           # Create gradle-wrapper.properties using echo commands to avoid YAML issues
           echo "📝 Creating gradle-wrapper.properties..."
@@ -1358,9 +1338,11 @@ workflows:
               if ! flutter build apk --release \
                 --dart-define=PKG_NAME="$PKG_NAME" \
                 --dart-define=APP_NAME="$APP_NAME" \
+                --dart-define=ORG_NAME="$ORG_NAME" \
                 --dart-define=VERSION_NAME="$VERSION_NAME" \
                 --dart-define=VERSION_CODE="$VERSION_CODE" \
                 --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY" \
+                --dart-define=firebase_config_android="$firebase_config_android" \
                 --dart-define=WEB_URL="$WEB_URL" \
                 --dart-define=IS_SPLASH="$IS_SPLASH" \
                 --dart-define=SPLASH="$SPLASH" \

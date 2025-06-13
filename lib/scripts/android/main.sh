@@ -67,40 +67,61 @@ echo ""
 cd "$SCRIPT_DIR/../../../android"
 echo "--- Initializing Gradle Wrapper ---"
 
-# Backup local.properties if it exists (both in android and parent directory)
-if [ -f "local.properties" ]; then
-    echo "📦 Backing up existing local.properties in android directory..."
-    cp local.properties local.properties.backup
-fi
-if [ -f "../local.properties" ]; then
-    echo "📦 Backing up existing local.properties in parent directory..."
-    cp ../local.properties ../local.properties.backup
-fi
+# Skip Gradle wrapper initialization in CI environments (like Codemagic)
+# since it's already handled by the CI workflow
+if [ -n "$CI" ]; then
+    echo "🔍 Running in CI environment, skipping Gradle wrapper initialization..."
+    echo "✅ Using pre-configured Gradle wrapper from CI workflow"
+    cd "$SCRIPT_DIR"
+    echo ""
+else
+    # Backup local.properties if it exists (both in android and parent directory)
+    if [ -f "local.properties" ]; then
+        echo "📦 Backing up existing local.properties in android directory..."
+        cp local.properties local.properties.backup
+    fi
+    if [ -f "../local.properties" ]; then
+        echo "📦 Backing up existing local.properties in parent directory..."
+        cp ../local.properties ../local.properties.backup
+    fi
 
-# Check if Gradle wrapper already exists and is working
-if [ -f "gradlew" ] && [ -f "gradle/wrapper/gradle-wrapper.jar" ] && [ -f "gradle/wrapper/gradle-wrapper.properties" ]; then
-    echo "🔍 Checking existing Gradle wrapper..."
-    if ./gradlew --version >/dev/null 2>&1; then
-        echo "✅ Existing Gradle wrapper is working, skipping initialization"
-        cd "$SCRIPT_DIR"
-        echo ""
-        # Skip to next step
+    # Check if Gradle wrapper already exists and is working
+    if [ -f "gradlew" ] && [ -f "gradle/wrapper/gradle-wrapper.jar" ] && [ -f "gradle/wrapper/gradle-wrapper.properties" ]; then
+        echo "🔍 Checking existing Gradle wrapper..."
+        if ./gradlew --version >/dev/null 2>&1; then
+            echo "✅ Existing Gradle wrapper is working, skipping initialization"
+            cd "$SCRIPT_DIR"
+            echo ""
+            # Skip to next step
+        else
+            echo "⚠️  Existing Gradle wrapper is not working, reinitializing..."
+            # Continue with initialization below
+        fi
     else
-        echo "⚠️  Existing Gradle wrapper is not working, reinitializing..."
+        echo "📝 Gradle wrapper not found, initializing..."
         # Continue with initialization below
     fi
-else
-    echo "📝 Gradle wrapper not found, initializing..."
-    # Continue with initialization below
-fi
 
-# Only initialize if we didn't skip above
-if [ ! -f "gradlew" ] || ! ./gradlew --version >/dev/null 2>&1; then
-    mkdir -p gradle/wrapper
-    curl -O https://services.gradle.org/distributions/gradle-8.12-bin.zip
-    unzip -j gradle-8.12-bin.zip "gradle-8.12/bin/gradle-wrapper.jar" -d gradle/wrapper/
-    rm gradle-8.12-bin.zip
-    cat > gradle/wrapper/gradle-wrapper.properties << EOF
+    # Only initialize if we didn't skip above
+    if [ ! -f "gradlew" ] || ! ./gradlew --version >/dev/null 2>&1; then
+        mkdir -p gradle/wrapper
+        
+        # Try to download gradle-wrapper.jar directly from GitHub first
+        echo "📥 Downloading gradle-wrapper.jar from GitHub..."
+        if curl -L -o gradle/wrapper/gradle-wrapper.jar \
+            "https://github.com/gradle/gradle/raw/v8.12.0/gradle/wrapper/gradle-wrapper.jar"; then
+            echo "✅ Downloaded gradle-wrapper.jar from GitHub"
+        else
+            echo "⚠️  GitHub download failed, trying alternative method..."
+            # Fallback to Maven Central
+            curl -L -o gradle/wrapper/gradle-wrapper.jar \
+                "https://repo1.maven.org/maven2/org/gradle/gradle-wrapper/8.12/gradle-wrapper-8.12.jar" || \
+            curl -L -o gradle/wrapper/gradle-wrapper.jar \
+                "https://services.gradle.org/distributions-snapshots/gradle-wrapper.jar"
+        fi
+        
+        # Create gradle-wrapper.properties
+        cat > gradle/wrapper/gradle-wrapper.properties << EOF
 distributionBase=GRADLE_USER_HOME
 distributionPath=wrapper/dists
 distributionUrl=https\://services.gradle.org/distributions/gradle-8.12-bin.zip
@@ -109,9 +130,9 @@ validateDistributionUrl=true
 zipStoreBase=GRADLE_USER_HOME
 zipStorePath=wrapper/dists
 EOF
-    if [ ! -f "gradlew" ]; then
-        echo "📝 Creating gradlew script..."
-        cat > gradlew << EOL
+        if [ ! -f "gradlew" ]; then
+            echo "📝 Creating gradlew script..."
+            cat > gradlew << EOL
 #!/bin/sh
 SCRIPT_DIR="\$( cd "\$( dirname "\$0" )" && pwd )"
 WRAPPER_JAR="\${SCRIPT_DIR}/gradle/wrapper/gradle-wrapper.jar"
@@ -121,29 +142,30 @@ if [ ! -f "\${WRAPPER_JAR}" ]; then
 fi
 exec java -cp "\${WRAPPER_JAR}" org.gradle.wrapper.GradleWrapperMain "\$@"
 EOL
-        chmod +x gradlew
+            chmod +x gradlew
+        fi
+        echo "✅ Gradle wrapper initialized"
     fi
-    echo "✅ Gradle wrapper initialized"
-fi
 
-# Restore local.properties files if they were backed up
-if [ -f "local.properties.backup" ]; then
-    echo "🔄 Restoring local.properties in android directory..."
-    mv local.properties.backup local.properties
-fi
-if [ -f "../local.properties.backup" ]; then
-    echo "🔄 Restoring local.properties in parent directory..."
-    mv ../local.properties.backup ../local.properties
-fi
+    # Restore local.properties files if they were backed up
+    if [ -f "local.properties.backup" ]; then
+        echo "🔄 Restoring local.properties in android directory..."
+        mv local.properties.backup local.properties
+    fi
+    if [ -f "../local.properties.backup" ]; then
+        echo "🔄 Restoring local.properties in parent directory..."
+        mv ../local.properties.backup ../local.properties
+    fi
 
-# Ensure local.properties exists in parent directory (required by settings.gradle)
-if [ ! -f "../local.properties" ] && [ -f "local.properties" ]; then
-    echo "📋 Copying local.properties to parent directory for settings.gradle..."
-    cp local.properties ../local.properties
-fi
+    # Ensure local.properties exists in parent directory (required by settings.gradle)
+    if [ ! -f "../local.properties" ] && [ -f "local.properties" ]; then
+        echo "📋 Copying local.properties to parent directory for settings.gradle..."
+        cp local.properties ../local.properties
+    fi
 
-cd "$SCRIPT_DIR"
-echo ""
+    cd "$SCRIPT_DIR"
+    echo ""
+fi
 
 # 4. Validate Android project structure
 echo "--- Validating Android Project Structure ---"
