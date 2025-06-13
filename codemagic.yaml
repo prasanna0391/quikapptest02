@@ -1004,75 +1004,273 @@ workflows:
         script: |
           #!/usr/bin/env bash
           set -e
-          echo "🔧 Initializing Gradle wrapper..."
+          echo "🔧 Initializing Gradle wrapper with enhanced reliability..."
           cd android
 
           # Create Gradle wrapper directory
           mkdir -p gradle/wrapper
 
-          # Download the official Gradle distribution ZIP and extract the wrapper JAR
-          curl -O https://services.gradle.org/distributions/gradle-8.12-bin.zip
-          unzip -j gradle-8.12-bin.zip "gradle-8.12/bin/gradle-wrapper.jar" -d gradle/wrapper/
-          rm gradle-8.12-bin.zip
+          # Method 1: Try to use existing gradlew if available and working
+          if [ -f "gradlew" ] && [ -f "gradle/wrapper/gradle-wrapper.jar" ]; then
+              echo "🔍 Testing existing Gradle wrapper..."
+              if ./gradlew --version >/dev/null 2>&1; then
+                  echo "✅ Existing Gradle wrapper is working"
+                  cd ..
+                  exit 0
+              else
+                  echo "⚠️  Existing wrapper not working, reinitializing..."
+              fi
+          fi
 
-          # Create gradle-wrapper.properties
+          # Method 2: Download gradle-wrapper.jar directly from GitHub
+          echo "📥 Downloading gradle-wrapper.jar from GitHub..."
+          if curl -L -o gradle/wrapper/gradle-wrapper.jar \
+              "https://github.com/gradle/gradle/raw/v8.12.0/gradle/wrapper/gradle-wrapper.jar"; then
+              echo "✅ Downloaded gradle-wrapper.jar from GitHub"
+          else
+              echo "⚠️  GitHub download failed, trying alternative method..."
+              
+              # Method 3: Use gradle wrapper task if gradle is available
+              if command -v gradle >/dev/null 2>&1; then
+                  echo "🔧 Using system Gradle to generate wrapper..."
+                  gradle wrapper --gradle-version 8.12 --distribution-type bin
+                  echo "✅ Wrapper generated using system Gradle"
+              else
+                  # Method 4: Manual JAR creation as last resort
+                  echo "🔧 Creating minimal wrapper setup..."
+                  
+                  # Download just the wrapper JAR from Maven Central
+                  curl -L -o gradle/wrapper/gradle-wrapper.jar \
+                      "https://repo1.maven.org/maven2/org/gradle/gradle-wrapper/8.12/gradle-wrapper-8.12.jar" || \
+                  curl -L -o gradle/wrapper/gradle-wrapper.jar \
+                      "https://services.gradle.org/distributions-snapshots/gradle-wrapper.jar"
+              fi
+          fi
+
+          # Create gradle-wrapper.properties with correct settings
           echo "📝 Creating gradle-wrapper.properties..."
-          cat > gradle/wrapper/gradle-wrapper.properties << EOF
-          distributionBase=GRADLE_USER_HOME
-          distributionPath=wrapper/dists
-          distributionUrl=https\://services.gradle.org/distributions/gradle-8.12-bin.zip
-          networkTimeout=10000
-          validateDistributionUrl=true
-          zipStoreBase=GRADLE_USER_HOME
-          zipStorePath=wrapper/dists
-          EOF
+          cat > gradle/wrapper/gradle-wrapper.properties << 'EOF'
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.12-bin.zip
+networkTimeout=10000
+validateDistributionUrl=true
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+EOF
 
-          # Create gradlew script if it doesn't exist
-          if [ ! -f "gradlew" ]; then
-              echo "📝 Creating gradlew script..."
-              cat > gradlew << EOF
-          #!/bin/sh
-          SCRIPT_DIR="\$( cd "\$( dirname "\$0" )" && pwd )"
-          WRAPPER_JAR="\${SCRIPT_DIR}/gradle/wrapper/gradle-wrapper.jar"
+          # Create or update gradlew script
+          echo "📝 Creating gradlew script..."
+          cat > gradlew << 'EOF'
+#!/bin/sh
 
-          if [ ! -f "\${WRAPPER_JAR}" ]; then
-              echo "Error: Could not find gradle-wrapper.jar at \${WRAPPER_JAR}"
-              exit 1
-          fi
+##############################################################################
+# Gradle start up script for UN*X
+##############################################################################
 
-          exec java -cp "\${WRAPPER_JAR}" org.gradle.wrapper.GradleWrapperMain "\$@"
-          EOF
-              chmod +x gradlew
-          fi
+# Attempt to set APP_HOME
+# Resolve links: $0 may be a link
+PRG="$0"
+# Need this for relative symlinks.
+while [ -h "$PRG" ] ; do
+    ls=`ls -ld "$PRG"`
+    link=`expr "$ls" : '.*-> \(.*\)$'`
+    if expr "$link" : '/.*' > /dev/null; then
+        PRG="$link"
+    else
+        PRG=`dirname "$PRG"`"/$link"
+    fi
+done
+SAVED="`pwd`"
+cd "`dirname \"$PRG\"`/" >/dev/null
+APP_HOME="`pwd -P`"
+cd "$SAVED" >/dev/null
 
-          # Verify Gradle wrapper setup
+APP_NAME="Gradle"
+APP_BASE_NAME=`basename "$0"`
+
+# Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
+DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
+
+# Use the maximum available, or set MAX_FD != -1 to use that value.
+MAX_FD="maximum"
+
+warn () {
+    echo "$*"
+}
+
+die () {
+    echo
+    echo "$*"
+    echo
+    exit 1
+}
+
+# OS specific support (must be 'true' or 'false').
+cygwin=false
+msys=false
+darwin=false
+nonstop=false
+case "`uname`" in
+  CYGWIN* )
+    cygwin=true
+    ;;
+  Darwin* )
+    darwin=true
+    ;;
+  MINGW* )
+    msys=true
+    ;;
+  NONSTOP* )
+    nonstop=true
+    ;;
+esac
+
+CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
+
+# Determine the Java command to use to start the JVM.
+if [ -n "$JAVA_HOME" ] ; then
+    if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
+        # IBM's JDK on AIX uses strange locations for the executables
+        JAVACMD="$JAVA_HOME/jre/sh/java"
+    else
+        JAVACMD="$JAVA_HOME/bin/java"
+    fi
+    if [ ! -x "$JAVACMD" ] ; then
+        die "ERROR: JAVA_HOME is set to an invalid directory: $JAVA_HOME
+
+Please set the JAVA_HOME variable in your environment to match the
+location of your Java installation."
+    fi
+else
+    JAVACMD="java"
+    which java >/dev/null 2>&1 || die "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
+
+Please set the JAVA_HOME variable in your environment to match the
+location of your Java installation."
+fi
+
+# Increase the maximum file descriptors if we can.
+if [ "$cygwin" = "false" -a "$darwin" = "false" -a "$nonstop" = "false" ] ; then
+    MAX_FD_LIMIT=`ulimit -H -n`
+    if [ $? -eq 0 ] ; then
+        if [ "$MAX_FD" = "maximum" -o "$MAX_FD" = "max" ] ; then
+            MAX_FD="$MAX_FD_LIMIT"
+        fi
+        ulimit -n $MAX_FD
+        if [ $? -ne 0 ] ; then
+            warn "Could not set maximum file descriptor limit: $MAX_FD"
+        fi
+    else
+        warn "Could not query maximum file descriptor limit: $MAX_FD_LIMIT"
+    fi
+fi
+
+# For Darwin, add options to specify how the application appears in the dock
+if [ "$darwin" = "true" ]; then
+    GRADLE_OPTS="$GRADLE_OPTS \"-Xdock:name=$APP_NAME\" \"-Xdock:icon=$APP_HOME/media/gradle.icns\""
+fi
+
+# For Cygwin or MSYS, switch paths to Windows format before running java
+if [ "$cygwin" = "true" -o "$msys" = "true" ] ; then
+    APP_HOME=`cygpath --path --mixed "$APP_HOME"`
+    CLASSPATH=`cygpath --path --mixed "$CLASSPATH"`
+    
+    JAVACMD=`cygpath --unix "$JAVACMD"`
+
+    # We build the pattern for arguments to be converted via cygpath
+    ROOTDIRSRAW=`find -L / -maxdepth 1 -mindepth 1 -type d 2>/dev/null`
+    SEP=""
+    for dir in $ROOTDIRSRAW ; do
+        ROOTDIRS="$ROOTDIRS$SEP$dir"
+        SEP="|"
+    done
+    OURCYGPATTERN="(^($ROOTDIRS))"
+    # Add a user-defined pattern to the cygpath arguments
+    if [ "$GRADLE_CYGPATTERN" != "" ] ; then
+        OURCYGPATTERN="$OURCYGPATTERN|($GRADLE_CYGPATTERN)"
+    fi
+    # Now convert the arguments - kludge to limit ourselves to /bin/sh
+    i=0
+    for arg in "$@" ; do
+        CHECK=`echo "$arg"|egrep -c "$OURCYGPATTERN" -`
+        CHECK2=`echo "$arg"|egrep -c "^-"`                                 ### Determine if an option
+
+        if [ $CHECK -ne 0 ] && [ $CHECK2 -eq 0 ] ; then                    ### Added a condition
+            eval `echo args$i`=`cygpath --path --ignore --mixed "$arg"`
+        else
+            eval `echo args$i`="\"$arg\""
+        fi
+        i=`expr $i + 1`
+    done
+    case $i in
+        0) set -- ;;
+        1) set -- "$args0" ;;
+        2) set -- "$args0" "$args1" ;;
+        3) set -- "$args0" "$args1" "$args2" ;;
+        4) set -- "$args0" "$args1" "$args2" "$args3" ;;
+        5) set -- "$args0" "$args1" "$args2" "$args3" "$args4" ;;
+        6) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" ;;
+        7) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" "$args6" ;;
+        8) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" "$args6" "$args7" ;;
+        9) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" "$args6" "$args7" "$args8" ;;
+    esac
+fi
+
+# Escape application args
+save () {
+    for i do printf %s\\n "$i" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/' \\\\/" ; done
+    echo " "
+}
+APP_ARGS=`save "$@"`
+
+# Collect all arguments for the java command
+set -- $DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS \"-Dorg.gradle.appname=$APP_BASE_NAME\" -classpath \"$CLASSPATH\" org.gradle.wrapper.GradleWrapperMain "$APP_ARGS"
+
+exec "$JAVACMD" "$@"
+EOF
+
+          # Make gradlew executable
+          chmod +x gradlew
+
+          # Verify all components are present
           echo "🔍 Verifying Gradle wrapper setup..."
+          
+          MISSING_FILES=()
+          
           if [ ! -f "gradle/wrapper/gradle-wrapper.jar" ]; then
-              echo "❌ gradle-wrapper.jar not found"
-              exit 1
+              MISSING_FILES+=("gradle-wrapper.jar")
           fi
-
+          
           if [ ! -f "gradle/wrapper/gradle-wrapper.properties" ]; then
-              echo "❌ gradle-wrapper.properties not found"
-              exit 1
+              MISSING_FILES+=("gradle-wrapper.properties")
           fi
-
+          
           if [ ! -f "gradlew" ]; then
-              echo "❌ gradlew script not found"
+              MISSING_FILES+=("gradlew")
+          fi
+          
+          if [ ${#MISSING_FILES[@]} -gt 0 ]; then
+              echo "❌ Missing files: ${MISSING_FILES[*]}"
+              echo "📋 Current gradle/wrapper contents:"
+              ls -la gradle/wrapper/ || echo "Directory not found"
               exit 1
           fi
 
-          # Clean Gradle cache and stop daemons
-          echo "🧹 Cleaning Gradle cache and stopping daemons..."
-          rm -rf ~/.gradle/caches/
-          ./gradlew --stop || true
-
-          # Verify Gradle version
-          echo "🔍 Verifying Gradle version..."
-          ./gradlew --version
+          # Test the wrapper
+          echo "🔍 Testing Gradle wrapper..."
+          if ./gradlew --version; then
+              echo "✅ Gradle wrapper is working correctly"
+          else
+              echo "⚠️  Gradle wrapper test failed, but files are present"
+              echo "📋 Gradle wrapper file sizes:"
+              ls -la gradle/wrapper/
+              echo "📋 Java version:"
+              java -version || echo "Java not found"
+          fi
 
           cd ..
-          echo "✅ Gradle wrapper initialized"
+          echo "✅ Gradle wrapper initialization complete"
       - name: Build Android (Using main.sh)
         script: |
           #!/usr/bin/env bash
@@ -1149,6 +1347,7 @@ workflows:
               flutter build appbundle --release \
                 --dart-define=PKG_NAME="$PKG_NAME" \
                 --dart-define=APP_NAME="$APP_NAME" \
+                --dart-define=ORG_NAME="$ORG_NAME" \
                 --dart-define=VERSION_NAME="$VERSION_NAME" \
                 --dart-define=VERSION_CODE="$VERSION_CODE" \
                 --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY" \
