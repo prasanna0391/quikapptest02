@@ -282,105 +282,105 @@ workflows:
           if [ ! -f "Podfile" ]; then
             echo "⚠️  Podfile not found, creating a basic one..."
             cat > Podfile << EOF
-# Uncomment this line to define a global platform for your project
-platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'
-
-# CocoaPods analytics sends network stats synchronously affecting flutter build latency.
-ENV['COCOAPODS_DISABLE_STATS'] = 'true'
-
-project 'Runner', {
-  'Debug' => :debug,
-  'Profile' => :release,
-  'Release' => :release,
-}
-
-def flutter_root
-  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
-  unless File.exist?(generated_xcode_build_settings_path)
-    raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
-  end
-
-  File.foreach(generated_xcode_build_settings_path) do |line|
-    matches = line.match(/FLUTTER_ROOT\=(.*)/)
-    return matches[1].strip if matches
-  end
-  raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
-end
-
-require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
-
-flutter_ios_podfile_setup
-
-target 'Runner' do
-  use_frameworks!
-  use_modular_headers!
-
-  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-  target 'RunnerTests' do
-    inherit! :search_paths
-  end
-end
-
-post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    flutter_additional_ios_build_settings(target)
-    target.build_configurations.each do |config|
-      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'
-    end
-  end
-end
-EOF
-          else
-            echo "📄 Updating existing Podfile deployment target..."
-            # Update platform line in existing Podfile
-            if grep -q "platform :ios" Podfile; then
-              sed -i.bak "s/platform :ios, '[^']*'/platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'/" Podfile
-              echo "✅ Updated platform to iOS $IPHONEOS_DEPLOYMENT_TARGET"
-            else
-              # Add platform line at the beginning if it doesn't exist
-              sed -i.bak "1i\\
-platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'\\
-" Podfile
-              echo "✅ Added platform iOS $IPHONEOS_DEPLOYMENT_TARGET to Podfile"
-            fi
-            
-            # Update post_install hook to set deployment target for all pods
-            if ! grep -q "IPHONEOS_DEPLOYMENT_TARGET.*=.*'$IPHONEOS_DEPLOYMENT_TARGET'" Podfile; then
-              # Add or update the post_install hook
-              if grep -q "post_install do |installer|" Podfile; then
-                # Update existing post_install hook
-                if ! grep -q "config.build_settings\['IPHONEOS_DEPLOYMENT_TARGET'\]" Podfile; then
-                  sed -i.bak "/post_install do |installer|/a\\
-  installer.pods_project.targets.each do |target|\\
-    flutter_additional_ios_build_settings(target)\\
-    target.build_configurations.each do |config|\\
-      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'\\
-    end\\
-  end" Podfile
-                  echo "✅ Added deployment target setting to existing post_install hook"
-                fi
-              else
-                # Add post_install hook
-                cat >> Podfile << EOF
-
-post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    flutter_additional_ios_build_settings(target)
-    target.build_configurations.each do |config|
-      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'
-    end
-  end
-end
-EOF
-                echo "✅ Added post_install hook with deployment target"
-              fi
-            fi
-          fi
-          
-          echo "📋 Podfile configuration:"
-          echo "🎯 iOS Deployment Target: $IPHONEOS_DEPLOYMENT_TARGET"
-          echo "🔧 Platform: iOS $IPHONEOS_DEPLOYMENT_TARGET"
-          
+              # Uncomment this line to define a global platform for your project
+              platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'
+              
+              # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
+              ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+              
+              project 'Runner', {
+                'Debug' => :debug,
+                'Profile' => :release,
+                'Release' => :release,
+              }
+              
+              def flutter_root
+                generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+                unless File.exist?(generated_xcode_build_settings_path)
+                  raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
+                end
+              
+                File.foreach(generated_xcode_build_settings_path) do |line|
+                  matches = line.match(/FLUTTER_ROOT\=(.*)/)
+                  return matches[1].strip if matches
+                end
+                raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
+              end
+              
+              require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+              
+              flutter_ios_podfile_setup
+              
+              target 'Runner' do
+                use_frameworks!
+                use_modular_headers!
+              
+                flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+                target 'RunnerTests' do
+                  inherit! :search_paths
+                end
+              end
+              
+              post_install do |installer|
+                installer.pods_project.targets.each do |target|
+                  flutter_additional_ios_build_settings(target)
+                  target.build_configurations.each do |config|
+                    config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'
+                  end
+                end
+              end
+              EOF
+                        else
+                          echo "📄 Updating existing Podfile deployment target..."
+                          # Update platform line in existing Podfile
+                          if grep -q "platform :ios" Podfile; then
+                            sed -i.bak "s/platform :ios, '[^']*'/platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'/" Podfile
+                            echo "✅ Updated platform to iOS $IPHONEOS_DEPLOYMENT_TARGET"
+                          else
+                            # Add platform line at the beginning if it doesn't exist
+                            sed -i.bak "1i\\
+              platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'\\
+              " Podfile
+                            echo "✅ Added platform iOS $IPHONEOS_DEPLOYMENT_TARGET to Podfile"
+                          fi
+                          
+                          # Update post_install hook to set deployment target for all pods
+                          if ! grep -q "IPHONEOS_DEPLOYMENT_TARGET.*=.*'$IPHONEOS_DEPLOYMENT_TARGET'" Podfile; then
+                            # Add or update the post_install hook
+                            if grep -q "post_install do |installer|" Podfile; then
+                              # Update existing post_install hook
+                              if ! grep -q "config.build_settings\['IPHONEOS_DEPLOYMENT_TARGET'\]" Podfile; then
+                                sed -i.bak "/post_install do |installer|/a\\
+                installer.pods_project.targets.each do |target|\\
+                  flutter_additional_ios_build_settings(target)\\
+                  target.build_configurations.each do |config|\\
+                    config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'\\
+                  end\\
+                end" Podfile
+                                echo "✅ Added deployment target setting to existing post_install hook"
+                              fi
+                            else
+                              # Add post_install hook
+                              cat >> Podfile << EOF
+              
+              post_install do |installer|
+                installer.pods_project.targets.each do |target|
+                  flutter_additional_ios_build_settings(target)
+                  target.build_configurations.each do |config|
+                    config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'
+                  end
+                end
+              end
+              EOF
+                              echo "✅ Added post_install hook with deployment target"
+                            fi
+                          fi
+                        fi
+                        
+                        echo "📋 Podfile configuration:"
+                        echo "🎯 iOS Deployment Target: $IPHONEOS_DEPLOYMENT_TARGET"
+                        echo "🔧 Platform: iOS $IPHONEOS_DEPLOYMENT_TARGET"
+                        
           # Clean previous pods installation
           echo "🧹 Cleaning previous CocoaPods installation..."
           rm -rf Pods/
@@ -596,101 +596,101 @@ EOF
           if [ ! -f "Podfile" ]; then
             echo "⚠️  Podfile not found, creating a basic one..."
             cat > Podfile << EOF
-# Uncomment this line to define a global platform for your project
-platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'
-
-# CocoaPods analytics sends network stats synchronously affecting flutter build latency.
-ENV['COCOAPODS_DISABLE_STATS'] = 'true'
-
-project 'Runner', {
-  'Debug' => :debug,
-  'Profile' => :release,
-  'Release' => :release,
-}
-
-def flutter_root
-  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
-  unless File.exist?(generated_xcode_build_settings_path)
-    raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
-  end
-
-  File.foreach(generated_xcode_build_settings_path) do |line|
-    matches = line.match(/FLUTTER_ROOT\=(.*)/)
-    return matches[1].strip if matches
-  end
-  raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
-end
-
-require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
-
-flutter_ios_podfile_setup
-
-target 'Runner' do
-  use_frameworks!
-  use_modular_headers!
-
-  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-  target 'RunnerTests' do
-    inherit! :search_paths
-  end
-end
-
-post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    flutter_additional_ios_build_settings(target)
-    target.build_configurations.each do |config|
-      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'
-    end
-  end
-end
-EOF
-          else
-            echo "📄 Updating existing Podfile deployment target..."
-            # Update platform line in existing Podfile
-            if grep -q "platform :ios" Podfile; then
-              sed -i.bak "s/platform :ios, '[^']*'/platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'/" Podfile
-              echo "✅ Updated platform to iOS $IPHONEOS_DEPLOYMENT_TARGET"
-            else
-              # Add platform line at the beginning if it doesn't exist
-              sed -i.bak "1i\\
-platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'\\
-" Podfile
-              echo "✅ Added platform iOS $IPHONEOS_DEPLOYMENT_TARGET to Podfile"
-            fi
+            # Uncomment this line to define a global platform for your project
+            platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'
             
-            # Update post_install hook to set deployment target for all pods
-            if ! grep -q "IPHONEOS_DEPLOYMENT_TARGET.*=.*'$IPHONEOS_DEPLOYMENT_TARGET'" Podfile; then
-              # Add or update the post_install hook
-              if grep -q "post_install do |installer|" Podfile; then
-                # Update existing post_install hook
-                if ! grep -q "config.build_settings\['IPHONEOS_DEPLOYMENT_TARGET'\]" Podfile; then
-                  sed -i.bak "/post_install do |installer|/a\\
-  installer.pods_project.targets.each do |target|\\
-    flutter_additional_ios_build_settings(target)\\
-    target.build_configurations.each do |config|\\
-      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'\\
-    end\\
-  end" Podfile
-                  echo "✅ Added deployment target setting to existing post_install hook"
-                fi
-              else
-                # Add post_install hook
-                cat >> Podfile << EOF
-
-post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    flutter_additional_ios_build_settings(target)
-    target.build_configurations.each do |config|
-      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'
-    end
-  end
-end
-EOF
-                echo "✅ Added post_install hook with deployment target"
-              fi
-            fi
-          fi
-          
+            # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
+            ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+            
+            project 'Runner', {
+              'Debug' => :debug,
+              'Profile' => :release,
+              'Release' => :release,
+            }
+            
+            def flutter_root
+              generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+              unless File.exist?(generated_xcode_build_settings_path)
+                raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
+              end
+            
+              File.foreach(generated_xcode_build_settings_path) do |line|
+                matches = line.match(/FLUTTER_ROOT\=(.*)/)
+                return matches[1].strip if matches
+              end
+              raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
+            end
+            
+            require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+            
+            flutter_ios_podfile_setup
+            
+            target 'Runner' do
+              use_frameworks!
+              use_modular_headers!
+            
+              flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+              target 'RunnerTests' do
+                inherit! :search_paths
+              end
+            end
+            
+            post_install do |installer|
+              installer.pods_project.targets.each do |target|
+                flutter_additional_ios_build_settings(target)
+                target.build_configurations.each do |config|
+                  config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'
+                end
+              end
+            end
+            EOF
+                      else
+                        echo "📄 Updating existing Podfile deployment target..."
+                        # Update platform line in existing Podfile
+                        if grep -q "platform :ios" Podfile; then
+                          sed -i.bak "s/platform :ios, '[^']*'/platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'/" Podfile
+                          echo "✅ Updated platform to iOS $IPHONEOS_DEPLOYMENT_TARGET"
+                        else
+                          # Add platform line at the beginning if it doesn't exist
+                          sed -i.bak "1i\\
+            platform :ios, '$IPHONEOS_DEPLOYMENT_TARGET'\\
+            " Podfile
+                          echo "✅ Added platform iOS $IPHONEOS_DEPLOYMENT_TARGET to Podfile"
+                        fi
+                        
+                        # Update post_install hook to set deployment target for all pods
+                        if ! grep -q "IPHONEOS_DEPLOYMENT_TARGET.*=.*'$IPHONEOS_DEPLOYMENT_TARGET'" Podfile; then
+                          # Add or update the post_install hook
+                          if grep -q "post_install do |installer|" Podfile; then
+                            # Update existing post_install hook
+                            if ! grep -q "config.build_settings\['IPHONEOS_DEPLOYMENT_TARGET'\]" Podfile; then
+                              sed -i.bak "/post_install do |installer|/a\\
+              installer.pods_project.targets.each do |target|\\
+                flutter_additional_ios_build_settings(target)\\
+                target.build_configurations.each do |config|\\
+                  config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'\\
+                end\\
+              end" Podfile
+                              echo "✅ Added deployment target setting to existing post_install hook"
+                            fi
+                          else
+                            # Add post_install hook
+                            cat >> Podfile << EOF
+            
+            post_install do |installer|
+              installer.pods_project.targets.each do |target|
+                flutter_additional_ios_build_settings(target)
+                target.build_configurations.each do |config|
+                  config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '$IPHONEOS_DEPLOYMENT_TARGET'
+                end
+              end
+            end
+            EOF
+                            echo "✅ Added post_install hook with deployment target"
+                          fi
+                        fi
+                      fi
+                      
           echo "📋 Podfile configuration:"
           echo "🎯 iOS Deployment Target: $IPHONEOS_DEPLOYMENT_TARGET"
           echo "🔧 Platform: iOS $IPHONEOS_DEPLOYMENT_TARGET"
