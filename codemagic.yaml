@@ -4,7 +4,6 @@ environment: &default_env
   flutter: stable
   xcode: latest
   cocoapods: default
-  flutter_version: "3.24.5"
   vars:
     # App Configuration - Dynamic values from API
     VERSION_NAME: "${VERSION_NAME:-1.0.21}"
