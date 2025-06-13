@@ -4,7 +4,13 @@ set -euxo pipefail
 
 # Source environment variables
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-. "$SCRIPT_DIR/export.sh"
+
+# Only source export.sh if not running in CI (Codemagic)
+if [ -z "$CI" ]; then
+  if [ -f "$SCRIPT_DIR/export.sh" ]; then
+    . "$SCRIPT_DIR/export.sh"
+  fi
+fi
 
 echo "🧹 Running flutter clean..."
 flutter clean # Can be removed if run_all.sh already does this

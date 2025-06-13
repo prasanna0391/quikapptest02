@@ -16,6 +16,11 @@ NC='\033[0m' # No Color
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 
+# Only source export.sh if not running in CI (Codemagic)
+if [ -z "$CI" ] && [ -f "$SCRIPT_DIR/export.sh" ]; then
+    source "$SCRIPT_DIR/export.sh"
+fi
+
 # Function to send email using curl
 send_error_email() {
     local error_message="$1"

@@ -18,7 +18,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 OUTPUT_DIR="$PROJECT_ROOT/output"
 
 # Source environment variables to get EMAIL_ID
-if [ -f "$SCRIPT_DIR/export.sh" ]; then
+if [ -z "$CI" ] && [ -f "$SCRIPT_DIR/export.sh" ]; then
     source "$SCRIPT_DIR/export.sh"
 fi
 
