@@ -252,7 +252,7 @@ workflows:
           # Download Gradle wrapper files if they don't exist
           if [ ! -f "gradle/wrapper/gradle-wrapper.jar" ]; then
             echo "📥 Downloading Gradle wrapper JAR..."
-            curl -L -o gradle/wrapper/gradle-wrapper.jar https://github.com/gradle/gradle/raw/v8.12.0/gradle/wrapper/gradle-wrapper.jar
+            curl -L -o gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/v8.12.0/gradle/wrapper/gradle-wrapper.jar
             
             # Verify the JAR file
             if [ ! -s "gradle/wrapper/gradle-wrapper.jar" ]; then
@@ -922,75 +922,103 @@ workflows:
 
   combined-workflow:
     name: Combined Android & iOS Build
-    environment: *default_env
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    integrations:
+      codemagic_ssh_access: codemagic_ssh_access
+    environment:
+      flutter: stable
+      xcode: latest
+      node: v18.17.0
+      java: 17
+      groups:
+        - google_credentials
+        - appstore_credentials
+        - codemagic_ssh_access
+      vars:
+        PKG_NAME: "com.garbcode.garbcodeapp"
+        APP_NAME: "GarbCode"
+        VERSION_NAME: "1.0.0"
+        VERSION_CODE: "1"
+        BUNDLE_ID: "com.garbcode.garbcodeapp"
+        PUSH_NOTIFY: "true"
+        WEB_URL: "https://garbcode.com"
+        IS_SPLASH: "true"
+        SPLASH: "true"
+        IS_BOTTOMMENU: "true"
+        BOTTOMMENU_ITEMS: "true"
     scripts:
-      - name: Force Gradle Wrapper Version
-        script: |
-          cat > android/gradle/wrapper/gradle-wrapper.properties <<EOF
-          distributionBase=GRADLE_USER_HOME
-          distributionPath=wrapper/dists
-          zipStoreBase=GRADLE_USER_HOME
-          zipStorePath=wrapper/dists
-          distributionUrl=https\://services.gradle.org/distributions/gradle-8.12-all.zip
-          EOF
-          echo "✅ Forced gradle-wrapper.properties to Gradle 8.12"
-      - *debug_env
-      - name: Get Flutter packages
-        script: flutter pub get
       - name: Initialize Build Environment
         script: |
-          #!/usr/bin/env bash
-          set -e
           echo "🔧 Initializing build environment for both platforms..."
 
           # Check Java installation
           echo "🔍 Checking Java installation..."
-          if ! command -v java >/dev/null 2>&1; then
-              echo "❌ Java is not installed or not in PATH"
-              exit 1
-          fi
+          java -version
+          echo "✅ Java version: $(java -version 2>&1 | awk -F '"' '/version/ {print $2}')"
 
-          JAVA_VERSION=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}')
-          echo "✅ Java version: $JAVA_VERSION"
-
-          # Create Gradle wrapper directory if it doesn't exist
+          # Create Gradle wrapper directory
+          echo "📁 Creating Gradle wrapper directory..."
           mkdir -p android/gradle/wrapper
+          echo "✅ Created Gradle wrapper directory"
 
           # Download Gradle wrapper JAR
           echo "📥 Downloading Gradle wrapper JAR..."
-          curl -o android/gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/v8.12.0/gradle/wrapper/gradle-wrapper.jar
+          curl -L -o android/gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/v8.12.0/gradle/wrapper/gradle-wrapper.jar
+
+          # Verify JAR file
+          if [ ! -s android/gradle/wrapper/gradle-wrapper.jar ]; then
+            echo "❌ Failed to download Gradle wrapper JAR"
+            exit 1
+          fi
+          echo "✅ Downloaded Gradle wrapper JAR"
+          echo "✅ Verified Gradle wrapper JAR"
 
           # Create gradle-wrapper.properties
           echo "📝 Creating gradle-wrapper.properties..."
-          cat > android/gradle/wrapper/gradle-wrapper.properties <<EOF
+          cat > android/gradle/wrapper/gradle-wrapper.properties << EOL
           distributionBase=GRADLE_USER_HOME
           distributionPath=wrapper/dists
           zipStoreBase=GRADLE_USER_HOME
           zipStorePath=wrapper/dists
           distributionUrl=https\://services.gradle.org/distributions/gradle-8.12-all.zip
-          EOF
+          EOL
+          echo "✅ Created gradle-wrapper.properties"
 
           # Create gradlew script
           echo "📝 Creating gradlew script..."
-          cat > android/gradlew <<EOF
-          #!/usr/bin/env sh
+          cat > android/gradlew << EOL
+          #!/bin/sh
           exec java -cp android/gradle/wrapper/gradle-wrapper.jar org.gradle.wrapper.GradleWrapperMain "\$@"
-          EOF
+          EOL
 
           # Make gradlew executable
           chmod +x android/gradlew
+          echo "✅ Created gradlew script"
+
+          # Verify gradlew script
+          echo "🔍 Verifying gradlew script..."
+          if [ ! -x android/gradlew ]; then
+            echo "❌ gradlew script is not executable"
+            exit 1
+          fi
+          echo "✅ Verified gradlew script"
 
           # Clean Gradle cache and stop daemons
           echo "🧹 Cleaning Gradle cache and stopping daemons..."
-          cd android
-          ./gradlew --stop || true
-          cd ..
+          rm -rf ~/.gradle/caches/
+          ./android/gradlew --stop || true
+          echo "✅ Cleaned Gradle cache"
 
           # Verify Gradle version
           echo "🔍 Verifying Gradle version..."
-          cd android
-          ./gradlew --version
-          cd ..
+          ./android/gradlew --version
+          echo "✅ Verified Gradle version"
+
+          # Get Flutter packages
+          echo "=== Getting Flutter Packages ==="
+          flutter pub get
+          echo "✅ Got Flutter packages"
 
           # Validate iOS environment
           echo "🍎 Checking iOS environment..."
