@@ -908,6 +908,9 @@ workflows:
 
           cd android
 
+          # Create gradle wrapper directory if it doesn't exist
+          mkdir -p gradle/wrapper
+
           # Force update Gradle wrapper to 8.12
           echo "📦 Updating Gradle wrapper to version 8.12..."
           cat > gradle/wrapper/gradle-wrapper.properties <<EOF
@@ -918,22 +921,26 @@ workflows:
           distributionUrl=https\://services.gradle.org/distributions/gradle-8.12-all.zip
           EOF
 
+          # Download Gradle wrapper files if they don't exist
+          if [ ! -f "gradle/wrapper/gradle-wrapper.jar" ]; then
+            echo "📥 Downloading Gradle wrapper JAR..."
+            curl -o gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/v8.12.0/gradle/wrapper/gradle-wrapper.jar
+          fi
+
+          # Create gradlew script if it doesn't exist
+          if [ ! -f "gradlew" ]; then
+            echo "📝 Creating gradlew script..."
+            cat > gradlew <<EOF
+          #!/usr/bin/env sh
+          exec java -jar gradle/wrapper/gradle-wrapper.jar "\$@"
+          EOF
+            chmod +x gradlew
+          fi
+
           # Clean Gradle cache and stop daemons
           echo "🧹 Cleaning Gradle cache and stopping daemons..."
           rm -rf ~/.gradle/caches/
           ./gradlew --stop || true
-
-          # Ensure gradlew exists and is executable
-          if [ ! -f "./gradlew" ]; then
-            echo "📦 Generating Gradle wrapper..."
-            if command -v gradle >/dev/null 2>&1; then
-              gradle wrapper --gradle-version=8.12
-            else
-              echo "❌ Gradle is not installed on the system."
-              exit 1
-            fi
-          fi
-          chmod +x ./gradlew
 
           # Verify Gradle version
           echo "🔍 Verifying Gradle version..."
@@ -944,8 +951,6 @@ workflows:
           ./gradlew clean
 
           cd ..
-
-          echo "✅ Android Gradle wrapper initialized successfully"
 
           # Validate iOS environment
           echo "🍎 Checking iOS environment..."
