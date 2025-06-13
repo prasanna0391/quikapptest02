@@ -245,7 +245,7 @@ else
     echo -e "${YELLOW}⚠️  Gradle wrapper not found, generating it...${NC}"
     # Generate gradlew wrapper if it doesn't exist
     if command -v gradle >/dev/null 2>&1; then
-        gradle wrapper
+        gradle wrapper --gradle-version=8.12
         if [ -f "./gradlew" ]; then
             echo -e "${GREEN}✅ Generated gradlew wrapper, running clean...${NC}"
             ./gradlew clean

@@ -190,19 +190,38 @@ workflows:
 
           cd android
 
-          # Check if gradlew exists, if not, generate it
-          if [ ! -f "./gradlew" ]; then
-              echo "📦 Generating Gradle wrapper..."
+          # Check current Gradle version in wrapper properties
+          CURRENT_GRADLE_VERSION=""
+          if [ -f "gradle/wrapper/gradle-wrapper.properties" ]; then
+              CURRENT_GRADLE_VERSION=$(grep "distributionUrl" gradle/wrapper/gradle-wrapper.properties | sed 's/.*gradle-\([0-9.]*\)-.*/\1/')
+              echo "📋 Current Gradle wrapper version: $CURRENT_GRADLE_VERSION"
+          fi
+
+          # Check if gradlew exists and is executable
+          if [ ! -f "./gradlew" ] || [ ! -x "./gradlew" ]; then
+              echo "📦 Generating/fixing Gradle wrapper..."
               if command -v gradle >/dev/null 2>&1; then
-                  gradle wrapper --gradle-version=8.0
+                  gradle wrapper --gradle-version=8.12
                   chmod +x gradlew
-                  echo "✅ Gradle wrapper generated"
+                  echo "✅ Gradle wrapper generated with version 8.12"
               else
                   echo "⚠️  Gradle not available, Flutter will handle this"
               fi
           else
-              echo "✅ Gradle wrapper already exists"
+              echo "✅ Gradle wrapper already exists and is executable"
+              # Ensure it's executable
               chmod +x gradlew
+              
+              # Verify the version is compatible (at least 8.9)
+              if [ -n "$CURRENT_GRADLE_VERSION" ]; then
+                  MAJOR_VERSION=$(echo $CURRENT_GRADLE_VERSION | cut -d. -f1)
+                  MINOR_VERSION=$(echo $CURRENT_GRADLE_VERSION | cut -d. -f2)
+                  if [ "$MAJOR_VERSION" -lt 8 ] || ([ "$MAJOR_VERSION" -eq 8 ] && [ "$MINOR_VERSION" -lt 9 ]); then
+                      echo "⚠️  Gradle version $CURRENT_GRADLE_VERSION is too old, upgrading to 8.12..."
+                      gradle wrapper --gradle-version=8.12
+                      chmod +x gradlew
+                  fi
+              fi
           fi
 
           cd ..
@@ -825,20 +844,40 @@ workflows:
           set -e
           echo "🔧 Initializing build environment for both platforms..."
 
-          # Initialize Android Gradle wrapper
+          # Initialize Android Gradle wrapper with version checking
           cd android
-          if [ ! -f "./gradlew" ]; then
-              echo "📦 Generating Android Gradle wrapper..."
+
+          # Check current Gradle version in wrapper properties
+          CURRENT_GRADLE_VERSION=""
+          if [ -f "gradle/wrapper/gradle-wrapper.properties" ]; then
+              CURRENT_GRADLE_VERSION=$(grep "distributionUrl" gradle/wrapper/gradle-wrapper.properties | sed 's/.*gradle-\([0-9.]*\)-.*/\1/')
+              echo "📋 Current Gradle wrapper version: $CURRENT_GRADLE_VERSION"
+          fi
+
+          # Check if gradlew exists and is executable
+          if [ ! -f "./gradlew" ] || [ ! -x "./gradlew" ]; then
+              echo "📦 Generating/fixing Android Gradle wrapper..."
               if command -v gradle >/dev/null 2>&1; then
-                  gradle wrapper --gradle-version=8.0
+                  gradle wrapper --gradle-version=8.12
                   chmod +x gradlew
-                  echo "✅ Android Gradle wrapper generated"
+                  echo "✅ Android Gradle wrapper generated with version 8.12"
               else
                   echo "⚠️  Gradle not available, Flutter will handle this"
               fi
           else
-              echo "✅ Android Gradle wrapper already exists"
+              echo "✅ Android Gradle wrapper already exists and is executable"
               chmod +x gradlew
+              
+              # Verify the version is compatible (at least 8.9)
+              if [ -n "$CURRENT_GRADLE_VERSION" ]; then
+                  MAJOR_VERSION=$(echo $CURRENT_GRADLE_VERSION | cut -d. -f1)
+                  MINOR_VERSION=$(echo $CURRENT_GRADLE_VERSION | cut -d. -f2)
+                  if [ "$MAJOR_VERSION" -lt 8 ] || ([ "$MAJOR_VERSION" -eq 8 ] && [ "$MINOR_VERSION" -lt 9 ]); then
+                      echo "⚠️  Gradle version $CURRENT_GRADLE_VERSION is too old, upgrading to 8.12..."
+                      gradle wrapper --gradle-version=8.12
+                      chmod +x gradlew
+                  fi
+              fi
           fi
           cd ..
 
