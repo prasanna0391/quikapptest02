@@ -287,7 +287,7 @@ workflows:
               echo "⚠️  Android main.sh not found, using enhanced fallback build process..."
               
               # Enhanced Fallback: Set up Android code signing
-              echo "�� Setting up Android code signing..."
+              echo "🔐 Setting up Android code signing..."
               if [ -n "$KEY_STORE" ]; then
                   echo "📥 Downloading keystore..."
                   wget -O android/app/keystore.jks "$KEY_STORE"
@@ -870,45 +870,25 @@ workflows:
         script: flutter pub get
       - name: Initialize Build Environment
         script: |
-          #!/usr/bin/env bash
           set -e
           echo "🔧 Initializing build environment for both platforms..."
 
-          # Initialize Android Gradle wrapper with version checking
           cd android
 
-          # Check current Gradle version in wrapper properties
-          CURRENT_GRADLE_VERSION=""
-          if [ -f "gradle/wrapper/gradle-wrapper.properties" ]; then
-              CURRENT_GRADLE_VERSION=$(grep "distributionUrl" gradle/wrapper/gradle-wrapper.properties | sed 's/.*gradle-\([0-9.]*\)-.*/\1/')
-              echo "📋 Current Gradle wrapper version: $CURRENT_GRADLE_VERSION"
+          # Ensure gradlew exists and is executable
+          if [ ! -f "./gradlew" ]; then
+            if command -v gradle >/dev/null 2>&1; then
+              gradle wrapper --gradle-version=8.12
+            else
+              echo "❌ Gradle is not installed on the system."
+              exit 1
+            fi
           fi
+          chmod +x ./gradlew
 
-          # Check if gradlew exists and is executable
-          if [ ! -f "./gradlew" ] || [ ! -x "./gradlew" ]; then
-              echo "📦 Generating/fixing Android Gradle wrapper..."
-              if command -v gradle >/dev/null 2>&1; then
-                  gradle wrapper --gradle-version=8.12
-                  chmod +x gradlew
-                  echo "✅ Android Gradle wrapper generated with version 8.12"
-              else
-                  echo "⚠️  Gradle not available, Flutter will handle this"
-              fi
-          else
-              echo "✅ Android Gradle wrapper already exists and is executable"
-              chmod +x gradlew
+          # Print gradle version for debug
+          ./gradlew --version
 
-              # Verify the version is compatible (at least 8.9)
-              if [ -n "$CURRENT_GRADLE_VERSION" ]; then
-                  MAJOR_VERSION=$(echo $CURRENT_GRADLE_VERSION | cut -d. -f1)
-                  MINOR_VERSION=$(echo $CURRENT_GRADLE_VERSION | cut -d. -f2)
-                  if [ "$MAJOR_VERSION" -lt 8 ] || ([ "$MAJOR_VERSION" -eq 8 ] && [ "$MINOR_VERSION" -lt 9 ]); then
-                      echo "⚠️  Gradle version $CURRENT_GRADLE_VERSION is too old, upgrading to 8.12..."
-                      gradle wrapper --gradle-version=8.12
-                      chmod +x gradlew
-                  fi
-              fi
-          fi
           cd ..
 
           # Validate iOS environment
