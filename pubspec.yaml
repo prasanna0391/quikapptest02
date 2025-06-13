@@ -76,7 +76,7 @@ flutter_launcher_icons:
     generate: false
   macos:
     generate: false
- x
+
 flutter:
   uses-material-design: true
   assets:
