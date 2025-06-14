@@ -68,3 +68,7 @@ export KEYSTORE_FILE="keystore.jks"
 export KEYSTORE_PASSWORD="android"
 export KEY_ALIAS="androiddebugkey"
 export KEY_PASSWORD="android"
+
+# Firebase Configuration
+export FIREBASE_CONFIG_URL=""  # Set this if you have a Firebase config URL
+export FIREBASE_ENABLED=false  # Set to true if Firebase is enabled

@@ -168,7 +168,20 @@ EOF
 
 # Setup Firebase
 print_section "Setting up Firebase"
-download_firebase_config "Android" "$FIREBASE_CONFIG_ANDROID" "$ANDROID_FIREBASE_CONFIG_PATH"
+if [ -n "$FIREBASE_CONFIG_URL" ]; then
+    echo "📥 Downloading Firebase config for Android..."
+    if ! curl -L "$FIREBASE_CONFIG_URL" -o "$ANDROID_FIREBASE_CONFIG_PATH" --retry 3 --retry-delay 5; then
+        echo "❌ Failed to download Firebase config"
+        exit 1
+    fi
+    echo "✅ Firebase config downloaded successfully"
+else
+    echo "⚠️ No Firebase config URL provided, skipping Firebase setup"
+    # Create empty google-services.json if it doesn't exist
+    if [ ! -f "$ANDROID_FIREBASE_CONFIG_PATH" ]; then
+        echo "{}" > "$ANDROID_FIREBASE_CONFIG_PATH"
+    fi
+fi
 
 # Build APK
 print_section "Building APK"
