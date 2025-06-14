@@ -64,15 +64,15 @@ rm -rf android/app/build
 echo ""
 
 # 3.5. Initialize Gradle wrapper with official distribution (only if needed)
-cd "$SCRIPT_DIR/../../../android"
 echo "--- Initializing Gradle Wrapper ---"
+cd "$SCRIPT_DIR/../../../android"
 
 # Skip Gradle wrapper initialization in CI environments (like Codemagic)
 # since it's already handled by the CI workflow
 if [ -n "$CI" ]; then
     echo "🔍 Running in CI environment, skipping Gradle wrapper initialization..."
     echo "✅ Using pre-configured Gradle wrapper from CI workflow"
-    cd "$SCRIPT_DIR"
+    cd "$SCRIPT_DIR/../../../"
     echo ""
 else
     # Backup local.properties if it exists (both in android and parent directory)
@@ -163,7 +163,7 @@ EOL
         cp local.properties ../local.properties
     fi
 
-    cd "$SCRIPT_DIR"
+    cd "$SCRIPT_DIR/../../../"
     echo ""
 fi
 
