@@ -39,7 +39,7 @@ SUCCESS_TEMPLATE() {
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1A2E5B 0%, #3B5998 100%);
             color: white;
             padding: 30px;
             text-align: center;
@@ -120,7 +120,7 @@ SUCCESS_TEMPLATE() {
         .button {
             display: inline-block;
             padding: 12px 24px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1A2E5B 0%, #3B5998 100%);
             color: white;
             text-decoration: none;
             border-radius: 6px;
@@ -242,7 +242,7 @@ ERROR_TEMPLATE() {
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .header {
-            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            background: linear-gradient(135deg, #A52A2A 0%, #DC3545 100%);
             color: white;
             padding: 30px;
             text-align: center;
@@ -285,24 +285,56 @@ ERROR_TEMPLATE() {
             border-radius: 4px;
             overflow-x: auto;
             font-size: 0.9em;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
-        .troubleshooting {
-            margin: 20px 0;
-            padding: 15px;
+        .build-info {
             background: #f8f9fa;
+            padding: 15px;
             border-radius: 6px;
+            margin: 20px 0;
         }
-        .troubleshooting h3 {
+        .build-info h3 {
             margin: 0 0 10px 0;
             color: #495057;
         }
-        .troubleshooting ul {
+        .build-info ul {
+            margin: 0;
+            padding-left: 20px;
+            list-style: none;
+        }
+        .build-info li {
+            margin: 5px 0;
+            color: #6c757d;
+        }
+        .build-info li strong {
+            color: #495057;
+        }
+        .resolution-steps {
+            margin: 20px 0;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 6px;
+            border: 1px solid #c8e6c9;
+        }
+        .resolution-steps h3 {
+            margin: 0 0 10px 0;
+            color: #2e7d32;
+        }
+        .resolution-steps ol {
             margin: 0;
             padding-left: 20px;
         }
-        .troubleshooting li {
-            margin: 5px 0;
-            color: #6c757d;
+        .resolution-steps li {
+            margin: 8px 0;
+            color: #1b5e20;
+        }
+        .resolution-steps code {
+            background: #fff;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
         }
         .links {
             margin: 20px 0;
@@ -311,7 +343,7 @@ ERROR_TEMPLATE() {
         .button {
             display: inline-block;
             padding: 12px 24px;
-            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            background: linear-gradient(135deg, #A52A2A 0%, #DC3545 100%);
             color: white;
             text-decoration: none;
             border-radius: 6px;
@@ -370,23 +402,40 @@ ERROR_TEMPLATE() {
                 <div class="status-icon">❌</div>
                 <h2>Build Failed</h2>
             </div>
+            
+            <div class="build-info">
+                <h3>Build Information</h3>
+                <ul>
+                    <li><strong>Project:</strong> ${APP_NAME:-QuikApp Project}</li>
+                    <li><strong>Package:</strong> ${PKG_NAME:-com.quikapp.project}</li>
+                    <li><strong>Version:</strong> ${VERSION_NAME:-1.0.0}</li>
+                    <li><strong>Build Time:</strong> $(date '+%Y-%m-%d %H:%M:%S')</li>
+                    <li><strong>Build ID:</strong> $(date +%Y%m%d_%H%M%S)</li>
+                </ul>
+            </div>
+
             <div class="error-details">
                 <h3>Error Details</h3>
                 <pre>${ERROR_DETAILS}</pre>
             </div>
-            <div class="troubleshooting">
-                <h3>Troubleshooting Steps</h3>
-                <ul>
-                    <li>Check your build configuration in the QuikApp dashboard</li>
-                    <li>Verify all required assets and dependencies are present</li>
-                    <li>Review the build logs for specific error messages</li>
-                    <li>Ensure your app's package name and version are correct</li>
-                </ul>
+
+            <div class="resolution-steps">
+                <h3>🔧 Resolution Steps</h3>
+                <ol>
+                    <li>Check the error details above for specific issues</li>
+                    <li>Review the build logs for more information</li>
+                    <li>Run <code>flutter clean</code> and try building again</li>
+                    <li>Update dependencies with <code>flutter pub upgrade</code></li>
+                    <li>Verify Android SDK and build tools versions</li>
+                    <li>Contact the development team if the issue persists</li>
+                </ol>
             </div>
+
             <div class="support">
                 <h3>Need Help?</h3>
                 <p>Our support team is ready to assist you with any build issues.</p>
             </div>
+
             <div class="links">
                 <a href="https://app.quikapp.co" class="button">Access Dashboard</a>
                 <a href="https://quikapp.co/support" class="button">Get Support</a>
