@@ -33,9 +33,13 @@ print_section "Starting Combined Build Process"
 print_section "Setting up environment"
 find "$SCRIPT_DIR" -type f -name "*.sh" -exec chmod +x {} \;
 
-# Load balance variables first
-print_section "Loading balance variables"
-source "$(dirname "$0")/balance_vars.sh"
+# Load admin variables
+if [ -f "$(dirname "$0")/admin_vars.sh" ]; then
+    source "$(dirname "$0")/admin_vars.sh"
+else
+    echo "❌ admin_vars.sh not found"
+    exit 1
+fi
 
 # Ensure CM_BUILD_DIR is set
 if [ -z "$CM_BUILD_DIR" ]; then
