@@ -49,8 +49,8 @@ environment: &default_env
     BOTTOMMENU_VISIBLE_ON: "${BOTTOMMENU_VISIBLE_ON}"
 
     # Firebase Configuration - API required for push notifications
-    firebase_config_android: "https://raw.githubusercontent.com/prasanna91/QuikApp/main/google-services-gc.json"
-    firebase_config_ios: "https://raw.githubusercontent.com/prasanna91/QuikApp/main/GoogleService-Info-gc.plist"
+    firebase_config_android: "${firebase_config_android}"
+    firebase_config_ios: "${firebase_config_ios}"
 
     # iOS Configuration - API required for iOS builds
     APPLE_TEAM_ID: "${APPLE_TEAM_ID}"
@@ -204,13 +204,21 @@ scripts:
 
 workflows:
   android-publish:
-    name: Android Publish
+    name: Android Build
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: codemagic
     environment:
       flutter: stable
       xcode: latest
-      cocoapods: default
+      node: latest
+      groups:
+        - google_credentials
+        - android_credentials
+        - app_store_credentials
+        - firebase_credentials
       vars:
-        # App Configuration - Required from API
         VERSION_NAME: "${VERSION_NAME}"
         VERSION_CODE: "${VERSION_CODE}"
         APP_NAME: "${APP_NAME}"
@@ -219,8 +227,6 @@ workflows:
         PKG_NAME: "${PKG_NAME}"
         BUNDLE_ID: "${BUNDLE_ID}"
         EMAIL_ID: "${EMAIL_ID}"
-
-        # Feature Flags - API configurable with proper defaults
         PUSH_NOTIFY: "${PUSH_NOTIFY}"
         IS_CHATBOT: "${IS_CHATBOT}"
         IS_DEEPLINK: "${IS_DEEPLINK}"
@@ -228,44 +234,6 @@ workflows:
         IS_PULLDOWN: "${IS_PULLDOWN}"
         IS_BOTTOMMENU: "${IS_BOTTOMMENU}"
         IS_LOAD_IND: "${IS_LOAD_IND}"
-
-        # Assets - API configurable with empty defaults for optional fields
-        LOGO_URL: "${LOGO_URL}"
-        SPLASH: "${SPLASH}"
-        SPLASH_BG: "${SPLASH_BG}"
-        SPLASH_BG_COLOR: "${SPLASH_BG_COLOR}"
-        SPLASH_TAGLINE: "${SPLASH_TAGLINE}"
-        SPLASH_TAGLINE_COLOR: "${SPLASH_TAGLINE_COLOR}"
-        SPLASH_ANIMATION: "${SPLASH_ANIMATION}"
-        SPLASH_DURATION: "${SPLASH_DURATION}"
-
-        # Bottom Menu Configuration - API configurable with empty defaults
-        BOTTOMMENU_ITEMS: "${BOTTOMMENU_ITEMS}"
-        BOTTOMMENU_BG_COLOR: "${BOTTOMMENU_BG_COLOR}"
-        BOTTOMMENU_ICON_COLOR: "${BOTTOMMENU_ICON_COLOR}"
-        BOTTOMMENU_TEXT_COLOR: "${BOTTOMMENU_TEXT_COLOR}"
-        BOTTOMMENU_FONT: "${BOTTOMMENU_FONT}"
-        BOTTOMMENU_FONT_SIZE: "${BOTTOMMENU_FONT_SIZE}"
-        BOTTOMMENU_FONT_BOLD: "${BOTTOMMENU_FONT_BOLD}"
-        BOTTOMMENU_FONT_ITALIC: "${BOTTOMMENU_FONT_ITALIC}"
-        BOTTOMMENU_ACTIVE_TAB_COLOR: "${BOTTOMMENU_ACTIVE_TAB_COLOR}"
-        BOTTOMMENU_ICON_POSITION: "${BOTTOMMENU_ICON_POSITION}"
-        BOTTOMMENU_VISIBLE_ON: "${BOTTOMMENU_VISIBLE_ON}"
-
-        # Firebase Configuration - API required for push notifications
-        FIREBASE_CONFIG_ANDROID: "${firebase_config_android}"
-        FIREBASE_CONFIG_IOS: "${firebase_config_ios}"
-
-        # Android Configuration - API required for Android builds
-        KEY_STORE: "${KEY_STORE}"
-        CM_KEYSTORE_PASSWORD: "${CM_KEYSTORE_PASSWORD}"
-        CM_KEY_ALIAS: "${CM_KEY_ALIAS}"
-        CM_KEY_PASSWORD: "${CM_KEY_PASSWORD}"
-        COMPILE_SDK_VERSION: "35"
-        MIN_SDK_VERSION: "21"
-        TARGET_SDK_VERSION: "35"
-
-        # Permissions - API configurable with secure defaults (all false unless specified)
         IS_CAMERA: "${IS_CAMERA}"
         IS_LOCATION: "${IS_LOCATION}"
         IS_MIC: "${IS_MIC}"
@@ -274,284 +242,6 @@ workflows:
         IS_BIOMETRIC: "${IS_BIOMETRIC}"
         IS_CALENDAR: "${IS_CALENDAR}"
         IS_STORAGE: "${IS_STORAGE}"
-
-        # Email Configuration - Optional with defaults
-        SMTP_SERVER: "smtp.gmail.com"
-        SMTP_PORT: "587"
-        SMTP_USERNAME: "prasannasrie@gmail.com"
-        SMTP_PASSWORD: "jbbf nzhm zoay lbwb"
-    scripts:
-      - name: Setup Build Environment
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "🔧 Setting up build environment..."
-
-          # Make all scripts executable
-          find lib/scripts -type f -name "*.sh" -exec chmod +x {} \;
-
-          # Create output directory
-          mkdir -p output
-
-          # Set workflow name for email notifications
-          export WORKFLOW_NAME="Android Publish"
-
-          # Source environment variables
-          source lib/scripts/combined/export.sh
-
-          echo "✅ Build environment setup complete"
-      - name: Validate Environment
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "🔍 Validating environment..."
-
-          # Run validation script
-          bash lib/scripts/combined/validate.sh
-
-          echo "✅ Environment validation complete"
-      - name: Configure App Details
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "🔧 Configuring app details..."
-
-          # Update app name in Android
-          sed -i '' "s/android:label=\"[^\"]*\"/android:label=\"$APP_NAME\"/" android/app/src/main/AndroidManifest.xml
-
-          # Update package name in Android
-          sed -i '' "s/applicationId \"[^\"]*\"/applicationId \"$PKG_NAME\"/" android/app/build.gradle
-
-          # Download and setup app icon
-          if [ -n "$LOGO_URL" ]; then
-            echo "📥 Downloading app icon..."
-            wget -O assets/icon.png "$LOGO_URL"
-            flutter pub add flutter_launcher_icons
-            flutter pub run flutter_launcher_icons
-          fi
-
-          # Download and setup splash screen
-          if [ "$IS_SPLASH" = "true" ]; then
-            echo "📥 Downloading splash assets..."
-            if [ -n "$SPLASH" ]; then
-              wget -O assets/splash.png "$SPLASH"
-            fi
-            if [ -n "$SPLASH_BG" ]; then
-              wget -O assets/splash_bg.png "$SPLASH_BG"
-            fi
-            flutter pub add flutter_native_splash
-            flutter pub run flutter_native_splash:create
-          fi
-
-          echo "✅ App configuration complete"
-      - name: Run Android Build
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "🚀 Running Android build process..."
-
-          # Run the main combined build script
-          bash lib/scripts/combined/main.sh
-
-          echo "✅ Android build process completed"
-      - name: Revert Changes
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "🔄 Reverting project changes..."
-
-          # Revert AndroidManifest.xml
-          git checkout android/app/src/main/AndroidManifest.xml
-
-          # Revert build.gradle
-          git checkout android/app/build.gradle
-
-          # Remove downloaded assets
-          rm -f assets/icon.png
-          rm -f assets/splash.png
-          rm -f assets/splash_bg.png
-
-          # Remove generated files
-          rm -f pubspec.yaml.bak
-          rm -rf android/app/src/main/res/mipmap-*
-          rm -rf android/app/src/main/res/drawable-*
-
-          echo "✅ Project changes reverted"
-      - name: Send Build Notification
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "📧 Sending build notification..."
-
-          # Send email notification
-          bash lib/scripts/combined/send_error_email.sh "Build Complete" "Android build process completed successfully"
-
-          echo "✅ Build notification sent"
-    artifacts:
-      - build/app/outputs/flutter-apk/app-release.apk
-      - build/app/outputs/bundle/release/app-release.aab
-      - output/
-    publishing:
-      email:
-        recipients:
-          - $EMAIL_ID
-        notify:
-          success: false
-          failure: false
-
-  ios-publish:
-    name: iOS Publish
-    environment: *default_env
-    scripts:
-      - name: Setup Build Environment
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "🔧 Setting up build environment..."
-
-          # Make all scripts executable
-          find lib/scripts -type f -name "*.sh" -exec chmod +x {} \;
-
-          # Create output directory
-          mkdir -p output
-
-          # Set workflow name for email notifications
-          export WORKFLOW_NAME="iOS Publish"
-
-          # Source environment variables
-          source lib/scripts/combined/export.sh
-
-          echo "✅ Build environment setup complete"
-      - name: Validate Environment
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "🔍 Validating environment..."
-
-          # Run validation script
-          bash lib/scripts/combined/validate.sh
-
-          echo "✅ Environment validation complete"
-      - name: Configure App Details
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "🔧 Configuring app details..."
-
-          # Update app name in iOS
-          /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName $APP_NAME" ios/Runner/Info.plist
-          /usr/libexec/PlistBuddy -c "Set :CFBundleName $APP_NAME" ios/Runner/Info.plist
-
-          # Update bundle identifier in iOS
-          /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $BUNDLE_ID" ios/Runner/Info.plist
-
-          # Download and setup app icon
-          if [ -n "$LOGO_URL" ]; then
-            echo "📥 Downloading app icon..."
-            wget -O assets/icon.png "$LOGO_URL"
-            flutter pub add flutter_launcher_icons
-            flutter pub run flutter_launcher_icons
-          fi
-
-          # Download and setup splash screen
-          if [ "$IS_SPLASH" = "true" ]; then
-            echo "📥 Downloading splash assets..."
-            if [ -n "$SPLASH" ]; then
-              wget -O assets/splash.png "$SPLASH"
-            fi
-            if [ -n "$SPLASH_BG" ]; then
-              wget -O assets/splash_bg.png "$SPLASH_BG"
-            fi
-            flutter pub add flutter_native_splash
-            flutter pub run flutter_native_splash:create
-          fi
-
-          echo "✅ App configuration complete"
-      - name: Run iOS Build
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "🚀 Running iOS build process..."
-
-          # Run the main combined build script
-          bash lib/scripts/combined/main.sh
-
-          echo "✅ iOS build process completed"
-      - name: Revert Changes
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "🔄 Reverting project changes..."
-
-          # Revert Info.plist
-          git checkout ios/Runner/Info.plist
-
-          # Remove downloaded assets
-          rm -f assets/icon.png
-          rm -f assets/splash.png
-          rm -f assets/splash_bg.png
-
-          # Remove generated files
-          rm -f pubspec.yaml.bak
-          rm -rf ios/Runner/Assets.xcassets/AppIcon.appiconset/*
-          rm -rf ios/Runner/Assets.xcassets/Splash.imageset/*
-
-          echo "✅ Project changes reverted"
-      - name: Send Build Notification
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "📧 Sending build notification..."
-
-          # Send email notification
-          bash lib/scripts/combined/send_error_email.sh "Build Complete" "iOS build process completed successfully"
-
-          echo "✅ Build notification sent"
-    artifacts:
-      - build/ios/ipa/Runner.ipa
-      - build/ios/archive/Runner.xcarchive
-      - output/
-    publishing:
-      email:
-        recipients:
-          - $EMAIL_ID
-        notify:
-          success: false
-          failure: false
-
-  combined-workflow:
-    name: Combined Android & iOS Build
-    max_build_duration: 120
-    instance_type: mac_mini_m2
-    environment:
-      flutter: stable
-      xcode: latest
-      node: v18.17.0
-      java: 17
-      groups:
-        - google_credentials
-        - appstore_credentials
-      vars:
-        # App Configuration - Required from API
-        VERSION_NAME: "${VERSION_NAME}"
-        VERSION_CODE: "${VERSION_CODE}"
-        APP_NAME: "${APP_NAME}"
-        ORG_NAME: "${ORG_NAME}"
-        WEB_URL: "${WEB_URL}"
-        PKG_NAME: "${PKG_NAME}"
-        BUNDLE_ID: "${BUNDLE_ID}"
-        EMAIL_ID: "${EMAIL_ID}"
-
-        # Feature Flags - API configurable with proper defaults
-        PUSH_NOTIFY: "${PUSH_NOTIFY}"
-        IS_CHATBOT: "${IS_CHATBOT}"
-        IS_DEEPLINK: "${IS_DEEPLINK}"
-        IS_SPLASH: "${IS_SPLASH}"
-        IS_PULLDOWN: "${IS_PULLDOWN}"
-        IS_BOTTOMMENU: "${IS_BOTTOMMENU}"
-        IS_LOAD_IND: "${IS_LOAD_IND}"
-
-        # Assets - API configurable with empty defaults for optional fields
         LOGO_URL: "${LOGO_URL}"
         SPLASH: "${SPLASH}"
         SPLASH_BG: "${SPLASH_BG}"
@@ -560,8 +250,6 @@ workflows:
         SPLASH_TAGLINE_COLOR: "${SPLASH_TAGLINE_COLOR}"
         SPLASH_ANIMATION: "${SPLASH_ANIMATION}"
         SPLASH_DURATION: "${SPLASH_DURATION}"
-
-        # Bottom Menu Configuration - API configurable with empty defaults
         BOTTOMMENU_ITEMS: "${BOTTOMMENU_ITEMS}"
         BOTTOMMENU_BG_COLOR: "${BOTTOMMENU_BG_COLOR}"
         BOTTOMMENU_ICON_COLOR: "${BOTTOMMENU_ICON_COLOR}"
@@ -573,12 +261,8 @@ workflows:
         BOTTOMMENU_ACTIVE_TAB_COLOR: "${BOTTOMMENU_ACTIVE_TAB_COLOR}"
         BOTTOMMENU_ICON_POSITION: "${BOTTOMMENU_ICON_POSITION}"
         BOTTOMMENU_VISIBLE_ON: "${BOTTOMMENU_VISIBLE_ON}"
-
-        # Firebase Configuration - API required for push notifications
-        FIREBASE_CONFIG_ANDROID: "${firebase_config_android}"
-        FIREBASE_CONFIG_IOS: "${firebase_config_ios}"
-
-        # iOS Configuration - API required for iOS builds
+        firebase_config_android: "${firebase_config_android}"
+        firebase_config_ios: "${firebase_config_ios}"
         APPLE_TEAM_ID: "${APPLE_TEAM_ID}"
         APNS_KEY_ID: "${APNS_KEY_ID}"
         APNS_AUTH_KEY_URL: "${APNS_AUTH_KEY_URL}"
@@ -587,22 +271,59 @@ workflows:
         CERT_CER_URL: "${CERT_CER_URL}"
         CERT_KEY_URL: "${CERT_KEY_URL}"
         APP_STORE_CONNECT_KEY_IDENTIFIER: "${APP_STORE_CONNECT_KEY_IDENTIFIER}"
-        IPHONEOS_DEPLOYMENT_TARGET: "13.0"
-        COCOAPODS_PLATFORM: "ios"
-        EXPORT_METHOD: "app-store"
-        IS_DEVELOPMENT_PROFILE: "false"
-        IS_PRODUCTION_PROFILE: "true"
-
-        # Android Configuration - API required for Android builds
         KEY_STORE: "${KEY_STORE}"
         CM_KEYSTORE_PASSWORD: "${CM_KEYSTORE_PASSWORD}"
         CM_KEY_ALIAS: "${CM_KEY_ALIAS}"
         CM_KEY_PASSWORD: "${CM_KEY_PASSWORD}"
-        COMPILE_SDK_VERSION: "35"
-        MIN_SDK_VERSION: "21"
-        TARGET_SDK_VERSION: "35"
+    scripts:
+      - name: Load Balance Variables
+        script: |
+          source lib/scripts/android/balance_vars.sh
+      - name: Load Email Configuration
+        script: |
+          source lib/scripts/android/email_config.sh
+      - name: Run Android Build
+        script: |
+          bash lib/scripts/android/main.sh
+    artifacts:
+      - build/**/outputs/flutter-apk/*.apk
+      - build/**/outputs/bundle/release/*.aab
+    publishing:
+      email:
+        recipients:
+          - $EMAIL_ID
 
-        # Permissions - API configurable with secure defaults (all false unless specified)
+  ios-publish:
+    name: iOS Build
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: codemagic
+    environment:
+      flutter: stable
+      xcode: latest
+      node: latest
+      groups:
+        - google_credentials
+        - ios_credentials
+        - app_store_credentials
+        - firebase_credentials
+      vars:
+        VERSION_NAME: "${VERSION_NAME}"
+        VERSION_CODE: "${VERSION_CODE}"
+        APP_NAME: "${APP_NAME}"
+        ORG_NAME: "${ORG_NAME}"
+        WEB_URL: "${WEB_URL}"
+        PKG_NAME: "${PKG_NAME}"
+        BUNDLE_ID: "${BUNDLE_ID}"
+        EMAIL_ID: "${EMAIL_ID}"
+        PUSH_NOTIFY: "${PUSH_NOTIFY}"
+        IS_CHATBOT: "${IS_CHATBOT}"
+        IS_DEEPLINK: "${IS_DEEPLINK}"
+        IS_SPLASH: "${IS_SPLASH}"
+        IS_PULLDOWN: "${IS_PULLDOWN}"
+        IS_BOTTOMMENU: "${IS_BOTTOMMENU}"
+        IS_LOAD_IND: "${IS_LOAD_IND}"
         IS_CAMERA: "${IS_CAMERA}"
         IS_LOCATION: "${IS_LOCATION}"
         IS_MIC: "${IS_MIC}"
@@ -611,146 +332,144 @@ workflows:
         IS_BIOMETRIC: "${IS_BIOMETRIC}"
         IS_CALENDAR: "${IS_CALENDAR}"
         IS_STORAGE: "${IS_STORAGE}"
-
-        # iOS Permissions - API configurable with defaults
-        IS_PHOTO_LIBRARY: "${IS_PHOTO_LIBRARY}"
-        IS_PHOTO_LIBRARY_ADD: "${IS_PHOTO_LIBRARY_ADD}"
-        IS_FACE_ID: "${IS_FACE_ID}"
-        IS_TOUCH_ID: "${IS_TOUCH_ID}"
-
-        # Email Configuration - Optional with defaults
-        SMTP_SERVER: "smtp.gmail.com"
-        SMTP_PORT: "587"
-        SMTP_USERNAME: "prasannasrie@gmail.com"
-        SMTP_PASSWORD: "jbbf nzhm zoay lbwb"
+        LOGO_URL: "${LOGO_URL}"
+        SPLASH: "${SPLASH}"
+        SPLASH_BG: "${SPLASH_BG}"
+        SPLASH_BG_COLOR: "${SPLASH_BG_COLOR}"
+        SPLASH_TAGLINE: "${SPLASH_TAGLINE}"
+        SPLASH_TAGLINE_COLOR: "${SPLASH_TAGLINE_COLOR}"
+        SPLASH_ANIMATION: "${SPLASH_ANIMATION}"
+        SPLASH_DURATION: "${SPLASH_DURATION}"
+        BOTTOMMENU_ITEMS: "${BOTTOMMENU_ITEMS}"
+        BOTTOMMENU_BG_COLOR: "${BOTTOMMENU_BG_COLOR}"
+        BOTTOMMENU_ICON_COLOR: "${BOTTOMMENU_ICON_COLOR}"
+        BOTTOMMENU_TEXT_COLOR: "${BOTTOMMENU_TEXT_COLOR}"
+        BOTTOMMENU_FONT: "${BOTTOMMENU_FONT}"
+        BOTTOMMENU_FONT_SIZE: "${BOTTOMMENU_FONT_SIZE}"
+        BOTTOMMENU_FONT_BOLD: "${BOTTOMMENU_FONT_BOLD}"
+        BOTTOMMENU_FONT_ITALIC: "${BOTTOMMENU_FONT_ITALIC}"
+        BOTTOMMENU_ACTIVE_TAB_COLOR: "${BOTTOMMENU_ACTIVE_TAB_COLOR}"
+        BOTTOMMENU_ICON_POSITION: "${BOTTOMMENU_ICON_POSITION}"
+        BOTTOMMENU_VISIBLE_ON: "${BOTTOMMENU_VISIBLE_ON}"
+        firebase_config_android: "${firebase_config_android}"
+        firebase_config_ios: "${firebase_config_ios}"
+        APPLE_TEAM_ID: "${APPLE_TEAM_ID}"
+        APNS_KEY_ID: "${APNS_KEY_ID}"
+        APNS_AUTH_KEY_URL: "${APNS_AUTH_KEY_URL}"
+        CERT_PASSWORD: "${CERT_PASSWORD}"
+        PROFILE_URL: "${PROFILE_URL}"
+        CERT_CER_URL: "${CERT_CER_URL}"
+        CERT_KEY_URL: "${CERT_KEY_URL}"
+        APP_STORE_CONNECT_KEY_IDENTIFIER: "${APP_STORE_CONNECT_KEY_IDENTIFIER}"
+        KEY_STORE: "${KEY_STORE}"
+        CM_KEYSTORE_PASSWORD: "${CM_KEYSTORE_PASSWORD}"
+        CM_KEY_ALIAS: "${CM_KEY_ALIAS}"
+        CM_KEY_PASSWORD: "${CM_KEY_PASSWORD}"
     scripts:
-      - name: Setup Build Environment
+      - name: Load Balance Variables
         script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "🔧 Setting up build environment..."
-
-          # Make all scripts executable
-          find lib/scripts -type f -name "*.sh" -exec chmod +x {} \;
-
-          # Create output directory
-          mkdir -p output
-
-          # Set workflow name for email notifications
-          export WORKFLOW_NAME="Combined Android & iOS Build"
-
-          # Source environment variables
-          source lib/scripts/combined/export.sh
-
-          echo "✅ Build environment setup complete"
-      - name: Validate Environment
+          source lib/scripts/ios/balance_vars.sh
+      - name: Load Email Configuration
         script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "🔍 Validating environment..."
-
-          # Run validation script
-          bash lib/scripts/combined/validate.sh
-
-          echo "✅ Environment validation complete"
-      - name: Configure App Details
+          source lib/scripts/ios/email_config.sh
+      - name: Run iOS Build
         script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "🔧 Configuring app details..."
-
-          # Update app name in Android
-          sed -i '' "s/android:label=\"[^\"]*\"/android:label=\"$APP_NAME\"/" android/app/src/main/AndroidManifest.xml
-
-          # Update package name in Android
-          sed -i '' "s/applicationId \"[^\"]*\"/applicationId \"$PKG_NAME\"/" android/app/build.gradle
-
-          # Update app name in iOS
-          /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName $APP_NAME" ios/Runner/Info.plist
-          /usr/libexec/PlistBuddy -c "Set :CFBundleName $APP_NAME" ios/Runner/Info.plist
-
-          # Update bundle identifier in iOS
-          /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $BUNDLE_ID" ios/Runner/Info.plist
-
-          # Download and setup app icon
-          if [ -n "$LOGO_URL" ]; then
-            echo "📥 Downloading app icon..."
-            wget -O assets/icon.png "$LOGO_URL"
-            flutter pub add flutter_launcher_icons
-            flutter pub run flutter_launcher_icons
-          fi
-
-          # Download and setup splash screen
-          if [ "$IS_SPLASH" = "true" ]; then
-            echo "📥 Downloading splash assets..."
-            if [ -n "$SPLASH" ]; then
-              wget -O assets/splash.png "$SPLASH"
-            fi
-            if [ -n "$SPLASH_BG" ]; then
-              wget -O assets/splash_bg.png "$SPLASH_BG"
-            fi
-            flutter pub add flutter_native_splash
-            flutter pub run flutter_native_splash:create
-          fi
-
-          echo "✅ App configuration complete"
-      - name: Run Combined Build
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "🚀 Running combined build process..."
-
-          # Run the main combined build script
-          bash lib/scripts/combined/main.sh
-
-          echo "✅ Combined build process completed"
-      - name: Revert Changes
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "🔄 Reverting project changes..."
-
-          # Revert Android files
-          git checkout android/app/src/main/AndroidManifest.xml
-          git checkout android/app/build.gradle
-
-          # Revert iOS files
-          git checkout ios/Runner/Info.plist
-
-          # Remove downloaded assets
-          rm -f assets/icon.png
-          rm -f assets/splash.png
-          rm -f assets/splash_bg.png
-
-          # Remove generated files
-          rm -f pubspec.yaml.bak
-          rm -rf android/app/src/main/res/mipmap-*
-          rm -rf android/app/src/main/res/drawable-*
-          rm -rf ios/Runner/Assets.xcassets/AppIcon.appiconset/*
-          rm -rf ios/Runner/Assets.xcassets/Splash.imageset/*
-
-          echo "✅ Project changes reverted"
-      - name: Send Build Notification
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "📧 Sending build notification..."
-
-          # Send email notification
-          bash lib/scripts/combined/send_error_email.sh "Build Complete" "Combined build process completed successfully"
-
-          echo "✅ Build notification sent"
+          bash lib/scripts/ios/main.sh
     artifacts:
-      - build/app/outputs/flutter-apk/app-release.apk
-      - build/app/outputs/bundle/release/app-release.aab
-      - ios/build/ios/ipa/Runner.ipa
-      - build/ios/ipa/Runner.ipa
-      - build/ios/archive/Runner.xcarchive
-      - output/
+      - build/ios/ipa/*.ipa
     publishing:
       email:
         recipients:
           - $EMAIL_ID
-        notify:
-          success: false
-          failure: false
+
+  combined-workflow:
+    name: Combined Build
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: codemagic
+    environment:
+      flutter: stable
+      xcode: latest
+      node: latest
+      groups:
+        - google_credentials
+        - android_credentials
+        - ios_credentials
+        - app_store_credentials
+        - firebase_credentials
+      vars:
+        VERSION_NAME: "${VERSION_NAME}"
+        VERSION_CODE: "${VERSION_CODE}"
+        APP_NAME: "${APP_NAME}"
+        ORG_NAME: "${ORG_NAME}"
+        WEB_URL: "${WEB_URL}"
+        PKG_NAME: "${PKG_NAME}"
+        BUNDLE_ID: "${BUNDLE_ID}"
+        EMAIL_ID: "${EMAIL_ID}"
+        PUSH_NOTIFY: "${PUSH_NOTIFY}"
+        IS_CHATBOT: "${IS_CHATBOT}"
+        IS_DEEPLINK: "${IS_DEEPLINK}"
+        IS_SPLASH: "${IS_SPLASH}"
+        IS_PULLDOWN: "${IS_PULLDOWN}"
+        IS_BOTTOMMENU: "${IS_BOTTOMMENU}"
+        IS_LOAD_IND: "${IS_LOAD_IND}"
+        IS_CAMERA: "${IS_CAMERA}"
+        IS_LOCATION: "${IS_LOCATION}"
+        IS_MIC: "${IS_MIC}"
+        IS_NOTIFICATION: "${IS_NOTIFICATION}"
+        IS_CONTACT: "${IS_CONTACT}"
+        IS_BIOMETRIC: "${IS_BIOMETRIC}"
+        IS_CALENDAR: "${IS_CALENDAR}"
+        IS_STORAGE: "${IS_STORAGE}"
+        LOGO_URL: "${LOGO_URL}"
+        SPLASH: "${SPLASH}"
+        SPLASH_BG: "${SPLASH_BG}"
+        SPLASH_BG_COLOR: "${SPLASH_BG_COLOR}"
+        SPLASH_TAGLINE: "${SPLASH_TAGLINE}"
+        SPLASH_TAGLINE_COLOR: "${SPLASH_TAGLINE_COLOR}"
+        SPLASH_ANIMATION: "${SPLASH_ANIMATION}"
+        SPLASH_DURATION: "${SPLASH_DURATION}"
+        BOTTOMMENU_ITEMS: "${BOTTOMMENU_ITEMS}"
+        BOTTOMMENU_BG_COLOR: "${BOTTOMMENU_BG_COLOR}"
+        BOTTOMMENU_ICON_COLOR: "${BOTTOMMENU_ICON_COLOR}"
+        BOTTOMMENU_TEXT_COLOR: "${BOTTOMMENU_TEXT_COLOR}"
+        BOTTOMMENU_FONT: "${BOTTOMMENU_FONT}"
+        BOTTOMMENU_FONT_SIZE: "${BOTTOMMENU_FONT_SIZE}"
+        BOTTOMMENU_FONT_BOLD: "${BOTTOMMENU_FONT_BOLD}"
+        BOTTOMMENU_FONT_ITALIC: "${BOTTOMMENU_FONT_ITALIC}"
+        BOTTOMMENU_ACTIVE_TAB_COLOR: "${BOTTOMMENU_ACTIVE_TAB_COLOR}"
+        BOTTOMMENU_ICON_POSITION: "${BOTTOMMENU_ICON_POSITION}"
+        BOTTOMMENU_VISIBLE_ON: "${BOTTOMMENU_VISIBLE_ON}"
+        firebase_config_android: "${firebase_config_android}"
+        firebase_config_ios: "${firebase_config_ios}"
+        APPLE_TEAM_ID: "${APPLE_TEAM_ID}"
+        APNS_KEY_ID: "${APNS_KEY_ID}"
+        APNS_AUTH_KEY_URL: "${APNS_AUTH_KEY_URL}"
+        CERT_PASSWORD: "${CERT_PASSWORD}"
+        PROFILE_URL: "${PROFILE_URL}"
+        CERT_CER_URL: "${CERT_CER_URL}"
+        CERT_KEY_URL: "${CERT_KEY_URL}"
+        APP_STORE_CONNECT_KEY_IDENTIFIER: "${APP_STORE_CONNECT_KEY_IDENTIFIER}"
+        KEY_STORE: "${KEY_STORE}"
+        CM_KEYSTORE_PASSWORD: "${CM_KEYSTORE_PASSWORD}"
+        CM_KEY_ALIAS: "${CM_KEY_ALIAS}"
+        CM_KEY_PASSWORD: "${CM_KEY_PASSWORD}"
+    scripts:
+      - name: Load Balance Variables
+        script: |
+          source lib/scripts/combined/balance_vars.sh
+      - name: Load Email Configuration
+        script: |
+          source lib/scripts/combined/email_config.sh
+      - name: Run Combined Build
+        script: |
+          bash lib/scripts/combined/main.sh
+    artifacts:
+      - build/**/outputs/flutter-apk/*.apk
+      - build/**/outputs/bundle/release/*.aab
+      - build/ios/ipa/*.ipa
+    publishing:
+      email:
+        recipients:
+          - $EMAIL_ID

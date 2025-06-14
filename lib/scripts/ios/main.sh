@@ -1,238 +1,130 @@
 #!/bin/bash
 set -e
 
-# Source environment variables
-source "$(dirname "$0")/../export.sh"
+# Source download functions
+source lib/scripts/combined/download.sh
 
-echo "🚀 Starting iOS build process..."
-
-# Validate required environment variables
-if [ -z "$BUNDLE_ID" ] || [ -z "$APP_NAME" ] || [ -z "$VERSION_NAME" ] || [ -z "$VERSION_CODE" ]; then
-    echo "❌ Missing required environment variables"
+# Error handling function
+handle_error() {
+    local line_no=$1
+    local error_code=$2
+    local command=$3
+    echo "❌ Error occurred in $0 at line $line_no (exit code: $error_code)"
+    echo "Failed command: $command"
+    bash lib/scripts/combined/send_error_email.sh "Build Failed" "iOS build failed at line $line_no: $command"
     exit 1
-fi
+}
 
-# Create output directory
+# Set error handler
+trap 'handle_error ${LINENO} $? "$BASH_COMMAND"' ERR
+
+# Print section header
+print_section() {
+    echo "=== $1 ==="
+}
+
+# Main build process
+print_section "Starting iOS Build Process"
+
+# Setup environment
+print_section "Setting up environment"
+find lib/scripts -type f -name "*.sh" -exec chmod +x {} \;
 mkdir -p output
+source lib/scripts/combined/export.sh
 
-# Setup iOS code signing
-echo "🔐 Setting up iOS code signing..."
-KEYCHAIN_NAME="build.keychain"
-KEYCHAIN_PASSWORD="temporary"
+# Validate environment
+print_section "Validating environment"
+bash lib/scripts/combined/validate.sh
 
-# Create keychain with better error handling
-if ! security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"; then
-    echo "⚠️  Keychain creation failed, trying with cleanup..."
-    security delete-keychain "$KEYCHAIN_NAME" || true
-    security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
-fi
+# Configure app details
+print_section "Configuring app details"
+# Update app name in iOS
+/usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName $APP_NAME" ios/Runner/Info.plist
+/usr/libexec/PlistBuddy -c "Set :CFBundleName $APP_NAME" ios/Runner/Info.plist
 
-security default-keychain -s "$KEYCHAIN_NAME"
-security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
-security set-keychain-settings -t 3600 -u "$KEYCHAIN_NAME"
+# Update bundle identifier in iOS
+/usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $BUNDLE_ID" ios/Runner/Info.plist
 
-# Download and setup certificates with validation
-if [ -n "$CERT_CER_URL" ] && [ -n "$CERT_KEY_URL" ]; then
-    echo "📥 Downloading certificates..."
-    
-    if wget -O ios/distribution.cer "$CERT_CER_URL" && wget -O ios/privatekey.key "$CERT_KEY_URL"; then
-        echo "✅ Certificates downloaded"
+# Download and setup app icon
+download_app_icon
+
+# Download and setup splash screen
+download_splash_assets
+
+# Setup certificates and provisioning
+print_section "Setting up certificates and provisioning"
+setup_certificates() {
+    echo "Setting up certificates and provisioning..."
+    if download_certificates; then
+        # Create keychain
+        security create-keychain -p "$CERT_PASSWORD" build.keychain
+        security default-keychain -s build.keychain
+        security unlock-keychain -p "$CERT_PASSWORD" build.keychain
         
-        # Convert to P12 with error handling
-        if openssl pkcs12 -export -out ios/certificate.p12 -inkey ios/privatekey.key -in ios/distribution.cer -password pass:"$CERT_PASSWORD"; then
-            echo "✅ P12 certificate created"
-            
-            # Import certificate
-            if security import ios/certificate.p12 -k "$KEYCHAIN_NAME" -P "$CERT_PASSWORD" -T /usr/bin/codesign; then
-                security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
-                echo "✅ Certificate imported successfully"
-            else
-                echo "⚠️  Certificate import failed, continuing without code signing"
-            fi
-        else
-            echo "⚠️  P12 conversion failed, continuing without code signing"
-        fi
-    else
-        echo "⚠️  Certificate download failed, continuing without code signing"
-    fi
-fi
-
-# Setup provisioning profile
-if [ -n "$PROFILE_URL" ]; then
-    echo "📥 Downloading provisioning profile..."
-    if wget -O ios/profile.mobileprovision "$PROFILE_URL"; then
+        # Import certificates
+        security import cert.p12 -k build.keychain -P "$CERT_PASSWORD" -A
+        security import key.p12 -k build.keychain -P "$CERT_PASSWORD" -A
+        
+        # Install provisioning profile
         mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+        cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
         
-        # Extract profile info with error handling
-        PROFILE_PLIST=$(mktemp)
-        if security cms -D -i ios/profile.mobileprovision > "$PROFILE_PLIST"; then
-            UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" "$PROFILE_PLIST" 2>/dev/null || echo "")
-            PROFILE_NAME=$(/usr/libexec/PlistBuddy -c "Print Name" "$PROFILE_PLIST" 2>/dev/null || echo "")
-            
-            if [ -n "$UUID" ] && [ -n "$PROFILE_NAME" ]; then
-                cp ios/profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/"$UUID".mobileprovision
-                echo "PROFILE_NAME=$PROFILE_NAME" >> $CM_ENV
-                echo "PROFILE_UUID=$UUID" >> $CM_ENV
-                echo "✅ Provisioning profile installed: $PROFILE_NAME"
-            else
-                echo "⚠️  Could not extract profile info, continuing..."
-            fi
-        else
-            echo "⚠️  Profile parsing failed, continuing..."
-        fi
-        rm -f "$PROFILE_PLIST"
+        # Clean up
+        rm -f cert.p12 key.p12 profile.mobileprovision
+        return 0
     else
-        echo "⚠️  Profile download failed, continuing..."
+        return 1
     fi
-fi
+}
+setup_certificates
 
-# Create ExportOptions.plist
-cat > ExportOptions.plist << EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>method</key>
-  <string>$EXPORT_METHOD</string>
-  <key>signingStyle</key>
-  <string>manual</string>
-  <key>teamID</key>
-  <string>$APPLE_TEAM_ID</string>
-  <key>provisioningProfiles</key>
-  <dict>
-    <key>$BUNDLE_ID</key>
-    <string>\${PROFILE_NAME:-match AppStore $BUNDLE_ID}</string>
-  </dict>
-  <key>compileBitcode</key>
-  <false/>
-  <key>stripSwiftSymbols</key>
-  <true/>
-  <key>signingCertificate</key>
-  <string>Apple Distribution</string>
-  <key>uploadBitcode</key>
-  <false/>
-  <key>uploadSymbols</key>
-  <true/>
-</dict>
-</plist>
-EOF
+# Setup Firebase
+print_section "Setting up Firebase"
+download_firebase_config "iOS" "$FIREBASE_CONFIG_IOS" "ios/Runner/GoogleService-Info.plist"
 
-# Build iOS with comprehensive dart-define and error handling
-echo "🏗️ Building iOS app..."
+# Build iOS app
+print_section "Building iOS app"
+build_ios() {
+    echo "Building iOS app..."
+    flutter build ios --release --no-codesign
+}
+build_ios
 
-if ! flutter build ios --release --no-codesign \
-    --dart-define=PKG_NAME="$PKG_NAME" \
-    --dart-define=BUNDLE_ID="$BUNDLE_ID" \
-    --dart-define=APP_NAME="$APP_NAME" \
-    --dart-define=ORG_NAME="$ORG_NAME" \
-    --dart-define=VERSION_NAME="$VERSION_NAME" \
-    --dart-define=VERSION_CODE="$VERSION_CODE" \
-    --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY" \
-    --dart-define=firebase_config_ios="$firebase_config_ios" \
-    --dart-define=WEB_URL="$WEB_URL" \
-    --dart-define=IS_SPLASH="$IS_SPLASH" \
-    --dart-define=SPLASH="$SPLASH" \
-    --dart-define=SPLASH_ANIMATION="$SPLASH_ANIMATION" \
-    --dart-define=SPLASH_BG_COLOR="$SPLASH_BG_COLOR" \
-    --dart-define=SPLASH_TAGLINE="$SPLASH_TAGLINE" \
-    --dart-define=SPLASH_TAGLINE_COLOR="$SPLASH_TAGLINE_COLOR" \
-    --dart-define=SPLASH_DURATION="$SPLASH_DURATION" \
-    --dart-define=IS_PULLDOWN="$IS_PULLDOWN" \
-    --dart-define=LOGO_URL="$LOGO_URL" \
-    --dart-define=IS_BOTTOMMENU="$IS_BOTTOMMENU" \
-    --dart-define=BOTTOMMENU_ITEMS="$BOTTOMMENU_ITEMS" \
-    --dart-define=BOTTOMMENU_BG_COLOR="$BOTTOMMENU_BG_COLOR" \
-    --dart-define=BOTTOMMENU_ICON_COLOR="$BOTTOMMENU_ICON_COLOR" \
-    --dart-define=BOTTOMMENU_TEXT_COLOR="$BOTTOMMENU_TEXT_COLOR" \
-    --dart-define=BOTTOMMENU_FONT="$BOTTOMMENU_FONT" \
-    --dart-define=BOTTOMMENU_FONT_SIZE="$BOTTOMMENU_FONT_SIZE" \
-    --dart-define=BOTTOMMENU_FONT_BOLD="$BOTTOMMENU_FONT_BOLD" \
-    --dart-define=BOTTOMMENU_FONT_ITALIC="$BOTTOMMENU_FONT_ITALIC" \
-    --dart-define=BOTTOMMENU_ACTIVE_TAB_COLOR="$BOTTOMMENU_ACTIVE_TAB_COLOR" \
-    --dart-define=BOTTOMMENU_ICON_POSITION="$BOTTOMMENU_ICON_POSITION" \
-    --dart-define=BOTTOMMENU_VISIBLE_ON="$BOTTOMMENU_VISIBLE_ON" \
-    --dart-define=IS_DEEPLINK="$IS_DEEPLINK" \
-    --dart-define=IS_LOAD_IND="$IS_LOAD_IND" \
-    --dart-define=IS_CHATBOT="$IS_CHATBOT" \
-    --dart-define=IS_CAMERA="$IS_CAMERA" \
-    --dart-define=IS_LOCATION="$IS_LOCATION" \
-    --dart-define=IS_BIOMETRIC="$IS_BIOMETRIC" \
-    --dart-define=IS_MIC="$IS_MIC" \
-    --dart-define=IS_CONTACT="$IS_CONTACT" \
-    --dart-define=IS_CALENDAR="$IS_CALENDAR" \
-    --dart-define=IS_NOTIFICATION="$IS_NOTIFICATION" \
-    --dart-define=IS_STORAGE="$IS_STORAGE" \
-    --dart-define=IS_PHOTO_LIBRARY="$IS_PHOTO_LIBRARY" \
-    --dart-define=IS_PHOTO_LIBRARY_ADD="$IS_PHOTO_LIBRARY_ADD" \
-    --dart-define=IS_FACE_ID="$IS_FACE_ID" \
-    --dart-define=IS_TOUCH_ID="$IS_TOUCH_ID"; then
-    
-    echo "❌ iOS build failed, trying with clean..."
-    flutter clean
-    cd ios && pod install && cd ..
-    flutter pub get
-    
-    # Retry with minimal configuration
-    flutter build ios --release --no-codesign \
-        --dart-define=BUNDLE_ID="$BUNDLE_ID" \
-        --dart-define=APP_NAME="$APP_NAME" \
-        --dart-define=VERSION_NAME="$VERSION_NAME" \
-        --dart-define=VERSION_CODE="$VERSION_CODE"
-fi
+# Archive and export IPA
+print_section "Archiving and exporting IPA"
+archive_and_export() {
+    echo "Archiving and exporting IPA..."
+    xcodebuild -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release -archivePath build/Runner.xcarchive archive
+    xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportOptionsPlist ios/exportOptions.plist -exportPath build/ios/ipa
+}
+archive_and_export
 
-# Archive and export IPA with better error handling
-echo "📦 Archiving and exporting IPA..."
-
-# Load environment variables for profile info
-source $CM_ENV 2>/dev/null || true
-
-# Archive with error handling
-echo "🏗️ Creating Xcode archive..."
-if xcodebuild -workspace ios/Runner.xcworkspace \
-    -scheme Runner \
-    -configuration Release \
-    -archivePath build/ios/archive/Runner.xcarchive \
-    clean archive \
-    CODE_SIGN_STYLE=Manual \
-    DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
-    PROVISIONING_PROFILE_SPECIFIER="${PROFILE_NAME:-}" \
-    PROVISIONING_PROFILE="${PROFILE_UUID:-}" \
-    PRODUCT_BUNDLE_IDENTIFIER="$BUNDLE_ID" \
-    CODE_SIGN_IDENTITY="Apple Distribution" \
-    IPHONEOS_DEPLOYMENT_TARGET="$IPHONEOS_DEPLOYMENT_TARGET" \
-    OTHER_CODE_SIGN_FLAGS="--keychain $KEYCHAIN_NAME"; then
-    
-    echo "✅ Archive created successfully"
-    
-    # Export IPA
-    echo "📦 Exporting IPA..."
-    if xcodebuild -exportArchive \
-        -archivePath build/ios/archive/Runner.xcarchive \
-        -exportPath build/ios/ipa \
-        -exportOptionsPlist ExportOptions.plist; then
-        
-        echo "✅ IPA exported successfully"
-    else
-        echo "⚠️  IPA export failed, but archive was created"
-    fi
-else
-    echo "❌ Archive creation failed"
-    echo "📋 Available build products:"
-    find build/ -name "*.app" -type d | head -5
-fi
-
-# Copy artifacts to output folder
-echo "📁 Moving iOS artifacts..."
-if [ -f "build/ios/ipa/Runner.ipa" ]; then
+# Collect artifacts
+print_section "Collecting artifacts"
+collect_artifacts() {
+    echo "Collecting build artifacts..."
+    mkdir -p output
     cp build/ios/ipa/Runner.ipa output/
-    echo "✅ IPA moved to output/"
-else
-    echo "⚠️  IPA not found, checking for .app files..."
-    find build/ -name "*.app" -type d | head -1 | xargs -I {} cp -r {} output/ 2>/dev/null || true
-fi
+    cp -r build/Runner.xcarchive output/
+}
+collect_artifacts
 
-# Cleanup keychain
-security delete-keychain "$KEYCHAIN_NAME" || true
+# Revert changes
+print_section "Reverting changes"
+revert_changes() {
+    echo "Reverting project changes..."
+    git checkout ios/Runner/Info.plist
+    rm -f assets/icon.png
+    rm -f assets/splash.png
+    rm -f assets/splash_bg.png
+    rm -f pubspec.yaml.bak
+    rm -rf ios/Runner/Assets.xcassets/AppIcon.appiconset/*
+    rm -rf ios/Runner/Assets.xcassets/Splash.imageset/*
+}
+revert_changes
 
-echo "📋 Final iOS output contents:"
-ls -la output/ || echo "No output directory" 
+# Send success notification
+print_section "Sending build notification"
+bash lib/scripts/combined/send_error_email.sh "Build Complete" "iOS build process completed successfully"
+
+print_section "iOS Build Process Completed" 

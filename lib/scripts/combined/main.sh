@@ -6,25 +6,26 @@ set -e
 # Get the directory where the script is located
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+# Source download functions
+source "$SCRIPT_DIR/download.sh"
+
 # Function to handle errors
 handle_error() {
-    echo "❌ Build process failed!"
-    echo "📍 Error occurred at line: $1"
-    echo "🔧 Failed command: $2"
-    echo "📊 Exit code: $3"
-    
-    echo "📧 Sending error notification email..."
-    bash "$SCRIPT_DIR/send_error_email.sh" "Build Failed" "Build failed at line $1: $2"
-    
-    echo "🔄 Ending build session and reverting changes..."
+    local line_no=$1
+    local error_code=$2
+    local command=$3
+    echo "❌ Error occurred in $0 at line $line_no (exit code: $error_code)"
+    echo "Failed command: $command"
+    bash "$SCRIPT_DIR/send_error_email.sh" "Build Failed" "Combined build failed at line $line_no: $command"
     exit 1
 }
 
+# Set error handler
+trap 'handle_error ${LINENO} $? "$BASH_COMMAND"' ERR
+
 # Function to print section headers
 print_section() {
-    echo "-------------------------------------------------"
-    echo "🔧 $1"
-    echo "-------------------------------------------------"
+    echo "=== $1 ==="
 }
 
 # Function to clean previous builds
@@ -80,47 +81,75 @@ EOF
 }
 
 # Main build process
-echo "🚀 Starting build process..."
+print_section "Starting Combined Build Process"
 
-# Load environment variables
-print_section "Loading environment variables"
+# Setup environment
+print_section "Setting up environment"
+find "$SCRIPT_DIR" -type f -name "*.sh" -exec chmod +x {} \;
+mkdir -p output
 source "$SCRIPT_DIR/export.sh"
-echo "✅ Environment variables loaded"
 
 # Validate environment
 print_section "Validating environment"
 bash "$SCRIPT_DIR/validate.sh"
-echo "✅ Environment validated"
 
-# Clean previous builds
-clean_builds
+# Configure app details
+print_section "Configuring app details"
 
-# Setup Flutter SDK and Gradle
-setup_flutter_sdk
-setup_gradle_wrapper
+# Update Android configuration
+echo "Updating Android configuration..."
+sed -i '' "s/android:label=\"[^\"]*\"/android:label=\"$APP_NAME\"/" android/app/src/main/AndroidManifest.xml
+sed -i '' "s/applicationId \"[^\"]*\"/applicationId \"$PKG_NAME\"/" android/app/build.gradle
 
-# Configure app
-print_section "Configuring app"
-bash "$SCRIPT_DIR/configure_app.sh"
-echo "✅ App configured"
+# Update iOS configuration
+echo "Updating iOS configuration..."
+/usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName $APP_NAME" ios/Runner/Info.plist
+/usr/libexec/PlistBuddy -c "Set :CFBundleName $APP_NAME" ios/Runner/Info.plist
+/usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $BUNDLE_ID" ios/Runner/Info.plist
+
+# Download and setup app icon
+download_app_icon
+
+# Download and setup splash screen
+download_splash_assets
 
 # Build Android
 print_section "Building Android"
-bash "$SCRIPT_DIR/build_android.sh"
-echo "✅ Android build complete"
+echo "Running Android build script..."
+bash "$SCRIPT_DIR/android/main.sh"
 
 # Build iOS
 print_section "Building iOS"
-bash "$SCRIPT_DIR/build_ios.sh"
-echo "✅ iOS build complete"
+echo "Running iOS build script..."
+bash "$SCRIPT_DIR/ios/main.sh"
 
-# Print build summary
-print_section "Build Summary"
-echo "📱 App Name: $APP_NAME"
-echo "📦 Package: $PKG_NAME"
-echo "🆔 Bundle ID: $BUNDLE_ID"
-echo "📊 Version: $VERSION_NAME ($VERSION_CODE)"
-echo "📤 Generated artifacts:"
-ls -la output/
+# Revert changes
+print_section "Reverting changes"
+revert_changes() {
+    echo "Reverting project changes..."
+    # Revert Android files
+    git checkout android/app/src/main/AndroidManifest.xml
+    git checkout android/app/build.gradle
 
-echo "✅ Build process completed successfully!" 
+    # Revert iOS files
+    git checkout ios/Runner/Info.plist
+
+    # Remove downloaded assets
+    rm -f assets/icon.png
+    rm -f assets/splash.png
+    rm -f assets/splash_bg.png
+
+    # Remove generated files
+    rm -f pubspec.yaml.bak
+    rm -rf android/app/src/main/res/mipmap-*
+    rm -rf android/app/src/main/res/drawable-*
+    rm -rf ios/Runner/Assets.xcassets/AppIcon.appiconset/*
+    rm -rf ios/Runner/Assets.xcassets/Splash.imageset/*
+}
+revert_changes
+
+# Send success notification
+print_section "Sending build notification"
+bash "$SCRIPT_DIR/send_error_email.sh" "Build Complete" "Combined build process completed successfully"
+
+print_section "Combined Build Process Completed" 
