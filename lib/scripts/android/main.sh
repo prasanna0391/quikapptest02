@@ -74,6 +74,38 @@ setup_build_environment() {
     return 0
 }
 
+# Function to generate launcher icons
+generate_launcher_icons() {
+    print_section "Generating launcher icons"
+    
+    # Check if flutter_launcher_icons package is available
+    if ! flutter pub get; then
+        echo "❌ Failed to get Flutter dependencies"
+        return 1
+    fi
+    
+    # Check if flutter_launcher_icons is in pubspec.yaml
+    if ! grep -q "flutter_launcher_icons" "pubspec.yaml"; then
+        echo "❌ flutter_launcher_icons not found in pubspec.yaml"
+        return 1
+    fi
+    
+    # Generate icons
+    if ! flutter pub run flutter_launcher_icons; then
+        echo "❌ Failed to generate launcher icons"
+        return 1
+    fi
+    
+    # Verify icons were generated
+    if [ ! -f "$ANDROID_MIPMAP_DIR/ic_launcher.png" ]; then
+        echo "❌ Launcher icon not generated"
+        return 1
+    fi
+    
+    echo "✅ Launcher icons generated successfully"
+    return 0
+}
+
 # Error handling function
 handle_error() {
     local error_message="$1"
