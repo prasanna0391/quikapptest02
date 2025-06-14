@@ -52,7 +52,7 @@ export GRADLE_WRAPPER_PROPERTIES_PATH="$GRADLE_WRAPPER_DIR/gradle-wrapper.proper
 export GRADLE_WRAPPER_URL="https://raw.githubusercontent.com/gradle/gradle/v7.5.0/gradle/wrapper/gradle-wrapper.jar"
 export GRADLE_DISTRIBUTION_URL="https\://services.gradle.org/distributions/gradle-7.5-all.zip"
 
-# Notification Configuration
-export NOTIFICATION_EMAIL_FROM="build@example.com"
-export NOTIFICATION_EMAIL_TO="$EMAIL_ID"
-export NOTIFICATION_EMAIL_SUBJECT="Build Status" 
+## Notification Configuration
+#export NOTIFICATION_EMAIL_FROM="build@example.com"
+#export NOTIFICATION_EMAIL_TO="$EMAIL_ID"
+#export NOTIFICATION_EMAIL_SUBJECT="Build Status"

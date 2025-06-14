@@ -207,17 +207,17 @@ workflows:
     name: Android Build
     max_build_duration: 120
     instance_type: mac_mini_m2
-    integrations:
-      app_store_connect: codemagic
+#    integrations:
+#      app_store_connect: codemagic
     environment:
       flutter: stable
       xcode: latest
       node: latest
-      groups:
-        - google_credentials
-        - android_credentials
-        - app_store_credentials
-        - firebase_credentials
+#      groups:
+#        - google_credentials
+#        - android_credentials
+#        - app_store_credentials
+#        - firebase_credentials
       vars:
         VERSION_NAME: "${VERSION_NAME}"
         VERSION_CODE: "${VERSION_CODE}"
@@ -297,17 +297,17 @@ workflows:
     name: iOS Build
     max_build_duration: 120
     instance_type: mac_mini_m2
-    integrations:
-      app_store_connect: codemagic
+#    integrations:
+#      app_store_connect: codemagic
     environment:
       flutter: stable
       xcode: latest
       node: latest
-      groups:
-        - google_credentials
-        - ios_credentials
-        - app_store_credentials
-        - firebase_credentials
+#      groups:
+#        - google_credentials
+#        - ios_credentials
+#        - app_store_credentials
+#        - firebase_credentials
       vars:
         VERSION_NAME: "${VERSION_NAME}"
         VERSION_CODE: "${VERSION_CODE}"
@@ -386,18 +386,18 @@ workflows:
     name: Combined Build
     max_build_duration: 120
     instance_type: mac_mini_m2
-    integrations:
-      app_store_connect: codemagic
+#    integrations:
+#      app_store_connect: codemagic
     environment:
       flutter: stable
       xcode: latest
       node: latest
-      groups:
-        - google_credentials
-        - android_credentials
-        - ios_credentials
-        - app_store_credentials
-        - firebase_credentials
+#      groups:
+#        - google_credentials
+#        - android_credentials
+#        - ios_credentials
+#        - app_store_credentials
+#        - firebase_credentials
       vars:
         VERSION_NAME: "${VERSION_NAME}"
         VERSION_CODE: "${VERSION_CODE}"
