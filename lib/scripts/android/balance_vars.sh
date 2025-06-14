@@ -8,14 +8,14 @@ fi
 # Build Configuration
 export BUILD_MODE="app-store"
 export FLUTTER_VERSION="3.19.3"
-export GRADLE_VERSION="8.2"
-export JAVA_VERSION="17"
+export GRADLE_VERSION="7.5"
+export JAVA_VERSION="11"
 
 # Android Configuration
-export ANDROID_COMPILE_SDK="34"
+export ANDROID_COMPILE_SDK="33"
 export ANDROID_MIN_SDK="21"
-export ANDROID_TARGET_SDK="34"
-export ANDROID_BUILD_TOOLS="34.0.0"
+export ANDROID_TARGET_SDK="33"
+export ANDROID_BUILD_TOOLS="33.0.0"
 export ANDROID_NDK_VERSION="25.1.8937393"
 export ANDROID_CMDLINE_TOOLS="9477386"
 
@@ -50,7 +50,7 @@ export AAB_OUTPUT_PATH="${OUTPUT_DIR}/app-release.aab"
 export GRADLE_WRAPPER_DIR="${ANDROID_ROOT}/gradle/wrapper"
 export GRADLE_WRAPPER_JAR_PATH="${GRADLE_WRAPPER_DIR}/gradle-wrapper.jar"
 export GRADLE_WRAPPER_PROPERTIES_PATH="${GRADLE_WRAPPER_DIR}/gradle-wrapper.properties"
-export GRADLE_WRAPPER_URL="https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-wrapper.jar"
+export GRADLE_WRAPPER_URL="https://raw.githubusercontent.com/gradle/gradle/v${GRADLE_VERSION}/gradle/wrapper/gradle-wrapper.jar"
 export GRADLE_DISTRIBUTION_URL="https\://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip"
 
 # Download Configuration
