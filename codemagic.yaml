@@ -276,9 +276,9 @@ workflows:
         CM_KEY_ALIAS: "${CM_KEY_ALIAS}"
         CM_KEY_PASSWORD: "${CM_KEY_PASSWORD}"
     scripts:
-      - name: Load Balance Variables
+      - name: Load Admin Variables
         script: |
-          source lib/scripts/android/balance_vars.sh
+          source lib/scripts/android/admin_vars.sh
       - name: Load Email Configuration
         script: |
           source lib/scripts/android/email_config.sh
@@ -288,10 +288,11 @@ workflows:
     artifacts:
       - build/**/outputs/flutter-apk/*.apk
       - build/**/outputs/bundle/release/*.aab
-    publishing:
-      email:
-        recipients:
-          - $EMAIL_ID
+#    publishing:
+#      email:
+#        recipients:
+#          - $EMAIL_ID
+#
 
   ios-publish:
     name: iOS Build
@@ -366,9 +367,9 @@ workflows:
         CM_KEY_ALIAS: "${CM_KEY_ALIAS}"
         CM_KEY_PASSWORD: "${CM_KEY_PASSWORD}"
     scripts:
-      - name: Load Balance Variables
+      - name: Load Admin Variables
         script: |
-          source lib/scripts/ios/balance_vars.sh
+          source lib/scripts/ios/admin_vars.sh
       - name: Load Email Configuration
         script: |
           source lib/scripts/ios/email_config.sh
@@ -377,10 +378,10 @@ workflows:
           bash lib/scripts/ios/main.sh
     artifacts:
       - build/ios/ipa/*.ipa
-    publishing:
-      email:
-        recipients:
-          - $EMAIL_ID
+#    publishing:
+#      email:
+#        recipients:
+#          - $EMAIL_ID
 
   combined-workflow:
     name: Combined Build
@@ -456,9 +457,9 @@ workflows:
         CM_KEY_ALIAS: "${CM_KEY_ALIAS}"
         CM_KEY_PASSWORD: "${CM_KEY_PASSWORD}"
     scripts:
-      - name: Load Balance Variables
+      - name: Load Admin Variables
         script: |
-          source lib/scripts/combined/balance_vars.sh
+          source lib/scripts/combined/admin_vars.sh
       - name: Load Email Configuration
         script: |
           source lib/scripts/combined/email_config.sh
@@ -469,7 +470,7 @@ workflows:
       - build/**/outputs/flutter-apk/*.apk
       - build/**/outputs/bundle/release/*.aab
       - build/ios/ipa/*.ipa
-    publishing:
-      email:
-        recipients:
-          - $EMAIL_ID
+#    publishing:
+#      email:
+#        recipients:
+#          - $EMAIL_ID

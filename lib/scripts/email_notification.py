@@ -8,16 +8,13 @@ Supports both success and error notifications with beautiful HTML templates
 import os
 import sys
 import smtplib
-import base64
 import json
-import subprocess
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
 from datetime import datetime
 from pathlib import Path
-import re
 
 # Colors for output
 class Colors:
@@ -38,13 +35,19 @@ class EmailNotificationSystem:
         self.project_root = self.script_dir.parent.parent.parent
         self.templates_dir = self.script_dir / "email_templates"
         
-        # Email configuration (set by email_config.sh)
-        self.to_email = os.environ.get("EMAIL_ID", "recipient@example.com")
-        self.from_email = os.environ.get("EMAIL_FROM", os.environ.get("FROM_EMAIL", "no-reply@quikapp.co"))
-        self.smtp_server = os.environ.get("EMAIL_SMTP_SERVER", os.environ.get("SMTP_SERVER", "smtp.gmail.com"))
-        self.smtp_port = int(os.environ.get("EMAIL_SMTP_PORT", os.environ.get("SMTP_PORT", "587")))
-        self.smtp_user = os.environ.get("EMAIL_SMTP_USER", os.environ.get("SMTP_USER", "no-reply@quikapp.co"))
-        self.smtp_pass = os.environ.get("EMAIL_SMTP_PASS", os.environ.get("SMTP_PASS", "your-app-password"))
+        # QuikApp Details
+        self.quikapp_website = os.environ.get("QUIKAPP_WEBSITE", "https://quikapp.co")
+        self.quikapp_dashboard = os.environ.get("QUIKAPP_DASHBOARD", "https://app.quikapp.co")
+        self.quikapp_docs = os.environ.get("QUIKAPP_DOCS", "https://docs.quikapp.co")
+        self.quikapp_support = os.environ.get("QUIKAPP_SUPPORT", "support@quikapp.co")
+        
+        # Email configuration
+        self.to_email = os.environ.get("EMAIL_ID", "prasannasrie@gmail.com")
+        self.from_email = os.environ.get("EMAIL_FROM", "prasannasrie@gmail.com")
+        self.smtp_server = os.environ.get("EMAIL_SMTP_SERVER", "smtp.gmail.com")
+        self.smtp_port = int(os.environ.get("EMAIL_SMTP_PORT", "587"))
+        self.smtp_user = os.environ.get("EMAIL_SMTP_USER", "prasannasrie@gmail.com")
+        self.smtp_pass = os.environ.get("EMAIL_SMTP_PASS", "jbbf nzhm zoay lbwb")
         
         # App details from environment
         self.app_name = os.environ.get("APP_NAME", "QuikApp Project")
@@ -57,13 +60,6 @@ class EmailNotificationSystem:
         # Build details
         self.build_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.build_id = datetime.now().strftime('%Y%m%d_%H%M%S')
-        
-        # Gmail attachment size limit (25MB)
-        self.gmail_size_limit = 25 * 1024 * 1024
-
-    def get_file_size_mb(self, file_path):
-        """Get file size in MB"""
-        return os.path.getsize(file_path) / (1024 * 1024)
 
     def load_template(self, template_name):
         """Load HTML template and replace placeholders"""
@@ -96,7 +92,7 @@ class EmailNotificationSystem:
         
         for file_path in files:
             if file_path.is_file():
-                size_mb = self.get_file_size_mb(file_path)
+                size_mb = os.path.getsize(file_path) / (1024 * 1024)
                 
                 # Determine icon based on file extension
                 icon = "📄"
@@ -112,96 +108,6 @@ class EmailNotificationSystem:
                 artifacts_html += f'<li class="artifact-item"><span class="artifact-icon">{icon}</span><span class="artifact-name">{file_path.name}</span><span class="artifact-size">({size_mb:.1f} MB)</span></li>'
         
         return artifacts_html if artifacts_html else "<li>No artifacts found</li>"
-
-    def detect_error_type(self, error_message):
-        """Detect error type from error message"""
-        error_message_lower = error_message.lower()
-        
-        if any(keyword in error_message_lower for keyword in ["v1 embedding", "flutterapplication", "flutteractivity"]):
-            return "Android v1 Embedding Issue"
-        elif any(keyword in error_message_lower for keyword in ["resource", "not found", "mipmap", "drawable"]):
-            return "Missing Resource Files"
-        elif any(keyword in error_message_lower for keyword in ["google-services", "firebase", "package name"]):
-            return "Firebase Configuration Error"
-        elif any(keyword in error_message_lower for keyword in ["compilation", "syntax", "import"]):
-            return "Compilation Error"
-        elif any(keyword in error_message_lower for keyword in ["gradle", "build.gradle"]):
-            return "Gradle Configuration Error"
-        elif any(keyword in error_message_lower for keyword in ["certificate", "provisioning", "code signing"]):
-            return "Code Signing Error"
-        elif any(keyword in error_message_lower for keyword in ["cocoapods", "pod install"]):
-            return "CocoaPods Dependency Error"
-        elif any(keyword in error_message_lower for keyword in ["xcode", "archive", "export"]):
-            return "Xcode Build Error"
-        else:
-            return "Unknown Error"
-
-    def generate_resolve_steps(self, error_type):
-        """Generate resolution steps based on error type"""
-        steps_map = {
-            "Android v1 Embedding Issue": [
-                "Run the fix_v1_embedding.sh script to resolve Android v1 embedding issues",
-                "Ensure all Android files are using v2 embedding",
-                "Clean the build cache with 'flutter clean'",
-                "Update Flutter to the latest stable version"
-            ],
-            "Missing Resource Files": [
-                "Check that all required resource files exist in android/app/src/main/res/",
-                "Verify that launcher icons are properly configured",
-                "Run 'flutter pub get' to ensure all dependencies are downloaded",
-                "Check for any missing drawable or mipmap resources"
-            ],
-            "Firebase Configuration Error": [
-                "Verify that google-services.json is properly configured",
-                "Check that the package name in google-services.json matches your app's package name",
-                "Ensure Firebase project is properly set up",
-                "Verify Firebase dependencies in pubspec.yaml"
-            ],
-            "Compilation Error": [
-                "Check for syntax errors in Kotlin/Java files",
-                "Verify that all required imports are present",
-                "Run 'flutter clean' and try building again",
-                "Check for any deprecated API usage"
-            ],
-            "Gradle Configuration Error": [
-                "Check Gradle configuration files for errors",
-                "Verify that all dependencies are compatible",
-                "Try updating Gradle version if needed",
-                "Check for any conflicting dependencies"
-            ],
-            "Code Signing Error": [
-                "Verify that certificates and provisioning profiles are valid",
-                "Check that the bundle identifier matches the provisioning profile",
-                "Ensure certificates are not expired",
-                "Verify keychain access and permissions"
-            ],
-            "CocoaPods Dependency Error": [
-                "Run 'cd ios && pod install' to install dependencies",
-                "Check for any conflicting pod versions",
-                "Update CocoaPods to the latest version",
-                "Clean and reinstall pods with 'pod deintegrate && pod install'"
-            ],
-            "Xcode Build Error": [
-                "Check Xcode project settings and configurations",
-                "Verify that all required frameworks are linked",
-                "Check for any missing entitlements or capabilities",
-                "Ensure Xcode version is compatible with your project"
-            ],
-            "Unknown Error": [
-                "Review the error details above for specific issues",
-                "Check the build logs for more information",
-                "Run 'flutter clean' and try building again",
-                "Contact the development team if the issue persists"
-            ]
-        }
-        
-        steps = steps_map.get(error_type, steps_map["Unknown Error"])
-        steps_html = ""
-        
-        for i, step in enumerate(steps, 1):
-            steps_html += f'<li class="step-item">{step}</li>'
-        
-        return steps_html
 
     def send_success_email(self):
         """Send success notification email"""
@@ -227,7 +133,11 @@ class EmailNotificationSystem:
             "BUILD_TIME": self.build_time,
             "BUILD_ID": self.build_id,
             "RECIPIENT_NAME": self.to_email.split('@')[0].replace('.', ' ').title(),
-            "ARTIFACTS_LIST": artifacts_list
+            "ARTIFACTS_LIST": artifacts_list,
+            "QUIKAPP_WEBSITE": self.quikapp_website,
+            "QUIKAPP_DASHBOARD": self.quikapp_dashboard,
+            "QUIKAPP_DOCS": self.quikapp_docs,
+            "QUIKAPP_SUPPORT": self.quikapp_support
         }
         
         # Replace template variables
@@ -235,17 +145,13 @@ class EmailNotificationSystem:
         
         # Create email
         msg = MIMEMultipart('alternative')
-        msg['From'] = self.from_email
+        msg['From'] = f"{self.EMAIL_FROM_NAME} <{self.from_email}>"
         msg['To'] = self.to_email
         msg['Subject'] = f"✅ QuikApp Build Successful - {self.app_name} ({self.workflow_name})"
         
         # Attach HTML content
         html_part = MIMEText(html_content, 'html')
         msg.attach(html_part)
-        
-        # Attach artifacts if they exist
-        if output_dir.exists():
-            self.attach_artifacts(msg, output_dir)
         
         return self.send_email(msg, "success")
 
@@ -257,10 +163,6 @@ class EmailNotificationSystem:
         template_content = self.load_template("error_email")
         if not template_content:
             return False
-        
-        # Detect error type and generate resolve steps
-        error_type = self.detect_error_type(error_message)
-        resolve_steps = self.generate_resolve_steps(error_type)
         
         # Prepare template variables
         variables = {
@@ -275,8 +177,10 @@ class EmailNotificationSystem:
             "RECIPIENT_NAME": self.to_email.split('@')[0].replace('.', ' ').title(),
             "ERROR_MESSAGE": error_message,
             "ERROR_DETAILS": error_details,
-            "ERROR_TYPE": error_type,
-            "RESOLVE_STEPS": resolve_steps
+            "QUIKAPP_WEBSITE": self.quikapp_website,
+            "QUIKAPP_DASHBOARD": self.quikapp_dashboard,
+            "QUIKAPP_DOCS": self.quikapp_docs,
+            "QUIKAPP_SUPPORT": self.quikapp_support
         }
         
         # Replace template variables
@@ -284,7 +188,7 @@ class EmailNotificationSystem:
         
         # Create email
         msg = MIMEMultipart('alternative')
-        msg['From'] = self.from_email
+        msg['From'] = f"{self.EMAIL_FROM_NAME} <{self.from_email}>"
         msg['To'] = self.to_email
         msg['Subject'] = f"❌ QuikApp Build Failed - {self.app_name} ({self.workflow_name})"
         
@@ -293,50 +197,6 @@ class EmailNotificationSystem:
         msg.attach(html_part)
         
         return self.send_email(msg, "error")
-
-    def attach_artifacts(self, msg, output_dir):
-        """Attach build artifacts to email"""
-        print_colored(Colors.BLUE, "📎 Attaching artifacts:")
-        
-        files = list(output_dir.glob("*"))
-        large_files = []
-        small_files = []
-        
-        for file_path in files:
-            if file_path.is_file():
-                file_size = os.path.getsize(file_path)
-                
-                if file_size > self.gmail_size_limit:
-                    large_files.append((file_path, file_size))
-                else:
-                    small_files.append((file_path, file_size))
-        
-        # Attach small files
-        for file_path, file_size in small_files:
-            size_mb = file_size / (1024 * 1024)
-            print_colored(Colors.GREEN, f"   - {file_path.name} ({size_mb:.1f} MB)")
-            
-            try:
-                with open(file_path, "rb") as attachment:
-                    part = MIMEBase('application', 'octet-stream')
-                    part.set_payload(attachment.read())
-                
-                encoders.encode_base64(part)
-                part.add_header(
-                    'Content-Disposition',
-                    f'attachment; filename= {file_path.name}'
-                )
-                
-                msg.attach(part)
-            except Exception as e:
-                print_colored(Colors.YELLOW, f"   ⚠️  Failed to attach {file_path.name}: {e}")
-        
-        # Show large files that couldn't be attached
-        if large_files:
-            print_colored(Colors.YELLOW, "⚠️  Files too large for email attachment:")
-            for file_path, file_size in large_files:
-                size_mb = file_size / (1024 * 1024)
-                print_colored(Colors.YELLOW, f"   - {file_path.name} ({size_mb:.1f} MB)")
 
     def send_email(self, msg, email_type):
         """Send email via SMTP"""
@@ -360,16 +220,6 @@ class EmailNotificationSystem:
         except Exception as e:
             print_colored(Colors.RED, f"❌ Failed to send {email_type} email: {str(e)}")
             print_colored(Colors.YELLOW, "💡 Please check your SMTP configuration")
-            
-            # Save email content to file for debugging
-            email_file = self.project_root / f"build_{email_type}_email_{self.build_id}.html"
-            try:
-                with open(email_file, 'w', encoding='utf-8') as f:
-                    f.write(msg.get_payload()[0].get_payload())
-                print_colored(Colors.GREEN, f"✅ Email content saved to: {email_file}")
-            except Exception as save_error:
-                print_colored(Colors.RED, f"❌ Failed to save email content: {save_error}")
-            
             return False
 
 def main():

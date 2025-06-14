@@ -4,6 +4,9 @@ set -e
 # Source download functions
 source lib/scripts/combined/download.sh
 
+# Load the main email configuration
+source "${SCRIPT_DIR}/email_config.sh"
+
 # Error handling function
 handle_error() {
     local exit_code=$1
@@ -228,8 +231,51 @@ revert_changes() {
 }
 revert_changes
 
-# Send success notification
-print_section "Sending build notification"
-bash lib/scripts/combined/send_error_email.sh "Build Complete" "Android build process completed successfully"
+# Function to handle build success
+handle_build_success() {
+    print_section "Build completed successfully"
+    print_section "Sending success notification"
+    send_success_notification
+    exit 0
+}
+
+# Function to handle build error
+handle_build_error() {
+    local error_message="$1"
+    local error_details="$2"
+    
+    print_section "Build failed"
+    print_section "Sending error notification"
+    send_error_notification "$error_message" "$error_details"
+    exit 1
+}
+
+# Update the build process to use error handling
+if ! setup_build_environment; then
+    handle_build_error "Failed to set up build environment" "Could not initialize build environment. Please check the build logs for details."
+fi
+
+if ! download_splash_assets; then
+    handle_build_error "Failed to download splash assets" "Could not download splash screen assets. Please check your internet connection and try again."
+fi
+
+if ! generate_launcher_icons; then
+    handle_build_error "Failed to generate launcher icons" "Could not generate app launcher icons. Please check the icon configuration and try again."
+fi
+
+if ! setup_keystore; then
+    handle_build_error "Failed to set up keystore" "Could not set up the keystore for signing. Please check your keystore configuration."
+fi
+
+if ! setup_firebase; then
+    handle_build_error "Failed to set up Firebase" "Could not configure Firebase. Please check your Firebase configuration."
+fi
+
+if ! build_android_app; then
+    handle_build_error "Failed to build Android app" "The Android build process failed. Please check the build logs for details."
+fi
+
+# If we reach here, the build was successful
+handle_build_success
 
 print_section "Android Build Process Completed"
