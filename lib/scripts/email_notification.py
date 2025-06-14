@@ -44,6 +44,9 @@ class EmailNotificationSystem:
         # Email configuration
         self.to_email = os.environ.get("EMAIL_ID", "prasannasrie@gmail.com")
         self.from_email = os.environ.get("EMAIL_FROM", "prasannasrie@gmail.com")
+        self.from_name = os.environ.get("EMAIL_FROM_NAME", "QuikApp Build System")
+        self.cc_email = os.environ.get("EMAIL_CC", "")
+        self.bcc_email = os.environ.get("EMAIL_BCC", "")
         self.smtp_server = os.environ.get("EMAIL_SMTP_SERVER", "smtp.gmail.com")
         self.smtp_port = int(os.environ.get("EMAIL_SMTP_PORT", "587"))
         self.smtp_user = os.environ.get("EMAIL_SMTP_USER", "prasannasrie@gmail.com")
@@ -145,15 +148,21 @@ class EmailNotificationSystem:
         
         # Create email
         msg = MIMEMultipart('alternative')
-        msg['From'] = f"{self.EMAIL_FROM_NAME} <{self.from_email}>"
+        msg['From'] = f"{self.from_name} <{self.from_email}>"
         msg['To'] = self.to_email
         msg['Subject'] = f"✅ QuikApp Build Successful - {self.app_name} ({self.workflow_name})"
+        
+        if self.cc_email:
+            msg['Cc'] = self.cc_email
+        
+        if self.bcc_email:
+            msg['Bcc'] = self.bcc_email
         
         # Attach HTML content
         html_part = MIMEText(html_content, 'html')
         msg.attach(html_part)
         
-        return self.send_email(msg, "success")
+        return self.send_email(msg)
 
     def send_error_email(self, error_message, error_details):
         """Send error notification email"""
@@ -188,37 +197,47 @@ class EmailNotificationSystem:
         
         # Create email
         msg = MIMEMultipart('alternative')
-        msg['From'] = f"{self.EMAIL_FROM_NAME} <{self.from_email}>"
+        msg['From'] = f"{self.from_name} <{self.from_email}>"
         msg['To'] = self.to_email
         msg['Subject'] = f"❌ QuikApp Build Failed - {self.app_name} ({self.workflow_name})"
+        
+        if self.cc_email:
+            msg['Cc'] = self.cc_email
+        
+        if self.bcc_email:
+            msg['Bcc'] = self.bcc_email
         
         # Attach HTML content
         html_part = MIMEText(html_content, 'html')
         msg.attach(html_part)
         
-        return self.send_email(msg, "error")
+        return self.send_email(msg)
 
-    def send_email(self, msg, email_type):
+    def send_email(self, msg):
         """Send email via SMTP"""
         try:
-            print_colored(Colors.BLUE, f"📤 Sending {email_type} email...")
+            print_colored(Colors.BLUE, "📤 Sending email...")
             
-            server = smtplib.SMTP(self.smtp_server, self.smtp_port)
-            server.starttls()
-            server.login(self.smtp_user, self.smtp_pass)
+            with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
+                server.starttls()
+                server.login(self.smtp_user, self.smtp_pass)
+                
+                text = msg.as_string()
+                recipients = [self.to_email]
+                if self.cc_email:
+                    recipients.extend(self.cc_email.split(','))
+                if self.bcc_email:
+                    recipients.extend(self.bcc_email.split(','))
+                server.sendmail(self.from_email, recipients, text)
             
-            text = msg.as_string()
-            server.sendmail(self.from_email, self.to_email, text)
-            server.quit()
-            
-            print_colored(Colors.GREEN, f"✅ {email_type.title()} email sent successfully!")
-            print_colored(Colors.YELLOW, f"📧 Email sent to: {self.to_email}")
+            print_colored(Colors.GREEN, "✅ Email sent successfully!")
+            print_colored(Colors.YELLOW, f"📧 Email sent to: {', '.join(recipients)}")
             print_colored(Colors.YELLOW, f"📧 Subject: {msg['Subject']}")
             
             return True
             
         except Exception as e:
-            print_colored(Colors.RED, f"❌ Failed to send {email_type} email: {str(e)}")
+            print_colored(Colors.RED, f"❌ Failed to send email: {str(e)}")
             print_colored(Colors.YELLOW, "💡 Please check your SMTP configuration")
             return False
 

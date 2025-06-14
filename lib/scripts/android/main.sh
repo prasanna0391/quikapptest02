@@ -1,17 +1,78 @@
 #!/bin/bash
 set -e
 
+# Ensure we're using bash
+if [ -z "$BASH_VERSION" ]; then
+    exec /bin/bash "$0" "$@"
+fi
+
 # Get the directory where the script is located
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+# Print section header
+print_section() {
+    echo "=== $1 ==="
+}
+
 # Source the admin variables
-source "${SCRIPT_DIR}/admin_vars.sh"
+if [ -f "${SCRIPT_DIR}/admin_vars.sh" ]; then
+    source "${SCRIPT_DIR}/admin_vars.sh"
+else
+    echo "Error: admin_vars.sh not found in ${SCRIPT_DIR}"
+    exit 1
+fi
 
 # Source download functions
-source "${SCRIPT_DIR}/../combined/download.sh"
+if [ -f "${SCRIPT_DIR}/../combined/download.sh" ]; then
+    source "${SCRIPT_DIR}/../combined/download.sh"
+else
+    echo "Error: download.sh not found in ${SCRIPT_DIR}/../combined"
+    exit 1
+fi
 
 # Load the email configuration
-source "${SCRIPT_DIR}/email_config.sh"
+if [ -f "${SCRIPT_DIR}/email_config.sh" ]; then
+    source "${SCRIPT_DIR}/email_config.sh"
+else
+    echo "Error: email_config.sh not found in ${SCRIPT_DIR}"
+    exit 1
+fi
+
+# Function to setup build environment
+setup_build_environment() {
+    print_section "Setting up build environment"
+    
+    # Set up Java environment
+    export JAVA_HOME="/opt/homebrew/opt/openjdk@17"
+    export PATH="$JAVA_HOME/bin:$PATH"
+    
+    # Set up Android environment
+    export ANDROID_HOME="$HOME/Library/Android/sdk"
+    export PATH="$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH"
+    
+    # Set up Flutter environment
+    export FLUTTER_ROOT="/opt/homebrew/bin/flutter"
+    export PATH="$FLUTTER_ROOT/bin:$PATH"
+    
+    # Verify environment
+    if ! command -v java &> /dev/null; then
+        echo "❌ Java not found"
+        return 1
+    fi
+    
+    if ! command -v adb &> /dev/null; then
+        echo "❌ Android SDK not found"
+        return 1
+    fi
+    
+    if ! command -v flutter &> /dev/null; then
+        echo "❌ Flutter not found"
+        return 1
+    fi
+    
+    echo "✅ Build environment setup complete"
+    return 0
+}
 
 # Error handling function
 handle_error() {
@@ -43,28 +104,12 @@ handle_build_error() {
     exit 1
 }
 
-# Set error handler
-trap 'handle_error $? $LINENO' ERR
-
-# Print section header
-print_section() {
-    echo "=== $1 ==="
-}
-
 # Main build process
 print_section "Starting Android Build Process"
 
 # Setup environment
 print_section "Setting up environment"
 find lib/scripts -type f -name "*.sh" -exec chmod +x {} \;
-
-# Load admin variables
-if [ -f "$(dirname "$0")/admin_vars.sh" ]; then
-    source "$(dirname "$0")/admin_vars.sh"
-else
-    echo "❌ admin_vars.sh not found"
-    exit 1
-fi
 
 # Ensure CM_BUILD_DIR is set
 if [ -z "$CM_BUILD_DIR" ]; then
@@ -104,159 +149,6 @@ create_directory "$ANDROID_ROOT/app/src/main/res/values" "values resources"
 # Create build output directories
 create_directory "$(dirname "$APK_OUTPUT_PATH")" "APK output"
 create_directory "$(dirname "$AAB_OUTPUT_PATH")" "AAB output"
-
-source lib/scripts/combined/export.sh
-
-# Validate environment
-print_section "Validating environment"
-bash lib/scripts/combined/validate.sh
-
-# Configure app details
-print_section "Configuring app details"
-# Update app name in Android
-sed -i '' "s/android:label=\"[^\"]*\"/android:label=\"$APP_NAME\"/" "$ANDROID_MANIFEST_PATH"
-
-# Update package name in Android
-sed -i '' "s/applicationId \"[^\"]*\"/applicationId \"$PKG_NAME\"/" "$ANDROID_BUILD_GRADLE_PATH"
-
-# Download and setup app icon
-download_app_icon
-
-# Download and setup splash screen
-print_section "Setting up splash screen"
-download_splash_assets
-
-# Setup local properties
-print_section "Setting up local properties"
-setup_local_properties() {
-    echo "Creating local.properties files..."
-    echo "sdk.dir=$ANDROID_HOME" > "$ANDROID_LOCAL_PROPERTIES_PATH"
-    echo "flutter.sdk=$FLUTTER_ROOT" >> "$ANDROID_LOCAL_PROPERTIES_PATH"
-    echo "flutter.buildMode=release" >> "$ANDROID_LOCAL_PROPERTIES_PATH"
-    echo "flutter.versionName=$VERSION_NAME" >> "$ANDROID_LOCAL_PROPERTIES_PATH"
-    echo "flutter.versionCode=$VERSION_CODE" >> "$ANDROID_LOCAL_PROPERTIES_PATH"
-}
-setup_local_properties
-
-# Setup Gradle wrapper
-print_section "Setting up Gradle wrapper"
-if [ ! -f "$GRADLE_WRAPPER_JAR_PATH" ]; then
-    echo "📥 Downloading Gradle wrapper from $GRADLE_WRAPPER_URL"
-    if ! curl -L "$GRADLE_WRAPPER_URL" -o "$GRADLE_WRAPPER_JAR_PATH" --retry 3 --retry-delay 5; then
-        echo "❌ Failed to download Gradle wrapper"
-        exit 1
-    fi
-fi
-
-# Create gradle-wrapper.properties
-print_section "Creating gradle-wrapper.properties"
-mkdir -p "$(dirname "$GRADLE_WRAPPER_PROPERTIES_PATH")"
-cat > "$GRADLE_WRAPPER_PROPERTIES_PATH" << EOF
-distributionBase=GRADLE_USER_HOME
-distributionPath=wrapper/dists
-distributionUrl=$GRADLE_DISTRIBUTION_URL
-zipStoreBase=GRADLE_USER_HOME
-zipStorePath=wrapper/dists
-EOF
-
-# Create gradlew script
-print_section "Creating gradlew script"
-mkdir -p "$(dirname "${ANDROID_ROOT}/gradlew")"
-curl -L "https://raw.githubusercontent.com/gradle/gradle/v${GRADLE_VERSION}/gradlew" -o "${ANDROID_ROOT}/gradlew"
-chmod +x "${ANDROID_ROOT}/gradlew"
-
-# Setup keystore
-print_section "Setting up keystore"
-if [ -n "$ANDROID_KEYSTORE_BASE64" ]; then
-    echo "🔐 Setting up keystore from base64..."
-    mkdir -p "$(dirname "$ANDROID_KEYSTORE_PATH")"
-    echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$ANDROID_KEYSTORE_PATH"
-    if [ ! -f "$ANDROID_KEYSTORE_PATH" ]; then
-        echo "❌ Failed to create keystore file"
-        exit 1
-    fi
-    echo "✅ Keystore file created successfully"
-else
-    echo "⚠️ No keystore provided, using debug keystore"
-    # Create debug keystore if it doesn't exist
-    if [ ! -f "$ANDROID_KEYSTORE_PATH" ]; then
-        keytool -genkey -v -keystore "$ANDROID_KEYSTORE_PATH" \
-            -alias androiddebugkey \
-            -keyalg RSA \
-            -keysize 2048 \
-            -validity 10000 \
-            -storepass android \
-            -keypass android \
-            -dname "CN=Android Debug,O=Android,C=US"
-    fi
-fi
-
-# Create key.properties
-print_section "Creating key.properties"
-cat > "$ANDROID_KEY_PROPERTIES_PATH" << EOF
-storeFile=keystore.jks
-storePassword=android
-keyAlias=androiddebugkey
-keyPassword=android
-EOF
-
-# Setup Firebase
-print_section "Setting up Firebase"
-if [ -n "$FIREBASE_CONFIG_URL" ]; then
-    echo "📥 Downloading Firebase config for Android..."
-    if ! curl -L "$FIREBASE_CONFIG_URL" -o "$ANDROID_FIREBASE_CONFIG_PATH" --retry 3 --retry-delay 5; then
-        echo "❌ Failed to download Firebase config"
-        exit 1
-    fi
-    echo "✅ Firebase config downloaded successfully"
-else
-    echo "⚠️ No Firebase config URL provided, skipping Firebase setup"
-    # Create empty google-services.json if it doesn't exist
-    if [ ! -f "$ANDROID_FIREBASE_CONFIG_PATH" ]; then
-        echo "{}" > "$ANDROID_FIREBASE_CONFIG_PATH"
-    fi
-fi
-
-# Build APK
-print_section "Building APK"
-build_apk() {
-    echo "Building APK..."
-    flutter build apk --release
-}
-build_apk
-
-# Build AAB
-print_section "Building AAB"
-build_aab() {
-    echo "Building AAB..."
-    flutter build appbundle --release
-}
-build_aab
-
-# Collect artifacts
-print_section "Collecting artifacts"
-collect_artifacts() {
-    echo "Collecting build artifacts..."
-    mkdir -p "$OUTPUT_DIR"
-    cp "$APK_OUTPUT_PATH" "$OUTPUT_DIR/"
-    cp "$AAB_OUTPUT_PATH" "$OUTPUT_DIR/"
-}
-collect_artifacts
-
-# Revert changes
-print_section "Reverting changes"
-revert_changes() {
-    echo "Reverting project changes..."
-    git checkout "$ANDROID_MANIFEST_PATH"
-    git checkout "$ANDROID_BUILD_GRADLE_PATH"
-    rm -f "$APP_ICON_PATH"
-    rm -f "$SPLASH_IMAGE_PATH"
-    rm -f "$SPLASH_BG_PATH"
-    rm -f "$PUBSPEC_BACKUP_PATH"
-    rm -rf "$ANDROID_MIPMAP_DIR"/*
-    rm -rf "$ANDROID_DRAWABLE_DIR"/*
-}
-revert_changes
 
 # Update the build process to use error handling
 if ! setup_build_environment; then
