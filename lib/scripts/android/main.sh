@@ -1,19 +1,43 @@
 #!/bin/bash
 set -e
 
-# Source download functions
-source lib/scripts/combined/download.sh
+# Source the admin variables
+source "${SCRIPT_DIR}/admin_vars.sh"
 
-# Load the main email configuration
+# Source download functions
+source "${SCRIPT_DIR}/../combined/download.sh"
+
+# Load the email configuration
 source "${SCRIPT_DIR}/email_config.sh"
 
 # Error handling function
 handle_error() {
-    local exit_code=$1
-    local line_number=$2
-    echo "❌ Error occurred in $0 at line $line_number (exit code: $exit_code)"
-    echo "Failed command: $BASH_COMMAND"
-    exit $exit_code
+    local error_message="$1"
+    local error_details="$2"
+    
+    print_section "Build failed"
+    print_section "Sending error notification"
+    send_error_notification "$error_message" "$error_details"
+    exit 1
+}
+
+# Function to handle build success
+handle_build_success() {
+    print_section "Build completed successfully"
+    print_section "Sending success notification"
+    send_success_notification
+    exit 0
+}
+
+# Function to handle build error
+handle_build_error() {
+    local error_message="$1"
+    local error_details="$2"
+    
+    print_section "Build failed"
+    print_section "Sending error notification"
+    send_error_notification "$error_message" "$error_details"
+    exit 1
 }
 
 # Set error handler
@@ -230,25 +254,6 @@ revert_changes() {
     rm -rf "$ANDROID_DRAWABLE_DIR"/*
 }
 revert_changes
-
-# Function to handle build success
-handle_build_success() {
-    print_section "Build completed successfully"
-    print_section "Sending success notification"
-    send_success_notification
-    exit 0
-}
-
-# Function to handle build error
-handle_build_error() {
-    local error_message="$1"
-    local error_details="$2"
-    
-    print_section "Build failed"
-    print_section "Sending error notification"
-    send_error_notification "$error_message" "$error_details"
-    exit 1
-}
 
 # Update the build process to use error handling
 if ! setup_build_environment; then
