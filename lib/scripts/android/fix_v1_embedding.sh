@@ -21,6 +21,60 @@ APP_DIR="$ANDROID_DIR/app"
 echo -e "${BLUE}🔧 Fixing Android V1 Embedding Issues${NC}"
 echo "=================================="
 
+# Create local.properties file
+create_local_properties() {
+    echo -e "${YELLOW}📝 Creating local.properties file...${NC}"
+    cd "$PROJECT_ROOT/android"
+    
+    # Try to find Flutter SDK path
+    FLUTTER_SDK_PATH=""
+    
+    # Method 1: Check FLUTTER_ROOT environment variable
+    if [ -n "$FLUTTER_ROOT" ] && [ -d "$FLUTTER_ROOT" ]; then
+        FLUTTER_SDK_PATH="$FLUTTER_ROOT"
+        echo -e "${GREEN}✅ Found Flutter SDK via FLUTTER_ROOT: $FLUTTER_SDK_PATH${NC}"
+    else
+        # Method 2: Find Flutter in PATH
+        FLUTTER_BIN=$(which flutter 2>/dev/null || echo "")
+        if [ -n "$FLUTTER_BIN" ]; then
+            # Get the directory containing the flutter binary
+            FLUTTER_BIN_DIR=$(dirname "$FLUTTER_BIN")
+            # Get the parent directory (should be Flutter SDK root)
+            FLUTTER_SDK_PATH=$(dirname "$FLUTTER_BIN_DIR")
+            echo -e "${GREEN}✅ Found Flutter SDK via PATH: $FLUTTER_SDK_PATH${NC}"
+        else
+            # Method 3: Common Flutter installation locations
+            COMMON_PATHS=(
+                "/Users/builder/programs/flutter"
+                "/usr/local/flutter"
+                "/opt/flutter"
+                "$HOME/flutter"
+            )
+            
+            for path in "${COMMON_PATHS[@]}"; do
+                if [ -d "$path" ]; then
+                    FLUTTER_SDK_PATH="$path"
+                    echo -e "${GREEN}✅ Found Flutter SDK in common location: $FLUTTER_SDK_PATH${NC}"
+                    break
+                fi
+            done
+        fi
+    fi
+    
+    if [ -z "$FLUTTER_SDK_PATH" ]; then
+        echo -e "${RED}❌ Could not find Flutter SDK path${NC}"
+        exit 1
+    fi
+    
+    # Create local.properties file
+    cat > local.properties << EOF
+flutter.sdk=$FLUTTER_SDK_PATH
+EOF
+    
+    echo -e "${GREEN}✅ Created local.properties with Flutter SDK path${NC}"
+    cd "$PROJECT_ROOT"
+}
+
 # Initialize Gradle wrapper if not present
 initialize_gradle_wrapper() {
     echo -e "${YELLOW}📦 Initializing Gradle wrapper...${NC}"
@@ -177,6 +231,9 @@ EOF
     
     cd "$PROJECT_ROOT"
 }
+
+# Create local.properties before initializing Gradle wrapper
+create_local_properties
 
 # Initialize Gradle wrapper before proceeding
 initialize_gradle_wrapper
