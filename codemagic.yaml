@@ -205,264 +205,34 @@ scripts:
 workflows:
   android-publish:
     name: Android Publish
-    environment: *default_env
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+      vars: *default_env
+      flutter_version: "3.24.5"
     scripts:
-      - name: Force Gradle Wrapper Version
-        script: |
-          cat > android/gradle/wrapper/gradle-wrapper.properties <<EOF
-          distributionBase=GRADLE_USER_HOME
-          distributionPath=wrapper/dists
-          zipStoreBase=GRADLE_USER_HOME
-          zipStorePath=wrapper/dists
-          distributionUrl=https\://services.gradle.org/distributions/gradle-8.12-all.zip
-          EOF
-          echo "✅ Forced gradle-wrapper.properties to Gradle 8.12"
-      - *debug_env
-      - name: Get Flutter packages
-        script: flutter pub get
-      - name: Initialize Android Gradle Wrapper
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "🔧 Initializing Android Gradle Wrapper for compatibility..."
-
-          cd android
-
-          # Check Java availability
-          echo "🔍 Checking Java installation..."
-          if ! command -v java >/dev/null 2>&1; then
-              echo "❌ Java is not installed or not in PATH"
-              exit 1
-          fi
-
-          JAVA_VERSION=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}')
-          echo "✅ Java version: $JAVA_VERSION"
-
-          # Create gradle wrapper directory if it doesn't exist
-          mkdir -p gradle/wrapper
-
-          # Try GitHub first, then fallback to Maven Central
-          curl -L -o gradle/wrapper/gradle-wrapper.jar \
-              "https://github.com/gradle/gradle/raw/v8.12.0/gradle/wrapper/gradle-wrapper.jar"
-
-          # Create gradle-wrapper.properties
-          echo "📝 Creating gradle-wrapper.properties..."
-          cat > gradle/wrapper/gradle-wrapper.properties <<EOF
-          distributionBase=GRADLE_USER_HOME
-          distributionPath=wrapper/dists
-          distributionUrl=https\://services.gradle.org/distributions/gradle-8.12-bin.zip
-          networkTimeout=10000
-          validateDistributionUrl=true
-          zipStoreBase=GRADLE_USER_HOME
-          zipStorePath=wrapper/dists
-          EOF
-
-          # Make gradlew executable
-          chmod +x gradlew
-
-          # Verify the wrapper setup
-          echo "🔍 Verifying Gradle wrapper setup..."
-          if [ ! -f "gradle/wrapper/gradle-wrapper.jar" ]; then
-              echo "❌ gradle-wrapper.jar not found"
-              exit 1
-          fi
-
-          if [ ! -f "gradle/wrapper/gradle-wrapper.properties" ]; then
-              echo "❌ gradle-wrapper.properties not found"
-              exit 1
-          fi
-
-          echo "✅ Gradle wrapper initialization complete"
-      - name: Validate Android Project Structure
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "🔍 Validating Android project structure..."
-
-          # Check critical Android files
-          REQUIRED_FILES=(
-              "android/app/build.gradle"
-              "android/build.gradle"
-              "android/gradle.properties"
-              "android/settings.gradle"
-          )
-
-          for file in "${REQUIRED_FILES[@]}"; do
-              if [ ! -f "$file" ]; then
-                  echo "❌ Missing required file: $file"
-                  exit 1
-              else
-                  echo "✅ Found: $file"
-              fi
-          done
-
-          # Ensure Android SDK versions are compatible
-          echo "🔧 Checking Android SDK compatibility for API 35..."
-
-          # Check if build.gradle has proper compileSdkVersion
-          if grep -q "compileSdkVersion.*3[5-9]" android/app/build.gradle; then
-              echo "✅ Compatible compileSdkVersion found"
-          else
-              echo "⚠️  May need compileSdkVersion update for Android 15"
-          fi
-
-          echo "✅ Android project structure validated"
       - name: Run Android build script
         script: |
           #!/usr/bin/env bash
           set -e
-          echo "🚀 Running Android build using comprehensive script system..."
+          echo "Running Android build script..."
 
           # Set workflow name for email notifications
           export WORKFLOW_NAME="Android Publish"
 
-          # Check if we have the comprehensive Android main.sh script
+          # Source environment variables from export.sh
+          if [ -f "lib/scripts/android/export.sh" ]; then
+              source lib/scripts/android/export.sh
+          fi
+
+          # Run the main Android build script
           if [ -f "lib/scripts/android/main.sh" ]; then
-              echo "🎯 Using comprehensive Android main.sh script..."
               chmod +x lib/scripts/android/main.sh
               ./lib/scripts/android/main.sh
           else
-              echo "⚠️  Android main.sh not found, using enhanced fallback build process..."
-              
-              # Enhanced Fallback: Set up Android code signing
-              echo "🔐 Setting up Android code signing..."
-              if [ -n "$KEY_STORE" ]; then
-                  echo "📥 Downloading keystore..."
-                  wget -O android/app/keystore.jks "$KEY_STORE"
-                  cat > android/key.properties << EOF
-          storePassword=$CM_KEYSTORE_PASSWORD
-          keyPassword=$CM_KEY_PASSWORD
-          keyAlias=$CM_KEY_ALIAS
-          storeFile=keystore.jks
-          EOF
-                  echo "✅ Keystore configured"
-              fi
-              
-              # Build APK and AAB with comprehensive error handling
-              echo "🏗️ Building Android APK and AAB..."
-              
-              # Build APK with retry mechanism
-              echo "📱 Building APK..."
-              if ! flutter build apk --release \
-                --dart-define=PKG_NAME="$PKG_NAME" \
-                --dart-define=APP_NAME="$APP_NAME" \
-                --dart-define=ORG_NAME="$ORG_NAME" \
-                --dart-define=VERSION_NAME="$VERSION_NAME" \
-                --dart-define=VERSION_CODE="$VERSION_CODE" \
-                --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY" \
-                --dart-define=firebase_config_android="$firebase_config_android" \
-                --dart-define=WEB_URL="$WEB_URL" \
-                --dart-define=IS_SPLASH="$IS_SPLASH" \
-                --dart-define=SPLASH="$SPLASH" \
-                --dart-define=SPLASH_ANIMATION="$SPLASH_ANIMATION" \
-                --dart-define=SPLASH_BG_COLOR="$SPLASH_BG_COLOR" \
-                --dart-define=SPLASH_TAGLINE="$SPLASH_TAGLINE" \
-                --dart-define=SPLASH_TAGLINE_COLOR="$SPLASH_TAGLINE_COLOR" \
-                --dart-define=SPLASH_DURATION="$SPLASH_DURATION" \
-                --dart-define=IS_PULLDOWN="$IS_PULLDOWN" \
-                --dart-define=LOGO_URL="$LOGO_URL" \
-                --dart-define=IS_BOTTOMMENU="$IS_BOTTOMMENU" \
-                --dart-define=BOTTOMMENU_ITEMS="$BOTTOMMENU_ITEMS" \
-                --dart-define=IS_DEEPLINK="$IS_DEEPLINK" \
-                --dart-define=IS_LOAD_IND="$IS_LOAD_IND" \
-                --dart-define=IS_CHATBOT="$IS_CHATBOT" \
-                --dart-define=IS_CAMERA="$IS_CAMERA" \
-                --dart-define=IS_LOCATION="$IS_LOCATION" \
-                --dart-define=IS_BIOMETRIC="$IS_BIOMETRIC" \
-                --dart-define=IS_MIC="$IS_MIC" \
-                --dart-define=IS_CONTACT="$IS_CONTACT" \
-                --dart-define=IS_CALENDAR="$IS_CALENDAR" \
-                --dart-define=IS_NOTIFICATION="$IS_NOTIFICATION" \
-                --dart-define=IS_STORAGE="$IS_STORAGE"; then
-                
-                echo "❌ APK build failed, trying with clean..."
-                flutter clean
-                flutter pub get
-                
-                flutter build apk --release \
-                  --dart-define=PKG_NAME="$PKG_NAME" \
-                  --dart-define=APP_NAME="$APP_NAME" \
-                  --dart-define=VERSION_NAME="$VERSION_NAME" \
-                  --dart-define=VERSION_CODE="$VERSION_CODE" \
-                  --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY"
-              fi
-              
-              # Build AAB
-              echo "📦 Building AAB..."
-              flutter build appbundle --release \
-                --dart-define=PKG_NAME="$PKG_NAME" \
-                --dart-define=APP_NAME="$APP_NAME" \
-                --dart-define=ORG_NAME="$ORG_NAME" \
-                --dart-define=VERSION_NAME="$VERSION_NAME" \
-                --dart-define=VERSION_CODE="$VERSION_CODE" \
-                --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY" \
-                --dart-define=firebase_config_android="$firebase_config_android" \
-                --dart-define=WEB_URL="$WEB_URL" \
-                --dart-define=IS_SPLASH="$IS_SPLASH" \
-                --dart-define=SPLASH="$SPLASH" \
-                --dart-define=SPLASH_ANIMATION="$SPLASH_ANIMATION" \
-                --dart-define=SPLASH_BG_COLOR="$SPLASH_BG_COLOR" \
-                --dart-define=SPLASH_TAGLINE="$SPLASH_TAGLINE" \
-                --dart-define=SPLASH_TAGLINE_COLOR="$SPLASH_TAGLINE_COLOR" \
-                --dart-define=SPLASH_DURATION="$SPLASH_DURATION" \
-                --dart-define=IS_PULLDOWN="$IS_PULLDOWN" \
-                --dart-define=LOGO_URL="$LOGO_URL" \
-                --dart-define=IS_BOTTOMMENU="$IS_BOTTOMMENU" \
-                --dart-define=BOTTOMMENU_ITEMS="$BOTTOMMENU_ITEMS" \
-                --dart-define=IS_DEEPLINK="$IS_DEEPLINK" \
-                --dart-define=IS_LOAD_IND="$IS_LOAD_IND" \
-                --dart-define=IS_CHATBOT="$IS_CHATBOT" \
-                --dart-define=IS_CAMERA="$IS_CAMERA" \
-                --dart-define=IS_LOCATION="$IS_LOCATION" \
-                --dart-define=IS_BIOMETRIC="$IS_BIOMETRIC" \
-                --dart-define=IS_MIC="$IS_MIC" \
-                --dart-define=IS_CONTACT="$IS_CONTACT" \
-                --dart-define=IS_CALENDAR="$IS_CALENDAR" \
-                --dart-define=IS_NOTIFICATION="$IS_NOTIFICATION" \
-                --dart-define=IS_STORAGE="$IS_STORAGE"
-              
-              # Move outputs
-              echo "📁 Moving build outputs..."
-              mkdir -p output
-              
-              # Check for APK
-              if [ -f "build/app/outputs/flutter-apk/app-release.apk" ]; then
-                  cp build/app/outputs/flutter-apk/app-release.apk output/
-                  echo "✅ APK moved to output/"
-              else
-                  echo "⚠️  APK not found at expected location"
-                  find build/ -name "*.apk" -type f | head -5
-              fi
-              
-              # Check for AAB
-              if [ -f "build/app/outputs/bundle/release/app-release.aab" ]; then
-                  cp build/app/outputs/bundle/release/app-release.aab output/
-                  echo "✅ AAB moved to output/"
-              else
-                  echo "⚠️  AAB not found at expected location"
-                  find build/ -name "*.aab" -type f | head -5
-              fi
-              
-              echo "📋 Final output contents:"
-              ls -la output/ || echo "No output directory"
-          fi
-      - name: Send success notification
-        script: |
-          #!/usr/bin/env bash
-          set -e
-          echo "📧 Sending success notification..."
-
-          # Load email configuration
-          if [ -f "lib/scripts/email_config.sh" ]; then
-              source lib/scripts/email_config.sh
-              echo "✅ Email configuration loaded"
-          fi
-
-          if [ -f "lib/scripts/android/send_output_email.sh" ]; then
-              bash lib/scripts/android/send_output_email.sh 2>/dev/null || true
-              echo "✅ Success notification sent"
-          else
-              echo "ℹ️  Email notification skipped (script not found or email not configured)"
+              echo "❌ Error: lib/scripts/android/main.sh not found. Cannot proceed with build."
+              exit 1
           fi
     artifacts:
       - build/app/outputs/flutter-apk/app-release.apk
