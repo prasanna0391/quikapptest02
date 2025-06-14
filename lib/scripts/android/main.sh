@@ -27,7 +27,46 @@ print_section "Starting Android Build Process"
 # Setup environment
 print_section "Setting up environment"
 find lib/scripts -type f -name "*.sh" -exec chmod +x {} \;
-mkdir -p "$OUTPUT_DIR"
+
+# Ensure CM_BUILD_DIR is set
+if [ -z "$CM_BUILD_DIR" ]; then
+    CM_BUILD_DIR="$PWD"
+    echo "CM_BUILD_DIR not set, using current directory: $CM_BUILD_DIR"
+fi
+
+# Create required directories with validation
+print_section "Creating required directories"
+create_directory() {
+    local dir="$1"
+    local desc="$2"
+    echo "Creating $desc directory: $dir"
+    if ! mkdir -p "$dir"; then
+        echo "❌ Failed to create $desc directory: $dir"
+        exit 1
+    fi
+    if [ ! -d "$dir" ]; then
+        echo "❌ Directory not created: $dir"
+        exit 1
+    fi
+    echo "✅ Created $desc directory: $dir"
+}
+
+# Create main directories
+create_directory "$CM_BUILD_DIR" "build root"
+create_directory "$OUTPUT_DIR" "output"
+create_directory "$ANDROID_ROOT" "Android root"
+create_directory "$ASSETS_DIR" "assets"
+create_directory "$TEMP_DIR" "temporary"
+
+# Create Android resource directories
+create_directory "$ANDROID_ROOT/app/src/main/res/mipmap" "mipmap resources"
+create_directory "$ANDROID_ROOT/app/src/main/res/drawable" "drawable resources"
+create_directory "$ANDROID_ROOT/app/src/main/res/values" "values resources"
+
+# Create build output directories
+create_directory "$(dirname "$APK_OUTPUT_PATH")" "APK output"
+create_directory "$(dirname "$AAB_OUTPUT_PATH")" "AAB output"
+
 source lib/scripts/combined/export.sh
 
 # Validate environment
