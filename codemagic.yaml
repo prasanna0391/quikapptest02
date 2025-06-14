@@ -95,8 +95,8 @@ environment: &default_env
     # Email Configuration - Optional with defaults
     SMTP_SERVER: "smtp.gmail.com"
     SMTP_PORT: "587"
-    SMTP_USERNAME: "prasannasrie@gmail.com"
-    SMTP_PASSWORD: "jbbf nzhm zoay lbwb"
+    SMTP_USERNAME: "no-reply@quikapp.co"
+    SMTP_PASSWORD: "${SMTP_PASSWORD}"
 
 scripts:
   - &debug_env
@@ -453,9 +453,8 @@ workflows:
           set -e
           echo "📧 Sending success notification..."
 
-          if [ -f "lib/scripts/email_notification.py" ] && [ -n "$SMTP_USERNAME" ] && [ -n "$SMTP_PASSWORD" ]; then
-              chmod +x lib/scripts/email_notification.py
-              python3 lib/scripts/email_notification.py success
+          if [ -f "lib/scripts/android/send_output_email.sh" ]; then
+              bash lib/scripts/android/send_output_email.sh 2>/dev/null || true
               echo "✅ Success notification sent"
           else
               echo "ℹ️  Email notification skipped (script not found or email not configured)"
@@ -636,8 +635,6 @@ workflows:
           # Check if we have the comprehensive iOS main.sh script
           if [ -f "lib/scripts/ios/main.sh" ]; then
               echo "🎯 Using comprehensive iOS main.sh script..."
-              # Set workflow name for email notifications
-              export WORKFLOW_NAME="Combined Android & iOS Build"
               chmod +x lib/scripts/ios/main.sh
               ./lib/scripts/ios/main.sh
           else
@@ -873,9 +870,8 @@ workflows:
           set -e
           echo "📧 Sending success notification..."
 
-          if [ -f "lib/scripts/email_notification.py" ] && [ -n "$SMTP_USERNAME" ] && [ -n "$SMTP_PASSWORD" ]; then
-              chmod +x lib/scripts/email_notification.py
-              python3 lib/scripts/email_notification.py success
+          if [ -f "lib/scripts/android/send_output_email.sh" ]; then
+              bash lib/scripts/android/send_output_email.sh 2>/dev/null || true
               echo "✅ Success notification sent"
           else
               echo "ℹ️  Email notification skipped (script not found or email not configured)"

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Build Success - {{APP_NAME}}</title>
+    <title>✅ Build Success - {{APP_NAME}} | QuikApp</title>
     <style>
         * {
             margin: 0;
@@ -12,23 +12,23 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             line-height: 1.6;
             color: #333;
-            background-color: #f8f9fa;
+            background-color: #f6f9fc;
         }
         
         .email-container {
             max-width: 600px;
-            margin: 0 auto;
+            margin: 20px auto;
             background-color: #ffffff;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
             overflow: hidden;
         }
         
         .header {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #5b73e8 100%);
             color: white;
             padding: 40px 30px;
             text-align: center;
@@ -42,8 +42,8 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-            opacity: 0.3;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23dots)"/></svg>');
+            opacity: 0.4;
         }
         
         .header-content {
@@ -51,31 +51,56 @@
             z-index: 1;
         }
         
+        .logo-container {
+            margin-bottom: 20px;
+        }
+        
+        .quikapp-logo {
+            font-size: 32px;
+            font-weight: 800;
+            color: #ffffff;
+            text-decoration: none;
+            display: inline-block;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
         .success-icon {
-            font-size: 48px;
+            font-size: 64px;
             margin-bottom: 15px;
             display: block;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
         }
         
         .header h1 {
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 700;
             margin-bottom: 10px;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         
         .header p {
-            font-size: 16px;
+            font-size: 18px;
             opacity: 0.9;
             font-weight: 300;
         }
         
         .content {
-            padding: 40px 30px;
+            padding: 50px 40px;
         }
         
         .greeting {
-            font-size: 18px;
+            font-size: 20px;
             color: #2c3e50;
             margin-bottom: 30px;
             font-weight: 500;
@@ -83,99 +108,104 @@
         
         .success-message {
             background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-            border-left: 4px solid #28a745;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
+            border-left: 5px solid #28a745;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 35px;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.1);
         }
         
         .success-message h3 {
             color: #155724;
-            font-size: 20px;
-            margin-bottom: 10px;
+            font-size: 22px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
         }
         
         .success-message h3::before {
             content: "✅";
-            margin-right: 10px;
-            font-size: 24px;
+            margin-right: 12px;
+            font-size: 28px;
         }
         
         .success-message p {
             color: #155724;
             font-size: 16px;
-            line-height: 1.5;
+            line-height: 1.6;
         }
         
         .project-details {
-            background-color: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            padding: 25px;
-            margin-bottom: 30px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #f1f3ff 100%);
+            border: 1px solid #e1e8ff;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 35px;
         }
         
         .project-details h3 {
             color: #495057;
-            font-size: 18px;
-            margin-bottom: 15px;
+            font-size: 20px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
         }
         
         .project-details h3::before {
             content: "📱";
-            margin-right: 10px;
-            font-size: 20px;
+            margin-right: 12px;
+            font-size: 24px;
         }
         
         .details-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 20px;
         }
         
         .detail-item {
             display: flex;
-            align-items: center;
-            padding: 10px 0;
+            flex-direction: column;
+            padding: 15px 0;
+            border-bottom: 1px solid #e1e8ff;
         }
         
         .detail-label {
             font-weight: 600;
             color: #6c757d;
-            min-width: 120px;
-            font-size: 14px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
         }
         
         .detail-value {
             color: #495057;
             font-weight: 500;
-            font-size: 14px;
+            font-size: 15px;
         }
         
         .artifacts-section {
-            background-color: #e3f2fd;
-            border: 1px solid #bbdefb;
-            border-radius: 8px;
-            padding: 25px;
-            margin-bottom: 30px;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border: 1px solid #90caf9;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 35px;
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.1);
         }
         
         .artifacts-section h3 {
             color: #1565c0;
-            font-size: 18px;
-            margin-bottom: 15px;
+            font-size: 20px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
         }
         
         .artifacts-section h3::before {
             content: "📦";
-            margin-right: 10px;
-            font-size: 20px;
+            margin-right: 12px;
+            font-size: 24px;
         }
         
         .artifact-list {
@@ -185,8 +215,8 @@
         .artifact-item {
             display: flex;
             align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid #e1f5fe;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(21, 101, 192, 0.1);
         }
         
         .artifact-item:last-child {
@@ -194,32 +224,93 @@
         }
         
         .artifact-icon {
-            margin-right: 10px;
-            font-size: 16px;
+            margin-right: 12px;
+            font-size: 20px;
         }
         
         .artifact-name {
             color: #1565c0;
-            font-weight: 500;
+            font-weight: 600;
+            flex: 1;
         }
         
         .artifact-size {
             color: #6c757d;
-            font-size: 12px;
-            margin-left: auto;
+            font-size: 13px;
+            font-weight: 500;
         }
         
-        .contact-support {
+        .platform-links {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 25px;
-            border-radius: 8px;
+            padding: 30px;
+            border-radius: 12px;
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 35px;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .platform-links h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .platform-links h3::before {
+            content: "🚀";
+            margin-right: 12px;
+            font-size: 24px;
+        }
+        
+        .platform-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .platform-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .platform-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+        
+        .platform-btn::before {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+        
+        .app-platform::before { content: "📱"; }
+        .website-platform::before { content: "🌐"; }
+        
+        .contact-support {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 35px;
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.3);
         }
         
         .contact-support h3 {
-            font-size: 18px;
+            font-size: 20px;
             margin-bottom: 15px;
             display: flex;
             align-items: center;
@@ -228,82 +319,97 @@
         
         .contact-support h3::before {
             content: "💬";
-            margin-right: 10px;
-            font-size: 20px;
+            margin-right: 12px;
+            font-size: 24px;
         }
         
         .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        
+        .contact-item a {
+            color: white;
+            text-decoration: none;
+        }
+        
+        .contact-item a:hover {
+            text-decoration: underline;
+        }
+        
+        .contact-item::before {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        .contact-email::before { content: "📧"; }
+        .contact-phone::before { content: "📞"; }
+        .contact-website::before { content: "🌐"; }
+        
+        .footer {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: #ecf0f1;
+            padding: 40px 30px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .footer-logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 15px;
+        }
+        
+        .footer p {
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+        
+        .social-links {
+            margin-top: 20px;
             display: flex;
             justify-content: center;
             gap: 20px;
             flex-wrap: wrap;
         }
         
-        .contact-item {
-            display: flex;
-            align-items: center;
-            font-size: 14px;
-        }
-        
-        .contact-item::before {
-            margin-right: 8px;
-            font-size: 16px;
-        }
-        
-        .contact-email::before {
-            content: "📧";
-        }
-        
-        .contact-phone::before {
-            content: "📞";
-        }
-        
-        .contact-website::before {
-            content: "🌐";
-        }
-        
-        .footer {
-            background-color: #343a40;
-            color: #adb5bd;
-            padding: 30px;
-            text-align: center;
-            font-size: 12px;
-        }
-        
-        .footer p {
-            margin-bottom: 10px;
-        }
-        
-        .footer-logo {
-            font-size: 16px;
-            font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 15px;
-        }
-        
-        .social-links {
-            margin-top: 15px;
-        }
-        
         .social-links a {
-            color: #adb5bd;
+            color: #ecf0f1;
             text-decoration: none;
-            margin: 0 10px;
-            font-size: 14px;
+            font-weight: 500;
+            padding: 5px 10px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
         }
         
         .social-links a:hover {
             color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
         }
         
         @media (max-width: 600px) {
             .email-container {
                 margin: 10px;
-                border-radius: 8px;
+                border-radius: 12px;
             }
             
             .header, .content {
-                padding: 20px;
+                padding: 25px 20px;
+            }
+            
+            .content {
+                padding: 35px 25px;
             }
             
             .details-grid {
@@ -311,6 +417,16 @@
             }
             
             .contact-info {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .platform-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .social-links {
                 flex-direction: column;
                 gap: 10px;
             }
@@ -321,6 +437,9 @@
     <div class="email-container">
         <div class="header">
             <div class="header-content">
+                <div class="logo-container">
+                    <a href="https://quikapp.co" class="quikapp-logo">QuikApp</a>
+                </div>
                 <span class="success-icon">🎉</span>
                 <h1>Build Successful!</h1>
                 <p>{{APP_NAME}} - {{WORKFLOW_NAME}} Workflow</p>
@@ -330,47 +449,47 @@
         <div class="content">
             <div class="greeting">
                 <strong>Hello {{RECIPIENT_NAME}},</strong><br>
-                Great news! Your {{APP_NAME}} build has completed successfully. 🚀
+                Congratulations! Your {{APP_NAME}} build has completed successfully on the QuikApp platform. 🚀
             </div>
             
             <div class="success-message">
                 <h3>Build Completed Successfully</h3>
-                <p>Your {{WORKFLOW_NAME}} workflow has finished building all artifacts. The build process completed without any errors and all files have been generated successfully.</p>
+                <p>Your {{WORKFLOW_NAME}} workflow has finished building all artifacts. The build process completed without any errors and all files have been generated successfully using QuikApp's optimized build system.</p>
             </div>
             
             <div class="project-details">
                 <h3>Project Details</h3>
                 <div class="details-grid">
                     <div class="detail-item">
-                        <span class="detail-label">Project Name:</span>
+                        <span class="detail-label">Project Name</span>
                         <span class="detail-value">{{APP_NAME}}</span>
                     </div>
                     <div class="detail-item">
-                        <span class="detail-label">Package Name:</span>
+                        <span class="detail-label">Package Name</span>
                         <span class="detail-value">{{PKG_NAME}}</span>
                     </div>
                     <div class="detail-item">
-                        <span class="detail-label">Bundle ID:</span>
+                        <span class="detail-label">Bundle ID</span>
                         <span class="detail-value">{{BUNDLE_ID}}</span>
                     </div>
                     <div class="detail-item">
-                        <span class="detail-label">Version Name:</span>
+                        <span class="detail-label">Version Name</span>
                         <span class="detail-value">{{VERSION_NAME}}</span>
                     </div>
                     <div class="detail-item">
-                        <span class="detail-label">Version Code:</span>
+                        <span class="detail-label">Version Code</span>
                         <span class="detail-value">{{VERSION_CODE}}</span>
                     </div>
                     <div class="detail-item">
-                        <span class="detail-label">Build Time:</span>
+                        <span class="detail-label">Build Time</span>
                         <span class="detail-value">{{BUILD_TIME}}</span>
                     </div>
                     <div class="detail-item">
-                        <span class="detail-label">Workflow:</span>
+                        <span class="detail-label">Workflow</span>
                         <span class="detail-value">{{WORKFLOW_NAME}}</span>
                     </div>
                     <div class="detail-item">
-                        <span class="detail-label">Build ID:</span>
+                        <span class="detail-label">Build ID</span>
                         <span class="detail-value">{{BUILD_ID}}</span>
                     </div>
                 </div>
@@ -378,23 +497,37 @@
             
             <div class="artifacts-section">
                 <h3>Build Artifacts</h3>
+                <p style="color: #1565c0; margin-bottom: 15px;">The following files have been generated and are ready for download:</p>
                 <ul class="artifact-list">
                     {{ARTIFACTS_LIST}}
                 </ul>
             </div>
             
+            <div class="platform-links">
+                <h3>Access Your App</h3>
+                <p>Use these links to access and manage your app:</p>
+                <div class="platform-buttons">
+                    <a href="https://app.quikapp.co" class="platform-btn app-platform">
+                        QuikApp Dashboard
+                    </a>
+                    <a href="https://quikapp.co" class="platform-btn website-platform">
+                        Visit Website
+                    </a>
+                </div>
+            </div>
+            
             <div class="contact-support">
                 <h3>Need Help?</h3>
-                <p>Our support team is here to help you with any questions or issues.</p>
+                <p>Our QuikApp support team is here to help you with any questions or issues.</p>
                 <div class="contact-info">
                     <div class="contact-item contact-email">
-                        <a href="mailto:support@quikapp.co" style="color: white; text-decoration: none;">support@quikapp.co</a>
+                        <a href="mailto:support@quikapp.co">support@quikapp.co</a>
                     </div>
                     <div class="contact-item contact-phone">
-                        <a href="tel:+1234567890" style="color: white; text-decoration: none;">+1 (234) 567-890</a>
+                        <a href="tel:+1234567890">+1 (234) 567-890</a>
                     </div>
                     <div class="contact-item contact-website">
-                        <a href="https://quikapp.co" style="color: white; text-decoration: none;">quikapp.co</a>
+                        <a href="https://quikapp.co">quikapp.co</a>
                     </div>
                 </div>
             </div>
@@ -402,13 +535,17 @@
         
         <div class="footer">
             <div class="footer-logo">QuikApp Build System</div>
-            <p>This is an automated notification from the QuikApp build system.</p>
+            <p>Convert your website into a mobile app with QuikApp - The quick app builder</p>
             <p>Build completed at {{BUILD_TIME}} | Build ID: {{BUILD_ID}}</p>
             <div class="social-links">
-                <a href="https://github.com/quikapp">GitHub</a> |
-                <a href="https://docs.quikapp.co">Documentation</a> |
                 <a href="https://quikapp.co">Website</a>
+                <a href="https://app.quikapp.co">Dashboard</a>
+                <a href="https://docs.quikapp.co">Documentation</a>
+                <a href="mailto:support@quikapp.co">Support</a>
             </div>
+            <p style="margin-top: 20px; font-size: 12px; opacity: 0.6;">
+                © 2024 QuikApp.co - All rights reserved | This is an automated notification from the QuikApp build system.
+            </p>
         </div>
     </div>
 </body>

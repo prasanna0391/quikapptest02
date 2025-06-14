@@ -43,16 +43,16 @@ class EmailNotificationSystem:
         self.from_email = "no-reply@quikapp.co"
         self.smtp_server = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
         self.smtp_port = int(os.environ.get("SMTP_PORT", "587"))
-        self.smtp_user = os.environ.get("SMTP_USERNAME", "your-email@gmail.com")
+        self.smtp_user = os.environ.get("SMTP_USERNAME", "no-reply@quikapp.co")
         self.smtp_pass = os.environ.get("SMTP_PASSWORD", "your-app-password")
         
         # App details from environment
-        self.app_name = os.environ.get("APP_NAME", "Garbcode App")
-        self.pkg_name = os.environ.get("PKG_NAME", "com.garbcode.garbcodeapp")
-        self.bundle_id = os.environ.get("BUNDLE_ID", "com.garbcode.garbcodeapp")
+        self.app_name = os.environ.get("APP_NAME", "QuikApp Project")
+        self.pkg_name = os.environ.get("PKG_NAME", "com.quikapp.project")
+        self.bundle_id = os.environ.get("BUNDLE_ID", "com.quikapp.project")
         self.version_name = os.environ.get("VERSION_NAME", "1.0.0")
         self.version_code = os.environ.get("VERSION_CODE", "1")
-        self.workflow_name = os.environ.get("WORKFLOW_NAME", "Unknown Workflow")
+        self.workflow_name = os.environ.get("WORKFLOW_NAME", "QuikApp Build")
         
         # Build details
         self.build_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -237,7 +237,7 @@ class EmailNotificationSystem:
         msg = MIMEMultipart('alternative')
         msg['From'] = self.from_email
         msg['To'] = self.to_email
-        msg['Subject'] = f"✅ Build Successful - {self.app_name} ({self.workflow_name})"
+        msg['Subject'] = f"✅ QuikApp Build Successful - {self.app_name} ({self.workflow_name})"
         
         # Attach HTML content
         html_part = MIMEText(html_content, 'html')
@@ -286,7 +286,7 @@ class EmailNotificationSystem:
         msg = MIMEMultipart('alternative')
         msg['From'] = self.from_email
         msg['To'] = self.to_email
-        msg['Subject'] = f"❌ Build Failed - {self.app_name} ({self.workflow_name})"
+        msg['Subject'] = f"❌ QuikApp Build Failed - {self.app_name} ({self.workflow_name})"
         
         # Attach HTML content
         html_part = MIMEText(html_content, 'html')

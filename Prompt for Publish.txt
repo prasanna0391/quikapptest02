@@ -1,0 +1,145 @@
+Android Publish Workflow
+This workflow is designed to build and publish the Android application.
+
+1. Force Gradle Wrapper Version:
+
+Description: This step ensures that the Gradle wrapper uses a specific version (8.12) by overwriting the gradle-wrapper.properties file. This is crucial for consistent builds across different environments.
+Prompt: "To ensure consistent Android builds, the system first forces the Gradle wrapper to version 8.12. This is done by updating the android/gradle/wrapper/gradle-wrapper.properties file to point to the Gradle 8.12 distribution URL. This step helps prevent build failures due to Gradle version inconsistencies."
+2. Debug Environment Variables:?
+
+Description: This step prints all relevant environment variables, including app configuration (name, version, package), customization flags (splash, pull-down, loading indicators, bottom menu, deep linking), push notification settings, Android/iOS keystore details, Firebase configurations, splash screen settings, bottom navigation settings, and permissions. This helps in verifying that all necessary inputs are correctly passed to the build system.
+Prompt: "Next, the system debugs all environment variables. This includes:
+App Name & Version: APP_NAME, ORG_NAME, WEB_URL, VERSION_NAME, VERSION_CODE, PKG_NAME, BUNDLE_ID
+App Customization Configuration: IS_SPLASH, IS_PULLDOWN, IS_LOAD_IND, IS_BOTTOMMENU, IS_DEEPLINK
+Push Notification Configuration: PUSH_NOTIFY, IS_CHATBOT
+Android Configuration: KEY_STORE, CM_KEYSTORE_PASSWORD (redacted), CM_KEY_ALIAS, CM_KEY_PASSWORD (redacted), COMPILE_SDK_VERSION, MIN_SDK_VERSION, TARGET_SDK_VERSION
+iOS Configuration: APP_STORE_CONNECT_KEY_IDENTIFIER, APNS_KEY_ID, APPLE_TEAM_ID, APNS_AUTH_KEY_URL, IPHONEOS_DEPLOYMENT_TARGET, EXPORT_METHOD
+Firebase Configuration: firebase_config_android, firebase_config_ios
+Splash Configuration: SPLASH, SPLASH_BG, SPLASH_BG_COLOR, SPLASH_TAGLINE, SPLASH_TAGLINE_COLOR, SPLASH_ANIMATION, SPLASH_DURATION
+Bottom Navigation Configuration: BOTTOMMENU_ITEMS, BOTTOMMENU_BG_COLOR, BOTTOMMENU_ICON_COLOR, BOTTOMMENU_TEXT_COLOR, BOTTOMMENU_FONT, BOTTOMMENU_FONT_SIZE, BOTTOMMENU_FONT_BOLD, BOTTOMMENU_FONT_ITALIC, BOTTOMMENU_ACTIVE_TAB_COLOR, BOTTOMMENU_ICON_POSITION, BOTTOMMENU_VISIBLE_ON
+Permissions: IS_CAMERA, IS_LOCATION, IS_MIC, IS_NOTIFICATION, IS_CONTACT, IS_BIOMETRIC, IS_CALENDAR, IS_STORAGE, IS_PHOTO_LIBRARY, IS_PHOTO_LIBRARY_ADD, IS_FACE_ID, IS_TOUCH_ID
+Email Configuration: EMAIL_ID, SMTP_SERVER, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD (redacted) This output is crucial for verifying that all dynamic variables are correctly set before the build proceeds."
+3. Get Flutter packages:
+
+Description: This step fetches all the dependencies listed in the pubspec.yaml file, ensuring that the project has all required packages for building.
+Prompt: "The build process then fetches all Flutter packages by running flutter pub get. This command ensures that all dependencies defined in pubspec.yaml are downloaded and available for the build."
+4. Initialize Android Gradle Wrapper:
+
+Description: This script initializes the Android Gradle wrapper, ensuring Java is available, creating the gradle/wrapper directory, downloading gradle-wrapper.jar, and creating gradle-wrapper.properties. It also makes gradlew executable.
+Prompt: "To prepare the Android build environment, the system initializes the Gradle wrapper. This involves:
+Checking for Java installation.
+Creating the android/gradle/wrapper directory.
+Downloading the gradle-wrapper.jar from a reliable source (GitHub, with a fallback).
+Creating the android/gradle/wrapper/gradle-wrapper.properties file with Gradle distribution details.
+Making the gradlew script executable. This step guarantees that the correct Gradle version and environment are set up for the Android build."
+5. Validate Android Project Structure:
+
+Description: This step verifies the presence of critical Android files (android/app/build.gradle, android/build.gradle, android/gradle.properties, android/settings.gradle) and checks for compatible SDK versions.
+Prompt: "Before building, the Android project structure is validated. This checks for the presence of essential files like android/app/build.gradle, android/build.gradle, android/gradle.properties, and android/settings.gradle. It also ensures that the compileSdkVersion in android/app/build.gradle is compatible, ideally version 35 or higher, to support the latest Android features."
+6. Run Android build script:?
+
+Description: This is the core build step for Android. It first attempts to use lib/scripts/android/main.sh if available. If not, it falls back to a comprehensive Flutter build process, which includes setting up Android code signing (if KEY_STORE is provided), building both APK and AAB files with extensive dart-define arguments, and moving the generated artifacts to an output/ directory. It also includes retry mechanisms for failed builds.
+Prompt: "The primary Android build is executed using the lib/scripts/android/main.sh script. If this comprehensive script is not found, a fallback process is initiated. This process involves:
+Setting up Android Code Signing: If a KEY_STORE URL is provided, the keystore is downloaded to android/app/keystore.jks, and android/key.properties is configured with the CM_KEYSTORE_PASSWORD, CM_KEY_ALIAS, and CM_KEY_PASSWORD.
+Building APK and AAB: The Flutter application is built for release into both APK and AAB formats using flutter build apk --release and flutter build appbundle --release. These commands include a wide range of dart-define arguments to configure app details (e.g., PKG_NAME, APP_NAME, VERSION_NAME, PUSH_NOTIFY, WEB_URL, IS_SPLASH, SPLASH, IS_BOTTOMMENU, BOTTOMMENU_ITEMS, IS_DEEPLINK, IS_LOAD_IND, IS_CHATBOT, and various IS_ permission flags).
+Retry Mechanism: If the initial APK build fails, flutter clean and flutter pub get are run, and the APK build is retried.
+Moving Outputs: The generated app-release.apk and app-release.aab files are copied to the output/ directory in the project root for easy access."
+7. Send success notification:
+
+Description: This step sends an email notification indicating the success of the Android build. It uses the lib/scripts/android/send_output_email.sh script, which leverages a Python script (send_output_email.py) to send an email with the build artifacts as attachments (if the file size is under 25MB). If the email service is not configured or sending fails, the email content is saved to an HTML file for debugging.
+Prompt: "Finally, a success notification email is sent to the configured EMAIL_ID. This email, generated by lib/scripts/android/send_output_email.sh (which calls send_output_email.py), includes details about the successful Android build, such as project name, package, version, build status, and a list of attached build artifacts (APK and AAB, if their size is below 25MB). If email sending fails, the email content is saved as an HTML file in the project root for review."
+iOS Publish Workflow
+This workflow focuses on building and publishing the iOS application.
+
+1. Force Gradle Wrapper Version:
+
+Description: Similar to the Android workflow, this step ensures that the Gradle wrapper uses a specific version (8.12) by overwriting the gradle-wrapper.properties file. Although this is an iOS workflow, the Flutter project structure often includes Android-related files, so this step ensures consistency.
+Prompt: "To maintain consistency across the project, the system first forces the Gradle wrapper to version 8.12, even for iOS builds. This involves updating the android/gradle/wrapper/gradle-wrapper.properties file to point to the Gradle 8.12 distribution. This helps in scenarios where a unified build environment is expected."
+2. Debug Environment Variables:
+
+Description: This step is identical to the Android workflow's debug step, printing all environment variables to verify correct configuration before the iOS build.
+Prompt: "Similar to the Android workflow, all environment variables are debugged and printed at this stage. This comprehensive output verifies that all dynamic variables, including iOS-specific configurations like APPLE_TEAM_ID, APNS_KEY_ID, APNS_AUTH_KEY_URL, CERT_PASSWORD, PROFILE_URL, CERT_CER_URL, CERT_KEY_URL, APP_STORE_CONNECT_KEY_IDENTIFIER, IPHONEOS_DEPLOYMENT_TARGET, COCOAPODS_PLATFORM, and EXPORT_METHOD, are correctly set for the iOS build."
+3. Get Flutter packages:
+
+Description: This step fetches all Flutter dependencies, ensuring that the project has all required packages for building the iOS application.
+Prompt: "The build process then fetches all Flutter packages by running flutter pub get. This ensures that all dependencies specified in pubspec.yaml are downloaded and available for the iOS build."
+4. Validate iOS Environment:?
+
+Description: This step validates the iOS build environment by checking Xcode version compatibility, listing available iOS simulators, verifying the presence of critical iOS files (ios/Runner.xcodeproj/project.pbxproj, ios/Runner/Info.plist, ios/Podfile), and checking the iOS deployment target. The logs show checks for KEYCHAIN_PASSWORD, CM_BUILD_DIR, and CM_ENV as well.
+Prompt: "The iOS build environment is validated by:
+Checking the installed Xcode version and listing available iOS simulators.
+Verifying the existence of essential iOS files such as ios/Runner.xcodeproj/project.pbxproj, ios/Runner/Info.plist, and ios/Podfile.
+Confirming that the iOS deployment target in ios/Runner.xcodeproj/project.pbxproj is compatible (e.g., 13.0 or higher).
+Additionally, checks are performed for the presence of KEYCHAIN_PASSWORD, CM_BUILD_DIR, and CM_ENV variables, which are critical for code signing and build management."
+5. Setup iOS Dependencies:?
+
+Description: This step sets up iOS dependencies using CocoaPods. It ensures the Podfile exists (or creates an optimized one if missing), updates the deployment target in the Podfile, cleans previous CocoaPods installations, and installs pods with a retry mechanism. Logs show pod install --repo-update being executed.
+Prompt: "This step prepares iOS dependencies using CocoaPods. It ensures the Podfile in the ios/ directory is correctly configured, updating the iOS deployment target (e.g., to 13.0) within it. The process includes cleaning previous CocoaPods installations (rm -rf Pods/ Podfile.lock), and then installing all necessary pods by running pod install --repo-update. A retry mechanism is implemented to handle intermittent failures during pod installation, ensuring robustness."
+6. Run iOS build script:?
+
+Description: This is the main iOS build step. It attempts to use lib/scripts/ios/main.sh if available. If not, it falls back to a comprehensive Flutter iOS build process, which includes setting up iOS code signing (creating a temporary keychain, downloading and importing certificates and provisioning profiles, generating a P12 file, and configuring ExportOptions.plist), building the iOS app using flutter build ios --release --no-codesign (with extensive dart-define arguments), archiving the app with xcodebuild, exporting the IPA, and moving artifacts to the output/ directory. It also performs keychain cleanup.
+Prompt: "The main iOS build is executed using the lib/scripts/ios/main.sh script. If this comprehensive script is not found, a detailed fallback process is initiated. This process involves:
+Setting up iOS Code Signing: A temporary keychain (build.keychain) is created and unlocked. Certificates (.cer) and private keys (.key) are downloaded from the provided CERT_CER_URL and CERT_KEY_URL. These are then converted into a .p12 file using openssl pkcs12 (with CERT_PASSWORD and KEYCHAIN_PASSWORD). The .p12 is imported into the keychain and configured for code signing. The provisioning profile from PROFILE_URL is downloaded, its UUID and Name are extracted, and it's installed in ~/Library/MobileDevice/Provisioning Profiles/.
+Creating ExportOptions.plist: A ExportOptions.plist file is generated, specifying the EXPORT_METHOD, APPLE_TEAM_ID, and provisioning profiles required for IPA export.
+Building iOS App: The Flutter application is built for release using flutter build ios --release --no-codesign. This command passes numerous dart-define arguments for app configuration (e.g., BUNDLE_ID, APP_NAME, VERSION_NAME, PUSH_NOTIFY, WEB_URL, IS_SPLASH, SPLASH, IS_BOTTOMMENU, BOTTOMMENU_ITEMS, IS_DEEPLINK, IS_LOAD_IND, IS_CHATBOT, and various IS_ permission flags).
+Archiving and Exporting IPA: The app is archived using xcodebuild -archive to create Runner.xcarchive. Subsequently, the IPA is exported from this archive using xcodebuild -exportArchive, guided by the ExportOptions.plist.
+Moving Artifacts: The generated Runner.ipa file is copied to the output/ directory. If the IPA is not found, the system attempts to copy the .app bundle as a fallback.
+Keychain Cleanup: The temporary keychain is deleted to ensure security."
+7. Send success notification:
+
+Description: This step sends an email notification confirming the successful iOS build. Similar to the Android workflow, it reuses the lib/scripts/android/send_output_email.sh script, which uses Python to send the email with the IPA file attached (if under 25MB).
+Prompt: "Finally, a success notification email is sent to the specified EMAIL_ID. This email confirms the successful iOS build, providing details such as the app name, bundle ID, version, build timestamp, and includes the generated IPA file as an attachment (if its size is less than 25MB). If email sending fails, the content is saved as an HTML file for debugging."
+Combined Android & iOS Build Workflow
+This workflow builds both Android and iOS applications in a single run.
+
+1. Debug Environment Variables:
+
+Description: This step is identical to the debug steps in the individual Android and iOS workflows, printing all environment variables for verification.
+Prompt: "As the initial step in the combined workflow, all environment variables are debugged and printed to the console. This comprehensive output ensures that all dynamic variables required for both Android and iOS builds, including app configuration, feature flags, permissions, and platform-specific credentials, are correctly set before the build process begins."
+2. Get Flutter packages:
+
+Description: This step fetches all Flutter dependencies required for both platforms.
+Prompt: "The system proceeds to fetch all Flutter packages by executing flutter pub get. This ensures that all necessary dependencies outlined in pubspec.yaml are downloaded and available for both Android and iOS compilation."
+3. Initialize Gradle Wrapper:?
+
+Description: This step ensures a consistent Gradle environment for the Android part of the build. It checks for an existing, working Gradle wrapper. If not found or not working, it downloads the Gradle wrapper JAR, creates gradle-wrapper.properties, and makes gradlew executable. It includes robust download logic and verification. Logs confirm this step initializes the wrapper.
+Prompt: "For the Android component of the combined build, the Gradle wrapper is initialized. The system first checks if a functional gradlew script already exists. If not, it creates the android/gradle/wrapper directory, downloads the gradle-wrapper.jar from its official distribution, creates android/gradle/wrapper/gradle-wrapper.properties pointing to Gradle 8.12, and makes the gradlew script executable. A final verification confirms the Gradle wrapper is operational."
+4. Setup Flutter SDK Path:
+
+Description: This step automatically detects the Flutter SDK path and creates local.properties files in both the project root and the android/ directory. These files are essential for Gradle to locate the Flutter SDK.
+Prompt: "This step is critical for Android build compatibility. The system automatically detects the Flutter SDK installation path and then creates local.properties files. One is placed in the project root, and another in the android/ directory, both containing the flutter.sdk property pointing to the detected SDK path. This ensures that the Gradle build system can correctly locate and utilize the Flutter SDK."
+5. Fix Gradle Wrapper Permissions:
+
+Description: This step ensures that the gradlew script (in both android/ and the project root) has executable permissions. It also tests the execution of gradlew to confirm it's working correctly.
+Prompt: "To ensure the Gradle wrapper can be executed, this step explicitly sets executable permissions for the gradlew script located in both the android/ directory and the project root. A test run of gradlew --version is performed to verify that the script is functional after permission adjustments."
+6. Build Android (Using main.sh):?
+
+Description: This is the core Android build step for the combined workflow. It attempts to use lib/scripts/android/main.sh if available. If not, it falls back to building both APK and AAB with dart-define arguments, including setting up keystore if KEY_STORE is provided. It includes retry mechanisms for failed builds.
+Prompt: "The Android application is built using the lib/scripts/android/main.sh script. If this script is not found, the system falls back to a direct build process that includes:
+Validating Android Project: Ensures all critical Android files are present.
+Setting up Keystore: If a KEY_STORE URL is provided, the keystore is downloaded to android/app/keystore.jks and android/key.properties is configured.
+Building APK and AAB: The application is built into .apk and .aab formats using flutter build apk --release and flutter build appbundle --release, incorporating a wide range of dart-define values for app configuration.
+Retry Mechanism: If the APK build fails, flutter clean and flutter pub get are executed, and the build is retried."
+7. Setup iOS Dependencies:?
+
+Description: This step handles the setup of iOS dependencies using CocoaPods. It creates or updates the Podfile with dynamic values, cleans existing pod installations, and installs new pods with a retry mechanism.
+Prompt: "For the iOS component, dependencies are set up via CocoaPods. This involves:
+Creating/Updating Podfile: An optimized Podfile is generated or updated in the ios/ directory, setting the iOS deployment target (e.g., 13.0) and including dynamic code signing configurations.
+Cleaning Dependencies: Existing Pods/ and Podfile.lock files are removed to ensure a clean installation.
+Installing Pods: pod install --repo-update is executed to install all required iOS dependencies. A retry mechanism is in place for robustness."
+8. Build iOS (Using main.sh):?
+
+Description: This is the main iOS build step for the combined workflow. It attempts to use lib/scripts/ios/main.sh if available. If not, it falls back to building the iOS app using flutter build ios --release --no-codesign with dart-define arguments, and then creates an unsigned IPA from the .app bundle.
+Prompt: "The iOS application is built using the lib/scripts/ios/main.sh script. If unavailable, a streamlined fallback process is used:
+Building iOS App: The Flutter iOS application is built for release using flutter build ios --release --no-codesign, passing various dart-define arguments for app configuration. A retry mechanism is included for build failures.
+Creating IPA from .app: After a successful build, the .app bundle is located (e.g., build/ios/iphoneos/Runner.app), and an unsigned IPA file is created from it by zipping the Payload/Runner.app directory structure."
+9. Copy all artifacts to output folder:
+
+Description: This step collects all generated Android (APK, AAB) and iOS (IPA, APP) artifacts and copies them into a single output/ directory in the project root. It also provides a summary of the collected files.
+Prompt: "All generated build artifacts from both Android and iOS are collected and centralized in a single output/ directory. This includes:
+Android Artifacts: app-release.apk and app-release.aab from build/app/outputs/.
+iOS Artifacts: Runner.ipa (if generated) or the Runner.app bundle from build/ios/. A final summary is displayed, listing all files found in the output/ directory, confirming the presence of APK, AAB, IPA, and APP files."
+10. Send success notification:
+
+Description: This step sends an email notification confirming the successful completion of the combined Android and iOS build. It uses lib/scripts/android/send_output_email.sh to send the email.
+Prompt: "As the final step, a combined build success notification email is sent. This email, handled by lib/scripts/android/send_output_email.sh, confirms that both Android and iOS builds have completed successfully. It provides an overview of the build status and indicates that artifacts are available in the designated output directory."

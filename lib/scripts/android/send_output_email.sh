@@ -23,41 +23,50 @@ if [ -z "$CI" ] && [ -f "$SCRIPT_DIR/export.sh" ]; then
 fi
 
 # --- CONFIGURE THESE VARIABLES ---
-TO="${EMAIL_ID:-prasannasrie@gmail.com}"
+TO="${EMAIL_ID:-support@quikapp.co}"
 FROM="no-reply@quikapp.co"
-SUBJECT="Android Build Report - $(date '+%Y-%m-%d %H:%M:%S')"
+SUBJECT="QuikApp Build Report - $(date '+%Y-%m-%d %H:%M:%S')"
 
 # Determine build status
 if [ -f "$OUTPUT_DIR/app-release.apk" ] || [ -f "$OUTPUT_DIR/app-release.aab" ]; then
     BUILD_STATUS="✅ SUCCESS"
     STATUS_COLOR="SUCCESS"
-    BODY="Android build completed successfully!
+    BODY="QuikApp build completed successfully!
 
 Build completed at: $(date '+%Y-%m-%d %H:%M:%S')
-Project: ${APP_NAME:-Garbcode App}
-Package: ${PKG_NAME:-com.garbcode.garbcodeapp}
-Version: ${VERSION_NAME:-1.0.22}
+Project: ${APP_NAME:-QuikApp Project}
+Package: ${PKG_NAME:-com.quikapp.project}
+Version: ${VERSION_NAME:-1.0.0}
 Build Status: SUCCESS
 
+Your mobile app has been successfully generated using QuikApp's platform.
 Build artifacts are attached to this email.
 
+Access your app at: https://app.quikapp.co
+Visit our website: https://quikapp.co
+
 Best regards,
-QuikApp Build System"
+QuikApp Build System
+Convert your website into a mobile app with ease!"
 else
     BUILD_STATUS="❌ FAILED"
     STATUS_COLOR="FAILED"
-    BODY="Android build failed!
+    BODY="QuikApp build failed!
 
 Build attempted at: $(date '+%Y-%m-%d %H:%M:%S')
-Project: ${APP_NAME:-Garbcode App}
-Package: ${PKG_NAME:-com.garbcode.garbcodeapp}
-Version: ${VERSION_NAME:-1.0.22}
+Project: ${APP_NAME:-QuikApp Project}
+Package: ${PKG_NAME:-com.quikapp.project}
+Version: ${VERSION_NAME:-1.0.0}
 Build Status: FAILED
 
 Reason: Build artifacts not found. Please check the build logs for more details.
 
+Access your dashboard: https://app.quikapp.co
+Get support: https://quikapp.co/support
+
 Best regards,
-QuikApp Build System"
+QuikApp Build System
+We're here to help you get your app built!"
 fi
 
 # Email configuration - Update these with your actual settings
@@ -76,15 +85,18 @@ echo -e "${BLUE}📧 Status: $BUILD_STATUS${NC}"
 if [ ! -d "$OUTPUT_DIR" ]; then
     echo -e "${RED}❌ Output directory not found: $OUTPUT_DIR${NC}"
     # Send failure email even if no output directory
-    BODY="Android build failed!
+    BODY="QuikApp build failed!
 
 Build attempted at: $(date '+%Y-%m-%d %H:%M:%S')
-Project: ${APP_NAME:-Garbcode App}
-Package: ${PKG_NAME:-com.garbcode.garbcodeapp}
-Version: ${VERSION_NAME:-1.0.22}
+Project: ${APP_NAME:-QuikApp Project}
+Package: ${PKG_NAME:-com.quikapp.project}
+Version: ${VERSION_NAME:-1.0.0}
 Build Status: FAILED
 
 Reason: Output directory not found. Build process may have failed early.
+
+Access your dashboard: https://app.quikapp.co
+Get support: https://quikapp.co/support
 
 Best regards,
 QuikApp Build System"
@@ -94,15 +106,18 @@ fi
 if [ -z "$(ls -A "$OUTPUT_DIR" 2>/dev/null)" ]; then
     echo -e "${YELLOW}⚠️  No files found in output directory${NC}"
     # Update body for no files case
-    BODY="Android build completed but no artifacts found!
+    BODY="QuikApp build completed but no artifacts found!
 
 Build completed at: $(date '+%Y-%m-%d %H:%M:%S')
-Project: ${APP_NAME:-Garbcode App}
-Package: ${PKG_NAME:-com.garbcode.garbcodeapp}
-Version: ${VERSION_NAME:-1.0.22}
+Project: ${APP_NAME:-QuikApp Project}
+Package: ${PKG_NAME:-com.quikapp.project}
+Version: ${VERSION_NAME:-1.0.0}
 Build Status: WARNING
 
 Reason: Build completed but no APK or AAB files were generated. Please check the build configuration.
+
+Access your dashboard: https://app.quikapp.co
+Get support: https://quikapp.co/support
 
 Best regards,
 QuikApp Build System"
