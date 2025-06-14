@@ -21,6 +21,166 @@ APP_DIR="$ANDROID_DIR/app"
 echo -e "${BLUE}🔧 Fixing Android V1 Embedding Issues${NC}"
 echo "=================================="
 
+# Initialize Gradle wrapper if not present
+initialize_gradle_wrapper() {
+    echo -e "${YELLOW}📦 Initializing Gradle wrapper...${NC}"
+    cd "$PROJECT_ROOT/android"
+    
+    # Create gradle/wrapper directory if it doesn't exist
+    mkdir -p gradle/wrapper
+    
+    # Download gradle-wrapper.jar if not present
+    if [ ! -f "gradle/wrapper/gradle-wrapper.jar" ]; then
+        echo -e "${YELLOW}📥 Downloading gradle-wrapper.jar...${NC}"
+        curl -L -o gradle/wrapper/gradle-wrapper.jar \
+            "https://github.com/gradle/gradle/raw/v8.12.0/gradle/wrapper/gradle-wrapper.jar"
+    fi
+    
+    # Create gradle-wrapper.properties if not present
+    if [ ! -f "gradle/wrapper/gradle-wrapper.properties" ]; then
+        echo -e "${YELLOW}📝 Creating gradle-wrapper.properties...${NC}"
+        cat > gradle/wrapper/gradle-wrapper.properties << EOF
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.12-bin.zip
+networkTimeout=10000
+validateDistributionUrl=true
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+EOF
+    fi
+    
+    # Create gradlew script if not present
+    if [ ! -f "gradlew" ]; then
+        echo -e "${YELLOW}📝 Creating gradlew script...${NC}"
+        cat > gradlew << 'EOF'
+#!/bin/sh
+# Gradle start up script for UN*X
+
+# Attempt to set APP_HOME
+PRG="$0"
+while [ -h "$PRG" ] ; do
+    ls=`ls -ld "$PRG"`
+    link=`expr "$ls" : '.*-> \(.*\)$'`
+    if expr "$link" : '/.*' > /dev/null; then
+        PRG="$link"
+    else
+        PRG=`dirname "$PRG"`"/$link"
+    fi
+done
+SAVED="`pwd`"
+cd "`dirname \"$PRG\"`/" >/dev/null
+APP_HOME="`pwd -P`"
+cd "$SAVED" >/dev/null
+
+APP_NAME="Gradle"
+APP_BASE_NAME=`basename "$0"`
+DEFAULT_JVM_OPTS="-Xmx64m -Xms64m"
+MAX_FD="maximum"
+
+warn () {
+    echo "$*"
+}
+
+die () {
+    echo
+    echo "$*"
+    echo
+    exit 1
+}
+
+# OS specific support
+cygwin=false
+msys=false
+darwin=false
+nonstop=false
+case "`uname`" in
+  CYGWIN* )
+    cygwin=true
+    ;;
+  Darwin* )
+    darwin=true
+    ;;
+  MINGW* )
+    msys=true
+    ;;
+  NONSTOP* )
+    nonstop=true
+    ;;
+esac
+
+CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
+
+# Determine the Java command to use
+if [ -n "$JAVA_HOME" ] ; then
+    if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
+        JAVACMD="$JAVA_HOME/jre/sh/java"
+    else
+        JAVACMD="$JAVA_HOME/bin/java"
+    fi
+    if [ ! -x "$JAVACMD" ] ; then
+        die "ERROR: JAVA_HOME is set to an invalid directory: $JAVA_HOME"
+    fi
+else
+    JAVACMD="java"
+    which java >/dev/null 2>&1 || die "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH."
+fi
+
+# Increase the maximum file descriptors if we can
+if [ "$cygwin" = "false" -a "$darwin" = "false" -a "$nonstop" = "false" ] ; then
+    MAX_FD_LIMIT=`ulimit -H -n`
+    if [ $? -eq 0 ] ; then
+        if [ "$MAX_FD" = "maximum" -o "$MAX_FD" = "max" ] ; then
+            MAX_FD="$MAX_FD_LIMIT"
+        fi
+        ulimit -n $MAX_FD
+        if [ $? -ne 0 ] ; then
+            warn "Could not set maximum file descriptor limit: $MAX_FD"
+        fi
+    else
+        warn "Could not query maximum file descriptor limit: $MAX_FD_LIMIT"
+    fi
+fi
+
+# For Darwin, add dock options
+if [ "$darwin" = "true" ]; then
+    GRADLE_OPTS="$GRADLE_OPTS -Xdock:name=$APP_NAME -Xdock:icon=$APP_HOME/media/gradle.icns"
+fi
+
+# For Cygwin or MSYS, switch paths to Windows format
+if [ "$cygwin" = "true" -o "$msys" = "true" ] ; then
+    APP_HOME=`cygpath --path --mixed "$APP_HOME"`
+    CLASSPATH=`cygpath --path --mixed "$CLASSPATH"`
+    JAVACMD=`cygpath --unix "$JAVACMD"`
+fi
+
+# Split up the JVM_OPTS And GRADLE_OPTS values into an array, following the shell quoting and substitution rules
+function splitJvmOpts() {
+    JVM_OPTS=("$@")
+}
+eval splitJvmOpts $DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS
+JVM_OPTS[${#JVM_OPTS[*]}]="-Dorg.gradle.appname=$APP_BASE_NAME"
+
+# Execute Gradle
+exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.gradle.wrapper.GradleWrapperMain "$@"
+EOF
+        chmod +x gradlew
+    fi
+    
+    # Verify Gradle wrapper setup
+    if [ -f "gradlew" ] && [ -f "gradle/wrapper/gradle-wrapper.jar" ] && [ -f "gradle/wrapper/gradle-wrapper.properties" ]; then
+        echo -e "${GREEN}✅ Gradle wrapper initialized successfully${NC}"
+    else
+        echo -e "${RED}❌ Failed to initialize Gradle wrapper${NC}"
+        exit 1
+    fi
+    
+    cd "$PROJECT_ROOT"
+}
+
+# Initialize Gradle wrapper before proceeding
+initialize_gradle_wrapper
+
 # Function to check if a file exists
 check_file() {
     if [ ! -f "$1" ]; then
