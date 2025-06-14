@@ -89,6 +89,7 @@ sed -i '' "s/applicationId \"[^\"]*\"/applicationId \"$PKG_NAME\"/" "$ANDROID_BU
 download_app_icon
 
 # Download and setup splash screen
+print_section "Setting up splash screen"
 download_splash_assets
 
 # Setup local properties
