@@ -92,11 +92,10 @@ environment: &default_env
     IS_FACE_ID: "${IS_FACE_ID}"
     IS_TOUCH_ID: "${IS_TOUCH_ID}"
 
-    # Email Configuration - Optional with defaults
-    SMTP_SERVER: "smtp.gmail.com"
-    SMTP_PORT: "587"
-    SMTP_USERNAME: "no-reply@quikapp.co"
-    SMTP_PASSWORD: "${SMTP_PASSWORD}"
+    # Email Configuration - Loaded from lib/scripts/email_config.sh
+    # API can override these values when database is ready
+    # For now, using defaults from email_config.sh
+    EMAIL_CONFIG_SOURCE: "lib/scripts/email_config.sh"
 
 scripts:
   - &debug_env
@@ -452,6 +451,12 @@ workflows:
           #!/usr/bin/env bash
           set -e
           echo "📧 Sending success notification..."
+
+          # Load email configuration
+          if [ -f "lib/scripts/email_config.sh" ]; then
+              source lib/scripts/email_config.sh
+              echo "✅ Email configuration loaded"
+          fi
 
           if [ -f "lib/scripts/android/send_output_email.sh" ]; then
               bash lib/scripts/android/send_output_email.sh 2>/dev/null || true
@@ -869,6 +874,12 @@ workflows:
           #!/usr/bin/env bash
           set -e
           echo "📧 Sending success notification..."
+
+          # Load email configuration
+          if [ -f "lib/scripts/email_config.sh" ]; then
+              source lib/scripts/email_config.sh
+              echo "✅ Email configuration loaded"
+          fi
 
           if [ -f "lib/scripts/android/send_output_email.sh" ]; then
               bash lib/scripts/android/send_output_email.sh 2>/dev/null || true
@@ -1574,6 +1585,12 @@ workflows:
           #!/usr/bin/env bash
           set -e
           echo "📧 Sending combined build success notification..."
+
+          # Load email configuration
+          if [ -f "lib/scripts/email_config.sh" ]; then
+              source lib/scripts/email_config.sh
+              echo "✅ Email configuration loaded"
+          fi
 
           if [ -f "lib/scripts/android/send_output_email.sh" ]; then
               bash lib/scripts/android/send_output_email.sh 2>/dev/null || true

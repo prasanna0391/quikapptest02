@@ -27,13 +27,13 @@ class Colors:
 def print_colored(color, message):
     print(f"{color}{message}{Colors.NC}")
 
-# Read configuration from environment variables
+# Read configuration from environment variables (set by email_config.sh)
 TO_EMAIL = os.environ.get("EMAIL_ID", "recipient@example.com")
-FROM_EMAIL = "no-reply@quikapp.co"
-SMTP_SERVER = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
-SMTP_PORT = int(os.environ.get("SMTP_PORT", "587"))
-SMTP_USER = os.environ.get("SMTP_USERNAME", "no-reply@quikapp.co")
-SMTP_PASS = os.environ.get("SMTP_PASSWORD", "your-app-password")
+FROM_EMAIL = os.environ.get("EMAIL_FROM", os.environ.get("FROM_EMAIL", "no-reply@quikapp.co"))
+SMTP_SERVER = os.environ.get("EMAIL_SMTP_SERVER", os.environ.get("SMTP_SERVER", "smtp.gmail.com"))
+SMTP_PORT = int(os.environ.get("EMAIL_SMTP_PORT", os.environ.get("SMTP_PORT", "587")))
+SMTP_USER = os.environ.get("EMAIL_SMTP_USER", os.environ.get("SMTP_USER", "no-reply@quikapp.co"))
+SMTP_PASS = os.environ.get("EMAIL_SMTP_PASS", os.environ.get("SMTP_PASS", "your-app-password"))
 
 # Get app details from environment variables
 APP_NAME = os.environ.get("APP_NAME", "QuikApp Project")

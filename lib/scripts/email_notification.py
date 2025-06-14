@@ -38,13 +38,13 @@ class EmailNotificationSystem:
         self.project_root = self.script_dir.parent.parent.parent
         self.templates_dir = self.script_dir / "email_templates"
         
-        # Email configuration
+        # Email configuration (set by email_config.sh)
         self.to_email = os.environ.get("EMAIL_ID", "recipient@example.com")
-        self.from_email = "no-reply@quikapp.co"
-        self.smtp_server = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
-        self.smtp_port = int(os.environ.get("SMTP_PORT", "587"))
-        self.smtp_user = os.environ.get("SMTP_USERNAME", "no-reply@quikapp.co")
-        self.smtp_pass = os.environ.get("SMTP_PASSWORD", "your-app-password")
+        self.from_email = os.environ.get("EMAIL_FROM", os.environ.get("FROM_EMAIL", "no-reply@quikapp.co"))
+        self.smtp_server = os.environ.get("EMAIL_SMTP_SERVER", os.environ.get("SMTP_SERVER", "smtp.gmail.com"))
+        self.smtp_port = int(os.environ.get("EMAIL_SMTP_PORT", os.environ.get("SMTP_PORT", "587")))
+        self.smtp_user = os.environ.get("EMAIL_SMTP_USER", os.environ.get("SMTP_USER", "no-reply@quikapp.co"))
+        self.smtp_pass = os.environ.get("EMAIL_SMTP_PASS", os.environ.get("SMTP_PASS", "your-app-password"))
         
         # App details from environment
         self.app_name = os.environ.get("APP_NAME", "QuikApp Project")

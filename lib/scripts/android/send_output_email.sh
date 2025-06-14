@@ -17,14 +17,29 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 OUTPUT_DIR="$PROJECT_ROOT/output"
 
+# Load centralized email configuration
+echo "📧 Loading email configuration..."
+if [ -f "$SCRIPT_DIR/../email_config.sh" ]; then
+    source "$SCRIPT_DIR/../email_config.sh"
+    echo "✅ Email configuration loaded successfully"
+else
+    echo "⚠️  Email configuration file not found, using fallback values"
+    # Fallback configuration
+    SMTP_SERVER="${SMTP_SERVER:-smtp.gmail.com}"
+    SMTP_PORT="${SMTP_PORT:-587}"
+    SMTP_USER="${SMTP_USERNAME:-prasannasrie@gmail.com}"
+    SMTP_PASS="${SMTP_PASSWORD:-jbbf nzhm zoay lbwb}"
+    FROM_EMAIL="${FROM_EMAIL:-no-reply@quikapp.co}"
+fi
+
 # Source environment variables to get EMAIL_ID
 if [ -z "$CI" ] && [ -f "$SCRIPT_DIR/export.sh" ]; then
     source "$SCRIPT_DIR/export.sh"
 fi
 
-# --- CONFIGURE THESE VARIABLES ---
+# --- EMAIL CONFIGURATION (Now loaded from email_config.sh) ---
 TO="${EMAIL_ID:-support@quikapp.co}"
-FROM="no-reply@quikapp.co"
+# FROM_EMAIL is now set by email_config.sh
 SUBJECT="QuikApp Build Report - $(date '+%Y-%m-%d %H:%M:%S')"
 
 # Determine build status
@@ -69,16 +84,9 @@ QuikApp Build System
 We're here to help you get your app built!"
 fi
 
-# Email configuration - Update these with your actual settings
-SMTP_SERVER="smtp.gmail.com"
-SMTP_PORT="587"
-SMTP_USER="your-email@gmail.com"
-SMTP_PASS="your-app-password"
-# ---------------------------------
-
 echo -e "${BLUE}📧 Sending email with build outputs...${NC}"
 echo -e "${BLUE}📧 To: $TO${NC}"
-echo -e "${BLUE}📧 From: $FROM${NC}"
+echo -e "${BLUE}📧 From: $FROM_EMAIL${NC}"
 echo -e "${BLUE}📧 Status: $BUILD_STATUS${NC}"
 
 # Check if output directory exists and has files
@@ -166,7 +174,7 @@ elif command -v msmtp &> /dev/null; then
     TMPMAIL=$(mktemp)
     {
         echo "Subject: $SUBJECT"
-        echo "From: $FROM"
+        echo "From: $FROM_EMAIL"
         echo "To: $TO"
         echo "MIME-Version: 1.0"
         echo "Content-Type: multipart/mixed; boundary=\"sep\""
@@ -191,7 +199,7 @@ elif command -v msmtp &> /dev/null; then
         echo "--sep--"
     } > "$TMPMAIL"
     
-    msmtp --host="$SMTP_SERVER" --port="$SMTP_PORT" --auth=on --user="$SMTP_USER" --passwordeval="echo $SMTP_PASS" -f "$FROM" "$TO" < "$TMPMAIL"
+    msmtp --host="$SMTP_SERVER" --port="$SMTP_PORT" --auth=on --user="$SMTP_USER" --passwordeval="echo $SMTP_PASS" -f "$FROM_EMAIL" "$TO" < "$TMPMAIL"
     rm "$TMPMAIL"
     echo -e "${GREEN}✅ Email sent successfully using msmtp${NC}"
     
