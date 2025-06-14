@@ -133,15 +133,38 @@ chmod +x "${ANDROID_ROOT}/gradlew"
 
 # Setup keystore
 print_section "Setting up keystore"
-setup_keystore() {
-    echo "Setting up keystore..."
-    echo "$KEY_STORE" | base64 --decode > "$ANDROID_KEYSTORE_PATH"
-    echo "storeFile=$KEYSTORE_FILE" > "$ANDROID_KEY_PROPERTIES_PATH"
-    echo "storePassword=$CM_KEYSTORE_PASSWORD" >> "$ANDROID_KEY_PROPERTIES_PATH"
-    echo "keyAlias=$CM_KEY_ALIAS" >> "$ANDROID_KEY_PROPERTIES_PATH"
-    echo "keyPassword=$CM_KEY_PASSWORD" >> "$ANDROID_KEY_PROPERTIES_PATH"
-}
-setup_keystore
+if [ -n "$ANDROID_KEYSTORE_BASE64" ]; then
+    echo "🔐 Setting up keystore from base64..."
+    mkdir -p "$(dirname "$ANDROID_KEYSTORE_PATH")"
+    echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$ANDROID_KEYSTORE_PATH"
+    if [ ! -f "$ANDROID_KEYSTORE_PATH" ]; then
+        echo "❌ Failed to create keystore file"
+        exit 1
+    fi
+    echo "✅ Keystore file created successfully"
+else
+    echo "⚠️ No keystore provided, using debug keystore"
+    # Create debug keystore if it doesn't exist
+    if [ ! -f "$ANDROID_KEYSTORE_PATH" ]; then
+        keytool -genkey -v -keystore "$ANDROID_KEYSTORE_PATH" \
+            -alias androiddebugkey \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -storepass android \
+            -keypass android \
+            -dname "CN=Android Debug,O=Android,C=US"
+    fi
+fi
+
+# Create key.properties
+print_section "Creating key.properties"
+cat > "$ANDROID_KEY_PROPERTIES_PATH" << EOF
+storeFile=keystore.jks
+storePassword=android
+keyAlias=androiddebugkey
+keyPassword=android
+EOF
 
 # Setup Firebase
 print_section "Setting up Firebase"

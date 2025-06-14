@@ -61,3 +61,10 @@ export DOWNLOAD_RETRY_DELAY=5
 export NOTIFICATION_EMAIL_FROM="builds@example.com"
 export NOTIFICATION_EMAIL_TO="team@example.com"
 export NOTIFICATION_EMAIL_SUBJECT="Android Build Notification"
+
+# Keystore Configuration
+export ANDROID_KEYSTORE_BASE64=""  # Set this if you have a base64-encoded keystore
+export KEYSTORE_FILE="keystore.jks"
+export KEYSTORE_PASSWORD="android"
+export KEY_ALIAS="androiddebugkey"
+export KEY_PASSWORD="android"
