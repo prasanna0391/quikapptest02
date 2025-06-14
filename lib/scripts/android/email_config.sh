@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Load the main email configuration
-source "$(dirname "$(dirname "$0")")/email_config.sh"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/../../email_config.sh"
 
 # Android-specific email configuration
 export EMAIL_SUBJECT="Android Build Notification"

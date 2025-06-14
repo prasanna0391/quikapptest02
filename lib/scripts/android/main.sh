@@ -6,17 +6,15 @@ source lib/scripts/combined/download.sh
 
 # Error handling function
 handle_error() {
-    local line_no=$1
-    local error_code=$2
-    local command=$3
-    echo "❌ Error occurred in $0 at line $line_no (exit code: $error_code)"
-    echo "Failed command: $command"
-    bash lib/scripts/combined/send_error_email.sh "Build Failed" "Android build failed at line $line_no: $command"
-    exit 1
+    local exit_code=$1
+    local line_number=$2
+    echo "❌ Error occurred in $0 at line $line_number (exit code: $exit_code)"
+    echo "Failed command: $BASH_COMMAND"
+    exit $exit_code
 }
 
 # Set error handler
-trap 'handle_error ${LINENO} $? "$BASH_COMMAND"' ERR
+trap 'handle_error $? $LINENO' ERR
 
 # Print section header
 print_section() {
