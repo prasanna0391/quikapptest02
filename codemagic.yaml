@@ -49,8 +49,8 @@ environment: &default_env
     BOTTOMMENU_VISIBLE_ON: "${BOTTOMMENU_VISIBLE_ON}"
 
     # Firebase Configuration - API required for push notifications
-    firebase_config_android: "${firebase_config_android}"
-    firebase_config_ios: "${firebase_config_ios}"
+    firebase_config_android: "https://raw.githubusercontent.com/prasanna91/QuikApp/main/google-services-gc.json"
+    firebase_config_ios: "https://raw.githubusercontent.com/prasanna91/QuikApp/main/GoogleService-Info-gc.plist"
 
     # iOS Configuration - API required for iOS builds
     APPLE_TEAM_ID: "${APPLE_TEAM_ID}"
@@ -955,8 +955,8 @@ workflows:
         BOTTOMMENU_VISIBLE_ON: "${BOTTOMMENU_VISIBLE_ON}"
 
         # Firebase Configuration - API required for push notifications
-        firebase_config_android: "${firebase_config_android}"
-        firebase_config_ios: "${firebase_config_ios}"
+        firebase_config_android: "https://raw.githubusercontent.com/prasanna91/QuikApp/main/google-services-gc.json"
+        firebase_config_ios: "https://raw.githubusercontent.com/prasanna91/QuikApp/main/GoogleService-Info-gc.plist"
 
         # iOS Configuration - API required for iOS builds
         APPLE_TEAM_ID: "${APPLE_TEAM_ID}"

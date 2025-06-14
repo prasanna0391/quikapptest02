@@ -24,6 +24,7 @@ echo "-------------------------------------------------"
 : "${CM_KEY_ALIAS:?Missing CM_KEY_ALIAS}"
 : "${CM_KEY_PASSWORD:?Missing CM_KEY_PASSWORD}"
 
+# Create android directory if it doesn't exist
 mkdir -p android
 
 # --- START: New Robust Download Logic ---
@@ -67,7 +68,7 @@ fi
 
 echo "📝 Writing android/key.properties..."
 cat <<EOF > android/key.properties
-storeFile=keystore.jks
+storeFile=../keystore.jks
 storePassword=$CM_KEYSTORE_PASSWORD
 keyAlias=$CM_KEY_ALIAS
 keyPassword=$CM_KEY_PASSWORD
@@ -80,3 +81,11 @@ echo "🔍 Displaying contents of android/key.properties:"
 cat android/key.properties
 echo "-------------------------------------------------"
 # --- END: NEW BLOCK ---
+
+# Create a symbolic link in android/app/ for backward compatibility
+echo "🔗 Creating symbolic link for backward compatibility..."
+mkdir -p android/app
+ln -sf ../keystore.jks android/app/keystore.jks
+echo "✅ Symbolic link created"
+
+echo "✅ Keystore injection complete"

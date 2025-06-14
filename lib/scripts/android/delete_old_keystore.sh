@@ -6,39 +6,37 @@ set -euo pipefail # Exit immediately if a command exits with a non-zero status.
 
 echo "--- Deleting Old Keystore Files ---"
 
-# Define the common locations for keystore files relative to your project root.
-# These paths are now consistent with where 'inject_keystore.sh' will place them.
-KEYSTORE_JKS="android/keystore.jks"          # The JKS file itself
-KEYSTORE_PROPERTIES="android/key.properties" # The properties file for Gradle
+# Define both possible keystore locations
+KEYSTORE_LOCATIONS=(
+    "android/keystore.jks"          # Main location
+    "android/app/keystore.jks"      # Alternative location
+)
+KEYSTORE_PROPERTIES="android/key.properties"
 
-# Check and delete .jks file
-if [ -f "$KEYSTORE_JKS" ]; then
-    echo "Found old .jks file: $KEYSTORE_JKS"
-    rm -f "$KEYSTORE_JKS"
-    if [ $? -eq 0 ]; then
-        echo "Successfully deleted $KEYSTORE_JKS"
+# Function to safely delete a file
+delete_file() {
+    local file="$1"
+    if [ -f "$file" ]; then
+        echo "Found file: $file"
+        rm -f "$file"
+        if [ $? -eq 0 ]; then
+            echo "Successfully deleted $file"
+        else
+            echo "Warning: Failed to delete $file"
+            return 1
+        fi
     else
-        echo "Error: Failed to delete $KEYSTORE_JKS"
-        exit 1
+        echo "No file found at $file. Skipping deletion."
     fi
-else
-    echo "No old .jks file found at $KEYSTORE_JKS. Skipping deletion."
-fi
+}
 
-# Check and delete key.properties file
-if [ -f "$KEYSTORE_PROPERTIES" ]; then
-    echo "Found old keystore properties file: $KEYSTORE_PROPERTIES"
-    rm -f "$KEYSTORE_PROPERTIES"
-    if [ $? -eq 0 ]; then
-        echo "Successfully deleted $KEYSTORE_PROPERTIES"
-    else
-        echo "Error: Failed to delete $KEYSTORE_PROPERTIES"
-        exit 1
-    fi
-else
-    echo "No old keystore properties file found at $KEYSTORE_PROPERTIES. Skipping deletion."
-fi
+# Delete all possible keystore locations
+for keystore in "${KEYSTORE_LOCATIONS[@]}"; do
+    delete_file "$keystore"
+done
+
+# Delete key.properties file
+delete_file "$KEYSTORE_PROPERTIES"
 
 echo "--- Old Keystore File Deletion Complete ---"
-
-exit 0 # Indicate success
+exit 0
