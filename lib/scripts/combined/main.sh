@@ -11,73 +11,19 @@ source "$SCRIPT_DIR/download.sh"
 
 # Function to handle errors
 handle_error() {
-    local line_no=$1
-    local error_code=$2
-    local command=$3
-    echo "❌ Error occurred in $0 at line $line_no (exit code: $error_code)"
-    echo "Failed command: $command"
-    bash "$SCRIPT_DIR/send_error_email.sh" "Build Failed" "Combined build failed at line $line_no: $command"
-    exit 1
+    local exit_code=$1
+    local line_number=$2
+    echo "❌ Error occurred in $0 at line $line_number (exit code: $exit_code)"
+    echo "Failed command: $BASH_COMMAND"
+    exit $exit_code
 }
 
 # Set error handler
-trap 'handle_error ${LINENO} $? "$BASH_COMMAND"' ERR
+trap 'handle_error $? $LINENO' ERR
 
 # Function to print section headers
 print_section() {
     echo "=== $1 ==="
-}
-
-# Function to clean previous builds
-clean_builds() {
-    print_section "Cleaning previous builds"
-    flutter clean
-    rm -rf output/
-    echo "✅ Clean complete"
-}
-
-# Function to setup Flutter SDK path
-setup_flutter_sdk() {
-    print_section "Setting up Flutter SDK path"
-    
-    # Get Flutter SDK path
-    FLUTTER_ROOT=$(which flutter | xargs dirname | xargs dirname)
-    
-    # Create local.properties in project root
-    cat > local.properties << EOF
-flutter.sdk=$FLUTTER_ROOT
-EOF
-    
-    # Create local.properties in android directory
-    mkdir -p android
-    cat > android/local.properties << EOF
-flutter.sdk=$FLUTTER_ROOT
-sdk.dir=$ANDROID_SDK_ROOT
-EOF
-    
-    echo "✅ Flutter SDK path configured"
-}
-
-# Function to setup Gradle wrapper
-setup_gradle_wrapper() {
-    print_section "Setting up Gradle wrapper"
-    
-    # Create gradle wrapper directory
-    mkdir -p android/gradle/wrapper
-    
-    # Download gradle-wrapper.jar
-    wget -O android/gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/v8.12.0/gradle/wrapper/gradle-wrapper.jar
-    
-    # Create gradle-wrapper.properties
-    cat > android/gradle/wrapper/gradle-wrapper.properties << EOF
-distributionBase=GRADLE_USER_HOME
-distributionPath=wrapper/dists
-zipStoreBase=GRADLE_USER_HOME
-zipStorePath=wrapper/dists
-distributionUrl=https\://services.gradle.org/distributions/gradle-8.12-all.zip
-EOF
-    
-    echo "✅ Gradle wrapper configured"
 }
 
 # Main build process
@@ -86,7 +32,58 @@ print_section "Starting Combined Build Process"
 # Setup environment
 print_section "Setting up environment"
 find "$SCRIPT_DIR" -type f -name "*.sh" -exec chmod +x {} \;
-mkdir -p output
+
+# Load balance variables first
+print_section "Loading balance variables"
+source "$(dirname "$0")/balance_vars.sh"
+
+# Ensure CM_BUILD_DIR is set
+if [ -z "$CM_BUILD_DIR" ]; then
+    CM_BUILD_DIR="$PWD"
+    echo "CM_BUILD_DIR not set, using current directory: $CM_BUILD_DIR"
+fi
+
+# Create required directories with validation
+print_section "Creating required directories"
+create_directory() {
+    local dir="$1"
+    local desc="$2"
+    echo "Creating $desc directory: $dir"
+    if ! mkdir -p "$dir"; then
+        echo "❌ Failed to create $desc directory: $dir"
+        exit 1
+    fi
+    if [ ! -d "$dir" ]; then
+        echo "❌ Directory not created: $dir"
+        exit 1
+    fi
+    echo "✅ Created $desc directory: $dir"
+}
+
+# Create main directories
+create_directory "$CM_BUILD_DIR" "build root"
+create_directory "$OUTPUT_DIR" "output"
+create_directory "$ANDROID_ROOT" "Android root"
+create_directory "$IOS_ROOT" "iOS root"
+create_directory "$ASSETS_DIR" "assets"
+create_directory "$TEMP_DIR" "temporary"
+
+# Create Android resource directories
+create_directory "$ANDROID_ROOT/app/src/main/res/mipmap" "mipmap resources"
+create_directory "$ANDROID_ROOT/app/src/main/res/drawable" "drawable resources"
+create_directory "$ANDROID_ROOT/app/src/main/res/values" "values resources"
+
+# Create iOS resource directories
+create_directory "$IOS_ROOT/Runner/Assets.xcassets" "iOS assets"
+create_directory "$IOS_ROOT/Runner/Base.lproj" "iOS base resources"
+create_directory "$IOS_CERTIFICATES_DIR" "iOS certificates"
+create_directory "$IOS_PROVISIONING_DIR" "iOS provisioning"
+
+# Create build output directories
+create_directory "$(dirname "$APK_OUTPUT_PATH")" "APK output"
+create_directory "$(dirname "$AAB_OUTPUT_PATH")" "AAB output"
+create_directory "$(dirname "$IPA_OUTPUT_PATH")" "IPA output"
+
 source "$SCRIPT_DIR/export.sh"
 
 # Validate environment
@@ -97,15 +94,13 @@ bash "$SCRIPT_DIR/validate.sh"
 print_section "Configuring app details"
 
 # Update Android configuration
-echo "Updating Android configuration..."
-sed -i '' "s/android:label=\"[^\"]*\"/android:label=\"$APP_NAME\"/" android/app/src/main/AndroidManifest.xml
-sed -i '' "s/applicationId \"[^\"]*\"/applicationId \"$PKG_NAME\"/" android/app/build.gradle
+sed -i '' "s/android:label=\"[^\"]*\"/android:label=\"$APP_NAME\"/" "$ANDROID_MANIFEST_PATH"
+sed -i '' "s/applicationId \"[^\"]*\"/applicationId \"$PKG_NAME\"/" "$ANDROID_BUILD_GRADLE_PATH"
 
 # Update iOS configuration
-echo "Updating iOS configuration..."
-/usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName $APP_NAME" ios/Runner/Info.plist
-/usr/libexec/PlistBuddy -c "Set :CFBundleName $APP_NAME" ios/Runner/Info.plist
-/usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $BUNDLE_ID" ios/Runner/Info.plist
+plutil -replace CFBundleName -string "$APP_NAME" "$IOS_INFO_PLIST_PATH"
+plutil -replace CFBundleDisplayName -string "$APP_NAME" "$IOS_INFO_PLIST_PATH"
+plutil -replace CFBundleIdentifier -string "$BUNDLE_ID" "$IOS_INFO_PLIST_PATH"
 
 # Download and setup app icon
 download_app_icon
@@ -113,38 +108,75 @@ download_app_icon
 # Download and setup splash screen
 download_splash_assets
 
+# Setup Android keystore
+print_section "Setting up Android keystore"
+setup_keystore() {
+    echo "Setting up keystore..."
+    echo "$KEY_STORE" | base64 --decode > "$ANDROID_KEYSTORE_PATH"
+    echo "storeFile=$KEYSTORE_FILE" > "$ANDROID_KEY_PROPERTIES_PATH"
+    echo "storePassword=$CM_KEYSTORE_PASSWORD" >> "$ANDROID_KEY_PROPERTIES_PATH"
+    echo "keyAlias=$CM_KEY_ALIAS" >> "$ANDROID_KEY_PROPERTIES_PATH"
+    echo "keyPassword=$CM_KEY_PASSWORD" >> "$ANDROID_KEY_PROPERTIES_PATH"
+}
+setup_keystore
+
+# Setup iOS certificates
+print_section "Setting up iOS certificates"
+setup_certificates() {
+    echo "Setting up certificates..."
+    echo "$CERTIFICATE" | base64 --decode > "$IOS_CERTIFICATES_DIR/certificate.p12"
+    echo "$PROVISIONING_PROFILE" | base64 --decode > "$IOS_PROVISIONING_DIR/profile.mobileprovision"
+}
+setup_certificates
+
+# Setup Firebase
+print_section "Setting up Firebase"
+download_firebase_config "Android" "$FIREBASE_CONFIG_ANDROID" "$ANDROID_FIREBASE_CONFIG_PATH"
+download_firebase_config "iOS" "$FIREBASE_CONFIG_IOS" "$IOS_FIREBASE_CONFIG_PATH"
+
 # Build Android
 print_section "Building Android"
-echo "Running Android build script..."
-bash "$SCRIPT_DIR/android/main.sh"
+build_android() {
+    echo "Building Android..."
+    flutter build apk --release
+    flutter build appbundle --release
+}
+build_android
 
 # Build iOS
 print_section "Building iOS"
-echo "Running iOS build script..."
-bash "$SCRIPT_DIR/ios/main.sh"
+build_ios() {
+    echo "Building iOS..."
+    flutter build ios --release --no-codesign
+}
+build_ios
+
+# Collect artifacts
+print_section "Collecting artifacts"
+collect_artifacts() {
+    echo "Collecting build artifacts..."
+    mkdir -p "$OUTPUT_DIR"
+    cp "$APK_OUTPUT_PATH" "$OUTPUT_DIR/"
+    cp "$AAB_OUTPUT_PATH" "$OUTPUT_DIR/"
+    cp "$IPA_OUTPUT_PATH" "$OUTPUT_DIR/"
+}
+collect_artifacts
 
 # Revert changes
 print_section "Reverting changes"
 revert_changes() {
     echo "Reverting project changes..."
-    # Revert Android files
-    git checkout android/app/src/main/AndroidManifest.xml
-    git checkout android/app/build.gradle
-
-    # Revert iOS files
-    git checkout ios/Runner/Info.plist
-
-    # Remove downloaded assets
-    rm -f assets/icon.png
-    rm -f assets/splash.png
-    rm -f assets/splash_bg.png
-
-    # Remove generated files
-    rm -f pubspec.yaml.bak
-    rm -rf android/app/src/main/res/mipmap-*
-    rm -rf android/app/src/main/res/drawable-*
-    rm -rf ios/Runner/Assets.xcassets/AppIcon.appiconset/*
-    rm -rf ios/Runner/Assets.xcassets/Splash.imageset/*
+    git checkout "$ANDROID_MANIFEST_PATH"
+    git checkout "$ANDROID_BUILD_GRADLE_PATH"
+    git checkout "$IOS_INFO_PLIST_PATH"
+    rm -f "$APP_ICON_PATH"
+    rm -f "$SPLASH_IMAGE_PATH"
+    rm -f "$SPLASH_BG_PATH"
+    rm -f "$PUBSPEC_BACKUP_PATH"
+    rm -rf "$ANDROID_MIPMAP_DIR"/*
+    rm -rf "$ANDROID_DRAWABLE_DIR"/*
+    rm -rf "$IOS_ROOT/Runner/Assets.xcassets"/*
+    rm -rf "$IOS_ROOT/Runner/Base.lproj"/*
 }
 revert_changes
 

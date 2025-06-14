@@ -28,6 +28,10 @@ print_section "Starting Android Build Process"
 print_section "Setting up environment"
 find lib/scripts -type f -name "*.sh" -exec chmod +x {} \;
 
+# Load balance variables first
+print_section "Loading balance variables"
+source "$(dirname "$0")/balance_vars.sh"
+
 # Ensure CM_BUILD_DIR is set
 if [ -z "$CM_BUILD_DIR" ]; then
     CM_BUILD_DIR="$PWD"

@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Ensure CM_BUILD_DIR is set
+if [ -z "$CM_BUILD_DIR" ]; then
+    CM_BUILD_DIR="$PWD"
+fi
+
 # Build Configuration
 export BUILD_MODE="app-store"
 export FLUTTER_VERSION="3.19.3"
@@ -15,7 +20,7 @@ export ANDROID_NDK_VERSION="25.1.8937393"
 export ANDROID_CMDLINE_TOOLS="9477386"
 
 # Path Configuration
-export PROJECT_ROOT="${CM_BUILD_DIR:-$PWD}"
+export PROJECT_ROOT="${CM_BUILD_DIR}"
 export ANDROID_ROOT="${PROJECT_ROOT}/android"
 export ASSETS_DIR="${PROJECT_ROOT}/assets"
 export OUTPUT_DIR="${PROJECT_ROOT}/build/outputs"
