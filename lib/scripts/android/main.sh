@@ -106,17 +106,30 @@ setup_local_properties
 
 # Setup Gradle wrapper
 print_section "Setting up Gradle wrapper"
-setup_gradle_wrapper() {
-    echo "Setting up Gradle wrapper..."
-    mkdir -p "$GRADLE_WRAPPER_DIR"
-    download_with_retry "$GRADLE_WRAPPER_URL" "$GRADLE_WRAPPER_JAR_PATH"
-    echo "distributionBase=GRADLE_USER_HOME" > "$GRADLE_WRAPPER_PROPERTIES_PATH"
-    echo "distributionPath=wrapper/dists" >> "$GRADLE_WRAPPER_PROPERTIES_PATH"
-    echo "distributionUrl=$GRADLE_DISTRIBUTION_URL" >> "$GRADLE_WRAPPER_PROPERTIES_PATH"
-    echo "zipStoreBase=GRADLE_USER_HOME" >> "$GRADLE_WRAPPER_PROPERTIES_PATH"
-    echo "zipStorePath=wrapper/dists" >> "$GRADLE_WRAPPER_PROPERTIES_PATH"
-}
-setup_gradle_wrapper
+if [ ! -f "$GRADLE_WRAPPER_JAR_PATH" ]; then
+    echo "📥 Downloading Gradle wrapper from $GRADLE_WRAPPER_URL"
+    if ! curl -L "$GRADLE_WRAPPER_URL" -o "$GRADLE_WRAPPER_JAR_PATH" --retry 3 --retry-delay 5; then
+        echo "❌ Failed to download Gradle wrapper"
+        exit 1
+    fi
+fi
+
+# Create gradle-wrapper.properties
+print_section "Creating gradle-wrapper.properties"
+mkdir -p "$(dirname "$GRADLE_WRAPPER_PROPERTIES_PATH")"
+cat > "$GRADLE_WRAPPER_PROPERTIES_PATH" << EOF
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+distributionUrl=$GRADLE_DISTRIBUTION_URL
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+EOF
+
+# Create gradlew script
+print_section "Creating gradlew script"
+mkdir -p "$(dirname "${ANDROID_ROOT}/gradlew")"
+curl -L "https://raw.githubusercontent.com/gradle/gradle/v${GRADLE_VERSION}/gradlew" -o "${ANDROID_ROOT}/gradlew"
+chmod +x "${ANDROID_ROOT}/gradlew"
 
 # Setup keystore
 print_section "Setting up keystore"
