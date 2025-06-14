@@ -13,14 +13,6 @@ export TARGET_SDK_VERSION="${TARGET_SDK_VERSION:-35}"
 echo "Using PKG_NAME: $PKG_NAME"
 echo "Using COMPILE_SDK_VERSION: $COMPILE_SDK_VERSION"
 
-# Read Flutter SDK path from local.properties
-FLUTTER_ROOT=$(grep "flutter.sdk" android/local.properties | cut -d'=' -f2 | tr -d ' ')
-if [ -z "$FLUTTER_ROOT" ]; then
-    echo "❌ Flutter SDK path not found in local.properties"
-    exit 1
-fi
-echo "📱 Using Flutter SDK at: $FLUTTER_ROOT"
-
 # Added debugging to verify file locations
 echo "-------------------------------------------------"
 echo "🔍 Listing contents of the /android/ directory to verify file locations..."
@@ -70,7 +62,7 @@ import java.io.File
 
 // Load local.properties for flutter.sdk path
 val localProperties = Properties()
-val localPropertiesFile = rootProject.file("local.properties")
+val localPropertiesFile = rootProject.file("local.properties") // This is correct, relative to project root
 if (localPropertiesFile.exists()) {
     localPropertiesFile.inputStream().use { input ->
         localProperties.load(input)
@@ -83,13 +75,15 @@ if (flutterRoot == null) {
 
 // Load key.properties for signing credentials
 val keystoreProperties = Properties()
-val keystorePropertiesFile = rootProject.file("key.properties")
+// CRITICAL FIX: Reference key.properties relative to the current module directory (android/app)
+// If key.properties is in 'android/', then from 'android/app/', it's '../key.properties'
+val keystorePropertiesFile = file("../key.properties") // Use 'file' without 'rootProject' for relative paths within module
 if (keystorePropertiesFile.exists()) {
     keystorePropertiesFile.inputStream().use { input ->
         keystoreProperties.load(input)
     }
 } else {
-    println("WARNING: key.properties not found at \${keystorePropertiesFile.absolutePath}")
+    println("WARNING: android/key.properties not found at \${keystorePropertiesFile.absolutePath}")
     println("This might be expected during initial setup, but ensure it exists for release builds.")
 }
 
@@ -125,12 +119,14 @@ android {
     signingConfigs {
         create("release") {
             if (keystoreProperties.isNotEmpty()) {
-                storeFile = rootProject.file(keystoreProperties.getProperty("storeFile"))
+                // CRITICAL FIX: Reference keystore.jks relative to the current module directory (android/app)
+                // If keystore.jks is in 'android/', then from 'android/app/', it's '../keystore.jks'
+                storeFile = file("../" + keystoreProperties.getProperty("storeFile"))
                 storePassword = keystoreProperties.getProperty("storePassword")
                 keyAlias = keystoreProperties.getProperty("keyAlias")
                 keyPassword = keystoreProperties.getProperty("keyPassword")
             } else {
-                println("ERROR: Keystore properties not loaded. Ensure key.properties exists and is valid.")
+                println("ERROR: Keystore properties not loaded. Ensure android/key.properties exists and is valid.")
             }
         }
     }
@@ -176,16 +172,17 @@ if (flutterRoot == null) {
 
 // Load key.properties for signing credentials
 val keystoreProperties = Properties()
-val keystorePropertiesFile = rootProject.file("key.properties")
+// CRITICAL FIX: Reference key.properties relative to the current module directory (android/app)
+// If key.properties is in 'android/', then from 'android/app/', it's '../key.properties'
+val keystorePropertiesFile = file("../key.properties") // Use 'file' without 'rootProject' for relative paths within module
 if (keystorePropertiesFile.exists()) {
     keystorePropertiesFile.inputStream().use { input ->
         keystoreProperties.load(input)
     }
 } else {
-    println("WARNING: key.properties not found at \${keystorePropertiesFile.absolutePath}")
+    println("WARNING: android/key.properties not found at \${keystorePropertiesFile.absolutePath}")
     println("This might be expected during initial setup, but ensure it exists for release builds.")
 }
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -217,12 +214,14 @@ android {
     signingConfigs {
         create("release") {
             if (keystoreProperties.isNotEmpty()) {
-                storeFile = rootProject.file(keystoreProperties.getProperty("storeFile"))
+                // CRITICAL FIX: Reference keystore.jks relative to the current module directory (android/app)
+                // If keystore.jks is in 'android/', then from 'android/app/', it's '../keystore.jks'
+                storeFile = file("../" + keystoreProperties.getProperty("storeFile"))
                 storePassword = keystoreProperties.getProperty("storePassword")
                 keyAlias = keystoreProperties.getProperty("keyAlias")
                 keyPassword = keystoreProperties.getProperty("keyPassword")
             } else {
-                println("ERROR: Keystore properties not loaded. Ensure key.properties exists and is valid.")
+                println("ERROR: Keystore properties not loaded. Ensure android/key.properties exists and is valid.")
             }
         }
     }

@@ -463,26 +463,15 @@ validate_android_structure() {
     echo -e "${BLUE}🔍 Validating Android Project Structure...${NC}"
     
     local required_files=(
+        "$ANDROID_ROOT/build.gradle.kts"
+        "$ANDROID_ROOT/app/build.gradle.kts"
         "$ANDROID_ROOT/app/src/main/AndroidManifest.xml"
         "$ANDROID_ROOT/gradle.properties"
+        "$ANDROID_ROOT/settings.gradle.kts"
     )
     
     local missing_files=()
     
-    # Check for either .gradle or .gradle.kts files
-    if [ ! -f "$ANDROID_ROOT/build.gradle" ] && [ ! -f "$ANDROID_ROOT/build.gradle.kts" ]; then
-        missing_files+=("$ANDROID_ROOT/build.gradle or build.gradle.kts")
-    fi
-    
-    if [ ! -f "$ANDROID_ROOT/app/build.gradle" ] && [ ! -f "$ANDROID_ROOT/app/build.gradle.kts" ]; then
-        missing_files+=("$ANDROID_ROOT/app/build.gradle or build.gradle.kts")
-    fi
-    
-    if [ ! -f "$ANDROID_ROOT/settings.gradle" ] && [ ! -f "$ANDROID_ROOT/settings.gradle.kts" ]; then
-        missing_files+=("$ANDROID_ROOT/settings.gradle or settings.gradle.kts")
-    fi
-    
-    # Check other required files
     for file in "${required_files[@]}"; do
         if [ ! -f "$file" ]; then
             missing_files+=("$file")

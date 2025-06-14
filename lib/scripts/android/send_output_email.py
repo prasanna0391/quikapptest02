@@ -27,18 +27,18 @@ class Colors:
 def print_colored(color, message):
     print(f"{color}{message}{Colors.NC}")
 
-# Read configuration from environment variables (set by email_config.sh)
+# Read configuration from environment variables
 TO_EMAIL = os.environ.get("EMAIL_ID", "recipient@example.com")
-FROM_EMAIL = os.environ.get("EMAIL_FROM", os.environ.get("FROM_EMAIL", "no-reply@quikapp.co"))
-SMTP_SERVER = os.environ.get("EMAIL_SMTP_SERVER", os.environ.get("SMTP_SERVER", "smtp.gmail.com"))
-SMTP_PORT = int(os.environ.get("EMAIL_SMTP_PORT", os.environ.get("SMTP_PORT", "587")))
-SMTP_USER = os.environ.get("EMAIL_SMTP_USER", os.environ.get("SMTP_USER", "no-reply@quikapp.co"))
-SMTP_PASS = os.environ.get("EMAIL_SMTP_PASS", os.environ.get("SMTP_PASS", "your-app-password"))
+FROM_EMAIL = "no-reply@quikapp.co"
+SMTP_SERVER = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
+SMTP_PORT = int(os.environ.get("SMTP_PORT", "587"))
+SMTP_USER = os.environ.get("SMTP_USERNAME", "your-email@gmail.com")
+SMTP_PASS = os.environ.get("SMTP_PASSWORD", "your-app-password")
 
 # Get app details from environment variables
-APP_NAME = os.environ.get("APP_NAME", "QuikApp Project")
-PKG_NAME = os.environ.get("PKG_NAME", "com.quikapp.project")
-VERSION_NAME = os.environ.get("VERSION_NAME", "1.0.0")
+APP_NAME = os.environ.get("APP_NAME", "Garbcode App")
+PKG_NAME = os.environ.get("PKG_NAME", "com.garbcode.garbcodeapp")
+VERSION_NAME = os.environ.get("VERSION_NAME", "1.0.22")
 
 # Gmail attachment size limit (25MB)
 GMAIL_SIZE_LIMIT = 25 * 1024 * 1024  # 25MB in bytes
@@ -70,7 +70,7 @@ def main():
     msg = MIMEMultipart()
     msg['From'] = FROM_EMAIL
     msg['To'] = TO_EMAIL
-    msg['Subject'] = f"QuikApp Build Outputs - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+    msg['Subject'] = f"Android Build Outputs - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
     
     # Check file sizes and prepare email content
     large_files = []
@@ -88,7 +88,7 @@ def main():
                 small_files.append((file_path, file_size))
     
     # Email body
-    body = f"""QuikApp build completed successfully!
+    body = f"""Android build completed successfully!
 
 Build completed at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 Project: {APP_NAME}
@@ -96,15 +96,10 @@ Package: {PKG_NAME}
 Version: {VERSION_NAME}
 Build Status: ✅ SUCCESS
 
-Your mobile app has been successfully generated using QuikApp's platform.
 Build artifacts are attached to this email.
 
-Access your app at: https://app.quikapp.co
-Visit our website: https://quikapp.co
-
 Best regards,
-QuikApp Build System
-Convert your website into a mobile app with ease!"""
+QuikApp Build System"""
     
     # If we have large files, modify the email body
     if large_files:
