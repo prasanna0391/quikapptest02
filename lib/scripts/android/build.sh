@@ -2,12 +2,44 @@
 
 set -euxo pipefail
 
-# Source environment variables
+# Script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+
+# Source environment variables
 . "$SCRIPT_DIR/export.sh"
 
 echo "🧹 Running flutter clean..."
-flutter clean # Can be removed if run_all.sh already does this
+flutter clean
+
+# Setup keystore
+echo "🔐 Setting up keystore..."
+cd "$PROJECT_ROOT/android/app"
+
+# Download keystore if URL is provided
+if [ -n "$KEY_STORE" ]; then
+    echo "📥 Downloading keystore from $KEY_STORE..."
+    if curl -L -o keystore.jks "$KEY_STORE"; then
+        echo "✅ Keystore downloaded successfully"
+    else
+        echo "❌ Failed to download keystore"
+        exit 1
+    fi
+fi
+
+# Create key.properties file
+echo "📝 Creating key.properties..."
+cat > "$PROJECT_ROOT/android/key.properties" << EOF
+storePassword=$CM_KEYSTORE_PASSWORD
+keyPassword=$CM_KEY_PASSWORD
+keyAlias=$CM_KEY_ALIAS
+storeFile=keystore.jks
+EOF
+
+echo "✅ Keystore setup complete"
+
+# Return to project root
+cd "$PROJECT_ROOT"
 
 echo "✅ Building APK..."
         flutter build apk --release \

@@ -1,5 +1,5 @@
 pluginManagement {
-    includeBuild("/Users/alakaraj/development/flutter/packages/flutter_tools/gradle")
+    includeBuild("/Users/alakaraj/flutter/packages/flutter_tools/gradle")
     repositories {
         google()
         mavenCentral()
