@@ -63,8 +63,7 @@ download_splash_assets() {
         fi
         
         if [ "$success" = true ]; then
-            flutter pub add flutter_native_splash
-            flutter pub run flutter_native_splash:create
+            echo "✅ Splash assets downloaded successfully"
             return 0
         else
             return 1
