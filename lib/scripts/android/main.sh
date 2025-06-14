@@ -161,21 +161,34 @@ echo "--- Preparing Android Project with File Manager ---"
 echo "🗑️  Cleaning old keystore..."
 "$SCRIPT_DIR/delete_old_keystore.sh"
 
-# Get JSON configuration
-echo "📄 Getting JSON configuration..."
-"$SCRIPT_DIR/get_json.sh"
+# Get JSON configuration if PUSH_NOTIFY is true
+if [ "${PUSH_NOTIFY:-false}" = "true" ]; then
+  echo "📄 Getting JSON configuration..."
+  "$SCRIPT_DIR/get_json.sh"
+else
+  echo "🚫 Firebase config skipped because PUSH_NOTIFY != true"
+fi
 
 # Inject permissions using file manager
 echo "🔐 Injecting Android permissions..."
 "$SCRIPT_DIR/inject_permissions_android.sh"
 
-# Inject keystore using file manager
-echo "🔑 Injecting keystore..."
-"$SCRIPT_DIR/inject_keystore.sh"
+# Inject keystore using file manager if KEY_STORE is provided
+if [ -n "${KEY_STORE:-}" ]; then
+  echo "🔑 Injecting keystore..."
+  "$SCRIPT_DIR/inject_keystore.sh"
+else
+  echo "🚫 Keystore injection skipped because KEY_STORE is not provided"
+fi
 
 # Configure Android build using file manager
 echo "⚙️  Configuring Android build..."
 "$SCRIPT_DIR/configure_android_build_fixed.sh"
+
+echo ""
+
+# Generate local.properties
+"$SCRIPT_DIR/generate_local_properties.sh"
 
 echo ""
 
