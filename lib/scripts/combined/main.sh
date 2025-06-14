@@ -8,122 +8,119 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Function to handle errors
 handle_error() {
-    local error_msg="$1"
-    echo "❌ Error: $error_msg"
-    bash "$SCRIPT_DIR/send_error_email.sh" "Build Failed" "$error_msg"
+    echo "❌ Build process failed!"
+    echo "📍 Error occurred at line: $1"
+    echo "🔧 Failed command: $2"
+    echo "📊 Exit code: $3"
+    
+    echo "📧 Sending error notification email..."
+    bash "$SCRIPT_DIR/send_error_email.sh" "Build Failed" "Build failed at line $1: $2"
+    
+    echo "🔄 Ending build session and reverting changes..."
     exit 1
 }
 
-# Function to print section header
+# Function to print section headers
 print_section() {
-    echo ""
-    echo "=== $1 ==="
-    echo ""
+    echo "-------------------------------------------------"
+    echo "🔧 $1"
+    echo "-------------------------------------------------"
 }
 
 # Function to clean previous builds
 clean_builds() {
-    print_section "Cleaning Previous Builds"
-    
-    echo "🧹 Cleaning Flutter build..."
-    flutter clean || handle_error "Failed to clean Flutter build"
-    
-    echo "🧹 Cleaning output directory..."
-    rm -rf output || true
-    
+    print_section "Cleaning previous builds"
+    flutter clean
+    rm -rf output/
     echo "✅ Clean complete"
 }
 
 # Function to setup Flutter SDK path
 setup_flutter_sdk() {
-    print_section "Setting up Flutter SDK"
+    print_section "Setting up Flutter SDK path"
     
-    # Create local.properties file in project root
-    echo "📝 Creating local.properties file..."
+    # Get Flutter SDK path
+    FLUTTER_ROOT=$(which flutter | xargs dirname | xargs dirname)
+    
+    # Create local.properties in project root
     cat > local.properties << EOF
 flutter.sdk=$FLUTTER_ROOT
 EOF
-
-    # Also create local.properties in android directory for compatibility
-    echo "📝 Creating android/local.properties file..."
+    
+    # Create local.properties in android directory
+    mkdir -p android
     cat > android/local.properties << EOF
 flutter.sdk=$FLUTTER_ROOT
+sdk.dir=$ANDROID_SDK_ROOT
 EOF
-
+    
     echo "✅ Flutter SDK path configured"
 }
 
 # Function to setup Gradle wrapper
 setup_gradle_wrapper() {
-    print_section "Setting up Gradle Wrapper"
+    print_section "Setting up Gradle wrapper"
     
-    cd android
-    
-    # Create Gradle wrapper directory
-    mkdir -p gradle/wrapper
+    # Create gradle wrapper directory
+    mkdir -p android/gradle/wrapper
     
     # Download gradle-wrapper.jar
-    echo "📥 Downloading gradle-wrapper.jar..."
-    curl -L -o gradle/wrapper/gradle-wrapper.jar \
-        "https://github.com/gradle/gradle/raw/v8.12.0/gradle/wrapper/gradle-wrapper.jar"
+    wget -O android/gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/v8.12.0/gradle/wrapper/gradle-wrapper.jar
     
     # Create gradle-wrapper.properties
-    echo "📝 Creating gradle-wrapper.properties..."
-    cat > gradle/wrapper/gradle-wrapper.properties << EOF
+    cat > android/gradle/wrapper/gradle-wrapper.properties << EOF
 distributionBase=GRADLE_USER_HOME
 distributionPath=wrapper/dists
-distributionUrl=https\://services.gradle.org/distributions/gradle-8.12-bin.zip
-networkTimeout=10000
-validateDistributionUrl=true
 zipStoreBase=GRADLE_USER_HOME
 zipStorePath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.12-all.zip
 EOF
     
-    # Make gradlew executable
-    chmod +x gradlew
-    
-    cd ..
-    echo "✅ Gradle wrapper setup complete"
+    echo "✅ Gradle wrapper configured"
 }
 
 # Main build process
-echo "🚀 Starting combined build process..."
+echo "🚀 Starting build process..."
 
-# Source environment variables
-print_section "Loading Environment"
-source "$SCRIPT_DIR/export.sh" || handle_error "Failed to load environment variables"
+# Load environment variables
+print_section "Loading environment variables"
+source "$SCRIPT_DIR/export.sh"
+echo "✅ Environment variables loaded"
 
 # Validate environment
-print_section "Validating Environment"
-bash "$SCRIPT_DIR/validate.sh" || handle_error "Environment validation failed"
+print_section "Validating environment"
+bash "$SCRIPT_DIR/validate.sh"
+echo "✅ Environment validated"
 
 # Clean previous builds
 clean_builds
 
-# Setup build environment
+# Setup Flutter SDK and Gradle
 setup_flutter_sdk
 setup_gradle_wrapper
 
 # Configure app
-print_section "Configuring App"
-bash "$SCRIPT_DIR/configure_app.sh" || handle_error "App configuration failed"
+print_section "Configuring app"
+bash "$SCRIPT_DIR/configure_app.sh"
+echo "✅ App configured"
 
 # Build Android
 print_section "Building Android"
-bash "$SCRIPT_DIR/build_android.sh" || handle_error "Android build failed"
+bash "$SCRIPT_DIR/build_android.sh"
+echo "✅ Android build complete"
 
 # Build iOS
 print_section "Building iOS"
-bash "$SCRIPT_DIR/build_ios.sh" || handle_error "iOS build failed"
+bash "$SCRIPT_DIR/build_ios.sh"
+echo "✅ iOS build complete"
 
 # Print build summary
 print_section "Build Summary"
 echo "📱 App Name: $APP_NAME"
 echo "📦 Package: $PKG_NAME"
-echo "📱 Bundle ID: $BUNDLE_ID"
+echo "🆔 Bundle ID: $BUNDLE_ID"
 echo "📊 Version: $VERSION_NAME ($VERSION_CODE)"
-echo ""
-echo "📦 Generated Artifacts:"
-ls -lh output/
+echo "📤 Generated artifacts:"
+ls -la output/
 
-echo "✅ Combined build process completed successfully" 
+echo "✅ Build process completed successfully!" 

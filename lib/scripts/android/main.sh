@@ -9,73 +9,218 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # Always set the correct package name for Android builds
 export PKG_NAME=com.garbcode.garbcodeapp
 
-# Function to handle errors and send email notifications
+# Function to handle errors
 handle_error() {
-    local exit_code=$?
-    local error_line=$1
-    local error_command=$2
+    echo "❌ Build process failed!"
+    echo "📍 Error occurred at line: $1"
+    echo "🔧 Failed command: $2"
+    echo "📊 Exit code: $3"
     
-    # Check if the build actually succeeded despite the error
-    local build_succeeded=false
-    if [ -f "output/app-release.apk" ] || [ -f "output/app-release.aab" ]; then
-        build_succeeded=true
-    fi
+    echo "📧 Sending error notification email..."
+    bash "$SCRIPT_DIR/send_error_email.sh" "Build Failed" "Build failed at line $1: $2"
     
-    if [ "$build_succeeded" = true ]; then
-        echo ""
-        echo "⚠️  Build completed with warnings but APK/AAB files were generated successfully!"
-        echo "📍 Warning occurred at line: $error_line"
-        echo "🔧 Command with warning: $error_command"
-        echo "📊 Exit code: $exit_code"
-        echo "✅ Build artifacts are available in the output/ directory"
+    echo "🔄 Ending build session and reverting changes..."
+    exit 1
+}
+
+# Function to print section headers
+print_section() {
+    echo "-------------------------------------------------"
+    echo "🔧 $1"
+    echo "-------------------------------------------------"
+}
+
+# Function to setup local properties
+setup_local_properties() {
+    print_section "Setting up local properties"
+    
+    # Get Flutter SDK path
+    FLUTTER_ROOT=$(which flutter | xargs dirname | xargs dirname)
+    
+    # Create local.properties in project root
+    cat > local.properties << EOF
+flutter.sdk=$FLUTTER_ROOT
+EOF
+    
+    # Create local.properties in android directory
+    mkdir -p android
+    cat > android/local.properties << EOF
+flutter.sdk=$FLUTTER_ROOT
+sdk.dir=$ANDROID_SDK_ROOT
+EOF
+    
+    echo "✅ Local properties configured"
+}
+
+# Function to setup Gradle wrapper
+setup_gradle_wrapper() {
+    print_section "Setting up Gradle wrapper"
+    
+    # Create gradle wrapper directory
+    mkdir -p android/gradle/wrapper
+    
+    # Download gradle-wrapper.jar
+    wget -O android/gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/v8.12.0/gradle/wrapper/gradle-wrapper.jar
+    
+    # Create gradle-wrapper.properties
+    cat > android/gradle/wrapper/gradle-wrapper.properties << EOF
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.12-all.zip
+EOF
+    
+    echo "✅ Gradle wrapper configured"
+}
+
+# Function to setup keystore
+setup_keystore() {
+    print_section "Setting up keystore"
+    
+    if [ -n "$KEY_STORE" ]; then
+        echo "📥 Downloading keystore..."
+        wget -O android/app/upload-keystore.jks "$KEY_STORE"
         
-        # End build session if it was started
-        if [ -f "$SCRIPT_DIR/android_file_manager.sh" ]; then
-            echo ""
-            echo "🔄 Ending build session and reverting changes..."
-            "$SCRIPT_DIR/android_file_manager.sh" end-session 2>/dev/null || true
-        fi
-        
-        echo ""
-        echo "✅ All tasks completed successfully!"
-        echo "📋 All Android file changes have been reverted to original state."
-        echo "🔒 Build artifacts are preserved, but Android project files are unchanged."
-        echo "📧 No error notifications sent - build completed successfully!"
-        exit 0
+        # Create key.properties
+        cat > android/key.properties << EOF
+storePassword=$CM_KEYSTORE_PASSWORD
+keyPassword=$CM_KEY_PASSWORD
+keyAlias=$CM_KEY_ALIAS
+storeFile=upload-keystore.jks
+EOF
+        echo "✅ Keystore configured"
     else
-        echo ""
-        echo "❌ Build process failed!"
-        echo "📍 Error occurred at line: $error_line"
-        echo "🔧 Failed command: $error_command"
-        echo "📊 Exit code: $exit_code"
-        
-        # Capture recent build logs for error details
-        local error_details=""
-        if [ -f "flutter_build_apk.log" ]; then
-            error_details=$(tail -50 flutter_build_apk.log 2>/dev/null || echo "No build log available")
-        fi
-        
-        # Generate error message
-        local error_message="Build process failed with exit code $exit_code"
-        
-        # Send error notification email
-        echo ""
-        echo "📧 Sending error notification email..."
-        "$SCRIPT_DIR/send_error_email.sh" "$error_message" "$error_details"
-        
-        # End build session if it was started
-        if [ -f "$SCRIPT_DIR/android_file_manager.sh" ]; then
-            echo ""
-            echo "🔄 Ending build session and reverting changes..."
-            "$SCRIPT_DIR/android_file_manager.sh" end-session 2>/dev/null || true
-        fi
-        
-        exit $exit_code
+        echo "⚠️ No keystore URL provided, skipping keystore setup"
     fi
 }
 
-# Set up error handling
-trap 'handle_error ${LINENO} "$BASH_COMMAND"' ERR
+# Function to setup Firebase
+setup_firebase() {
+    print_section "Setting up Firebase"
+    
+    if [ "$PUSH_NOTIFY" = "true" ] && [ -n "$FIREBASE_CONFIG_ANDROID" ]; then
+        echo "📥 Downloading Firebase config..."
+        wget -O android/app/google-services.json "$FIREBASE_CONFIG_ANDROID"
+        echo "✅ Firebase configured"
+    else
+        echo "⚠️ Firebase setup skipped (PUSH_NOTIFY=$PUSH_NOTIFY)"
+    fi
+}
+
+# Function to build APK
+build_apk() {
+    print_section "Building APK"
+    
+    flutter build apk --release \
+        --dart-define=PKG_NAME="$PKG_NAME" \
+        --dart-define=BUNDLE_ID="$BUNDLE_ID" \
+        --dart-define=APP_NAME="$APP_NAME" \
+        --dart-define=ORG_NAME="$ORG_NAME" \
+        --dart-define=VERSION_NAME="$VERSION_NAME" \
+        --dart-define=VERSION_CODE="$VERSION_CODE" \
+        --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY" \
+        --dart-define=firebase_config_android="$FIREBASE_CONFIG_ANDROID" \
+        --dart-define=WEB_URL="$WEB_URL" \
+        --dart-define=IS_SPLASH="$IS_SPLASH" \
+        --dart-define=SPLASH="$SPLASH" \
+        --dart-define=SPLASH_ANIMATION="$SPLASH_ANIMATION" \
+        --dart-define=SPLASH_BG_COLOR="$SPLASH_BG_COLOR" \
+        --dart-define=SPLASH_TAGLINE="$SPLASH_TAGLINE" \
+        --dart-define=SPLASH_TAGLINE_COLOR="$SPLASH_TAGLINE_COLOR" \
+        --dart-define=SPLASH_DURATION="$SPLASH_DURATION" \
+        --dart-define=IS_PULLDOWN="$IS_PULLDOWN" \
+        --dart-define=LOGO_URL="$LOGO_URL" \
+        --dart-define=IS_BOTTOMMENU="$IS_BOTTOMMENU" \
+        --dart-define=BOTTOMMENU_ITEMS="$BOTTOMMENU_ITEMS" \
+        --dart-define=BOTTOMMENU_BG_COLOR="$BOTTOMMENU_BG_COLOR" \
+        --dart-define=BOTTOMMENU_ICON_COLOR="$BOTTOMMENU_ICON_COLOR" \
+        --dart-define=BOTTOMMENU_TEXT_COLOR="$BOTTOMMENU_TEXT_COLOR" \
+        --dart-define=BOTTOMMENU_FONT="$BOTTOMMENU_FONT" \
+        --dart-define=BOTTOMMENU_FONT_SIZE="$BOTTOMMENU_FONT_SIZE" \
+        --dart-define=BOTTOMMENU_FONT_BOLD="$BOTTOMMENU_FONT_BOLD" \
+        --dart-define=BOTTOMMENU_FONT_ITALIC="$BOTTOMMENU_FONT_ITALIC" \
+        --dart-define=BOTTOMMENU_ACTIVE_TAB_COLOR="$BOTTOMMENU_ACTIVE_TAB_COLOR" \
+        --dart-define=BOTTOMMENU_ICON_POSITION="$BOTTOMMENU_ICON_POSITION" \
+        --dart-define=BOTTOMMENU_VISIBLE_ON="$BOTTOMMENU_VISIBLE_ON" \
+        --dart-define=IS_DEEPLINK="$IS_DEEPLINK" \
+        --dart-define=IS_LOAD_IND="$IS_LOAD_IND" \
+        --dart-define=IS_CHATBOT="$IS_CHATBOT" \
+        --dart-define=IS_CAMERA="$IS_CAMERA" \
+        --dart-define=IS_LOCATION="$IS_LOCATION" \
+        --dart-define=IS_BIOMETRIC="$IS_BIOMETRIC" \
+        --dart-define=IS_MIC="$IS_MIC" \
+        --dart-define=IS_CONTACT="$IS_CONTACT" \
+        --dart-define=IS_CALENDAR="$IS_CALENDAR" \
+        --dart-define=IS_NOTIFICATION="$IS_NOTIFICATION" \
+        --dart-define=IS_STORAGE="$IS_STORAGE"
+    
+    echo "✅ APK build complete"
+}
+
+# Function to build AAB
+build_aab() {
+    print_section "Building AAB"
+    
+    flutter build appbundle --release \
+        --dart-define=PKG_NAME="$PKG_NAME" \
+        --dart-define=BUNDLE_ID="$BUNDLE_ID" \
+        --dart-define=APP_NAME="$APP_NAME" \
+        --dart-define=ORG_NAME="$ORG_NAME" \
+        --dart-define=VERSION_NAME="$VERSION_NAME" \
+        --dart-define=VERSION_CODE="$VERSION_CODE" \
+        --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY" \
+        --dart-define=firebase_config_android="$FIREBASE_CONFIG_ANDROID" \
+        --dart-define=WEB_URL="$WEB_URL" \
+        --dart-define=IS_SPLASH="$IS_SPLASH" \
+        --dart-define=SPLASH="$SPLASH" \
+        --dart-define=SPLASH_ANIMATION="$SPLASH_ANIMATION" \
+        --dart-define=SPLASH_BG_COLOR="$SPLASH_BG_COLOR" \
+        --dart-define=SPLASH_TAGLINE="$SPLASH_TAGLINE" \
+        --dart-define=SPLASH_TAGLINE_COLOR="$SPLASH_TAGLINE_COLOR" \
+        --dart-define=SPLASH_DURATION="$SPLASH_DURATION" \
+        --dart-define=IS_PULLDOWN="$IS_PULLDOWN" \
+        --dart-define=LOGO_URL="$LOGO_URL" \
+        --dart-define=IS_BOTTOMMENU="$IS_BOTTOMMENU" \
+        --dart-define=BOTTOMMENU_ITEMS="$BOTTOMMENU_ITEMS" \
+        --dart-define=BOTTOMMENU_BG_COLOR="$BOTTOMMENU_BG_COLOR" \
+        --dart-define=BOTTOMMENU_ICON_COLOR="$BOTTOMMENU_ICON_COLOR" \
+        --dart-define=BOTTOMMENU_TEXT_COLOR="$BOTTOMMENU_TEXT_COLOR" \
+        --dart-define=BOTTOMMENU_FONT="$BOTTOMMENU_FONT" \
+        --dart-define=BOTTOMMENU_FONT_SIZE="$BOTTOMMENU_FONT_SIZE" \
+        --dart-define=BOTTOMMENU_FONT_BOLD="$BOTTOMMENU_FONT_BOLD" \
+        --dart-define=BOTTOMMENU_FONT_ITALIC="$BOTTOMMENU_FONT_ITALIC" \
+        --dart-define=BOTTOMMENU_ACTIVE_TAB_COLOR="$BOTTOMMENU_ACTIVE_TAB_COLOR" \
+        --dart-define=BOTTOMMENU_ICON_POSITION="$BOTTOMMENU_ICON_POSITION" \
+        --dart-define=BOTTOMMENU_VISIBLE_ON="$BOTTOMMENU_VISIBLE_ON" \
+        --dart-define=IS_DEEPLINK="$IS_DEEPLINK" \
+        --dart-define=IS_LOAD_IND="$IS_LOAD_IND" \
+        --dart-define=IS_CHATBOT="$IS_CHATBOT" \
+        --dart-define=IS_CAMERA="$IS_CAMERA" \
+        --dart-define=IS_LOCATION="$IS_LOCATION" \
+        --dart-define=IS_BIOMETRIC="$IS_BIOMETRIC" \
+        --dart-define=IS_MIC="$IS_MIC" \
+        --dart-define=IS_CONTACT="$IS_CONTACT" \
+        --dart-define=IS_CALENDAR="$IS_CALENDAR" \
+        --dart-define=IS_NOTIFICATION="$IS_NOTIFICATION" \
+        --dart-define=IS_STORAGE="$IS_STORAGE"
+    
+    echo "✅ AAB build complete"
+}
+
+# Function to collect artifacts
+collect_artifacts() {
+    print_section "Collecting artifacts"
+    
+    # Create output directory
+    mkdir -p output
+    
+    # Copy APK and AAB to output directory
+    cp build/app/outputs/flutter-apk/app-release.apk output/
+    cp build/app/outputs/bundle/release/app-release.aab output/
+    
+    echo "✅ Artifacts collected"
+}
 
 echo "🚀 Starting Android Build Process with File Management Rules"
 echo "📋 RULE: Only ADD files to Android folders, NO DIRECT MODIFICATIONS"
@@ -244,3 +389,48 @@ echo "✅ All tasks completed successfully!"
 echo "📋 All Android file changes have been reverted to original state."
 echo "🔒 Build artifacts are preserved, but Android project files are unchanged."
 echo "📧 No error notifications sent - build completed successfully!"
+
+# Main build process
+echo "🚀 Starting Android build process..."
+
+# Validate environment
+print_section "Validating Environment"
+bash "$SCRIPT_DIR/validate.sh" || handle_error ${LINENO} "Environment validation failed" $?
+
+# Setup local properties
+print_section "Setting up local properties"
+setup_local_properties || handle_error ${LINENO} "Failed to setup local properties" $?
+
+# Setup Gradle wrapper
+print_section "Setting up Gradle wrapper"
+setup_gradle_wrapper || handle_error ${LINENO} "Failed to setup Gradle wrapper" $?
+
+# Setup keystore
+print_section "Setting up keystore"
+setup_keystore || handle_error ${LINENO} "Failed to setup keystore" $?
+
+# Setup Firebase
+print_section "Setting up Firebase"
+setup_firebase || handle_error ${LINENO} "Failed to setup Firebase" $?
+
+# Build APK
+print_section "Building APK"
+build_apk || handle_error ${LINENO} "Failed to build APK" $?
+
+# Build AAB
+print_section "Building AAB"
+build_aab || handle_error ${LINENO} "Failed to build AAB" $?
+
+# Collect artifacts
+print_section "Collecting artifacts"
+collect_artifacts || handle_error ${LINENO} "Failed to collect artifacts" $?
+
+# Print build summary
+print_section "Build Summary"
+echo "📱 App Name: $APP_NAME"
+echo "📦 Package: $PKG_NAME"
+echo "📊 Version: $VERSION_NAME ($VERSION_CODE)"
+echo "📤 Generated artifacts:"
+ls -la output/
+
+echo "✅ Android build process completed successfully!"
