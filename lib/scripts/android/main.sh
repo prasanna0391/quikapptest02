@@ -230,47 +230,195 @@ handle_build_success() {
     exit 0
 }
 
+generate_build_gradle_kts() {
+    local has_firebase=$1
+    local has_keystore=$2
+    local build_gradle_path="android/build.gradle.kts"
+    
+    echo "Generating build.gradle.kts configuration..."
+    echo "Firebase: $has_firebase, Keystore: $has_keystore"
+    
+    # Create build.gradle.kts with appropriate configuration
+    cat > "$build_gradle_path" << EOF
+buildscript {
+    val kotlinVersion = "1.8.10"
+    
+    repositories {
+        google()
+        mavenCentral()
+    }
+    
+    dependencies {
+        classpath("com.android.tools.build:gradle:7.3.0")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:\$kotlinVersion")
+EOF
+
+    # Add Firebase if enabled
+    if [ "$has_firebase" = "true" ]; then
+        cat >> "$build_gradle_path" << EOF
+        classpath("com.google.gms:google-services:4.4.0")
+EOF
+    fi
+
+    cat >> "$build_gradle_path" << EOF
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+tasks.register("clean", Delete::class) {
+    delete(rootProject.buildDir)
+}
+EOF
+
+    # Create app-level build.gradle.kts
+    local app_build_gradle_path="android/app/build.gradle.kts"
+    cat > "$app_build_gradle_path" << EOF
+plugins {
+    id("com.android.application")
+    id("kotlin-android")
+    id("kotlin-kapt")
+EOF
+
+    # Add Firebase plugin if enabled
+    if [ "$has_firebase" = "true" ]; then
+        cat >> "$app_build_gradle_path" << EOF
+    id("com.google.gms.google-services")
+EOF
+    fi
+
+    cat >> "$app_build_gradle_path" << EOF
+}
+
+android {
+    namespace = "$PKG_NAME"
+    compileSdk = 34
+    
+    defaultConfig {
+        applicationId = "$PKG_NAME"
+        minSdk = 21
+        targetSdk = 34
+        versionCode = $VERSION_CODE
+        versionName = "$VERSION_NAME"
+    }
+EOF
+
+    # Add signing config if keystore is present
+    if [ "$has_keystore" = "true" ]; then
+        cat >> "$app_build_gradle_path" << EOF
+    signingConfigs {
+        create("release") {
+            storeFile = file("keystore.jks")
+            storePassword = System.getenv("KEY_STORE_PASSWORD")
+            keyAlias = System.getenv("KEY_ALIAS")
+            keyPassword = System.getenv("KEY_PASSWORD")
+        }
+    }
+    
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("release")
+        }
+    }
+EOF
+    else
+        cat >> "$app_build_gradle_path" << EOF
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+    }
+EOF
+    fi
+
+    cat >> "$app_build_gradle_path" << EOF
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+dependencies {
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.10")
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+EOF
+
+    # Add Firebase dependencies if enabled
+    if [ "$has_firebase" = "true" ]; then
+        cat >> "$app_build_gradle_path" << EOF
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-messaging")
+EOF
+    fi
+
+    cat >> "$app_build_gradle_path" << EOF
+}
+EOF
+
+    echo "Generated build.gradle.kts configuration"
+    return 0
+}
+
 update_gradle_files() {
     echo "Updating Gradle files..."
     
-    # Update build.gradle
-    sed -i '' "s/applicationId \".*\"/applicationId \"$PKG_NAME\"/" "$ANDROID_BUILD_GRADLE_PATH"
-    sed -i '' "s/versionCode .*/versionCode $VERSION_CODE/" "$ANDROID_BUILD_GRADLE_PATH"
-    sed -i '' "s/versionName \".*\"/versionName \"$VERSION_NAME\"/" "$ANDROID_BUILD_GRADLE_PATH"
+    # Check for Firebase and keystore
+    local has_firebase="false"
+    local has_keystore="false"
     
-    # Add Firebase dependencies if needed
     if [ "$PUSH_NOTIFY" = "true" ]; then
-        if ! grep -q "com.google.firebase" "$ANDROID_BUILD_GRADLE_PATH"; then
-            # Add Firebase BOM and dependencies
-            sed -i '' "/dependencies {/a\\
-    implementation platform('com.google.firebase:firebase-bom:32.7.0')\\
-    implementation 'com.google.firebase:firebase-analytics'\\
-    implementation 'com.google.firebase:firebase-messaging'\\
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.10'" "$ANDROID_BUILD_GRADLE_PATH"
-            
-            # Add Firebase plugin
-            sed -i '' "/plugins {/a\\
-    id 'com.google.gms.google-services'" "$ANDROID_BUILD_GRADLE_PATH"
-        fi
+        has_firebase="true"
     fi
+    
+    if [ -n "$KEY_STORE" ]; then
+        has_keystore="true"
+    fi
+    
+    # Generate appropriate build.gradle.kts
+    generate_build_gradle_kts "$has_firebase" "$has_keystore"
     
     # Update settings.gradle to use only one settings file
     if [ -f "android/settings.gradle" ] && [ -f "android/settings.gradle.kts" ]; then
-        rm "android/settings.gradle.kts"
+        rm "android/settings.gradle"
     fi
     
-    # Update root build.gradle
-    local root_build_gradle="android/build.gradle"
-    if [ -f "$root_build_gradle" ]; then
-        # Add Google services plugin and Kotlin version
-        if ! grep -q "com.google.gms.google-services" "$root_build_gradle"; then
-            sed -i '' "/buildscript {/a\\
-    ext.kotlin_version = '1.8.10'\\
-    dependencies {\\
-        classpath 'com.google.gms:google-services:4.4.0'\\
-        classpath \"org.jetbrains.kotlin:kotlin-gradle-plugin:\$kotlin_version\"\\
-    }" "$root_build_gradle"
-        fi
+    # Create settings.gradle.kts if it doesn't exist
+    local settings_gradle_path="android/settings.gradle.kts"
+    if [ ! -f "$settings_gradle_path" ]; then
+        cat > "$settings_gradle_path" << EOF
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = "android"
+include(":app")
+EOF
     fi
     
     return 0
