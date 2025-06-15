@@ -51,8 +51,14 @@ send_email_notification() {
         return 0
     fi
     
-    # Send email using Python script
-    python3 "${SCRIPT_DIR}/../email_notification.py" "$type" "$subject" "$message"
+    # Send email using Python script with proper error handling
+    if ! python3 "${SCRIPT_DIR}/../email_notification.py" "$type" "$subject" "$message"; then
+        echo "❌ Failed to send email notification"
+        echo "💡 Please check your SMTP configuration"
+        return 1
+    fi
+    
+    return 0
 }
 
 # Function to send success notification

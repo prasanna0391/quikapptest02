@@ -399,6 +399,9 @@ update_gradle_files() {
     # Create settings.gradle.kts if it doesn't exist
     local settings_gradle_path="android/settings.gradle.kts"
     cat > "$settings_gradle_path" << EOF
+import java.util.Properties
+import java.io.File
+
 pluginManagement {
     repositories {
         google()
@@ -424,7 +427,7 @@ if (pluginsFile.exists()) {
     val plugins = Properties()
     pluginsFile.inputStream().use { plugins.load(it) }
     
-    plugins.forEach { (name, path) ->
+    plugins.entries.forEach { (name, path) ->
         val pluginDirectory = File(flutterProjectRoot, path.toString()).resolve("android")
         if (pluginDirectory.exists()) {
             include(":$name")
