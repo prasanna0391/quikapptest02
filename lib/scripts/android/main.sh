@@ -377,7 +377,7 @@ android {
         release {
             keyAlias "${KEY_ALIAS}"
             keyPassword "${KEY_PASSWORD}"
-            storeFile file("${KEY_STORE}")
+            storeFile file("keystore.jks")
             storePassword "${STORE_PASSWORD}"
         }
     }}
