@@ -230,152 +230,11 @@ handle_build_success() {
     exit 0
 }
 
-generate_build_gradle_kts() {
-    local has_firebase=$1
-    local has_keystore=$2
-    local build_gradle_path="android/build.gradle.kts"
-    
-    echo "Generating build.gradle.kts configuration..."
-    echo "Firebase: $has_firebase, Keystore: $has_keystore"
-    
-    # Create build.gradle.kts with appropriate configuration
-    cat > "$build_gradle_path" << EOF
-buildscript {
-    val kotlinVersion = "1.8.10"
-    
-    repositories {
-        google()
-        mavenCentral()
-    }
-    
-    dependencies {
-        classpath("com.android.tools.build:gradle:7.3.0")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:\$kotlinVersion")
-EOF
-
-    # Add Firebase if enabled
-    if [ "$has_firebase" = "true" ]; then
-        cat >> "$build_gradle_path" << EOF
-        classpath("com.google.gms:google-services:4.4.0")
-EOF
-    fi
-
-    cat >> "$build_gradle_path" << EOF
-    }
-}
-
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-
-tasks.register("clean", Delete::class) {
-    delete(rootProject.buildDir)
-}
-EOF
-
-    # Create app-level build.gradle.kts
-    local app_build_gradle_path="android/app/build.gradle.kts"
-    cat > "$app_build_gradle_path" << EOF
-plugins {
-    id("com.android.application")
-    id("kotlin-android")
-    id("kotlin-kapt")
-    id("dev.flutter.flutter-gradle-plugin")
-EOF
-
-    # Add Firebase plugin if enabled
-    if [ "$has_firebase" = "true" ]; then
-        cat >> "$app_build_gradle_path" << EOF
-    id("com.google.gms.google-services")
-EOF
-    fi
-
-    cat >> "$app_build_gradle_path" << EOF
-}
-
-android {
-    namespace = "$PKG_NAME"
-    compileSdk = 34
-    
-    defaultConfig {
-        applicationId = "$PKG_NAME"
-        minSdk = 21
-        targetSdk = 34
-        versionCode = $VERSION_CODE
-        versionName = "$VERSION_NAME"
-    }
-EOF
-
-    # Add signing config if keystore is present
-    if [ "$has_keystore" = "true" ]; then
-        cat >> "$app_build_gradle_path" << EOF
-    signingConfigs {
-        create("release") {
-            storeFile = file("keystore.jks")
-            storePassword = System.getenv("KEY_STORE_PASSWORD")
-            keyAlias = System.getenv("KEY_ALIAS")
-            keyPassword = System.getenv("KEY_PASSWORD")
-        }
-    }
-    
-    buildTypes {
-        release {
-            isMinifyEnabled = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            signingConfig = signingConfigs.getByName("release")
-        }
-    }
-EOF
-    else
-        cat >> "$app_build_gradle_path" << EOF
-    buildTypes {
-        release {
-            isMinifyEnabled = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-        }
-    }
-EOF
-    fi
-
-    cat >> "$app_build_gradle_path" << EOF
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-
-dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.10")
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-EOF
-
-    # Add Firebase dependencies if enabled
-    if [ "$has_firebase" = "true" ]; then
-        cat >> "$app_build_gradle_path" << EOF
-    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-messaging")
-EOF
-    fi
-
-    cat >> "$app_build_gradle_path" << EOF
-}
-EOF
-
-    echo "Generated build.gradle.kts configuration"
-    return 0
-}
-
 update_gradle_files() {
     echo "Updating Gradle files..."
+    
+    # Remove any existing .kts files to avoid conflicts
+    find android -name "*.gradle.kts" -type f -delete
     
     # Check for Firebase and keystore
     local has_firebase="false"
@@ -389,20 +248,115 @@ update_gradle_files() {
         has_keystore="true"
     fi
     
-    # Generate appropriate build.gradle.kts
-    generate_build_gradle_kts "$has_firebase" "$has_keystore"
-    
-    # Update settings.gradle to use only one settings file
-    if [ -f "android/settings.gradle" ] && [ -f "android/settings.gradle.kts" ]; then
-        rm "android/settings.gradle"
-    fi
-    
-    # Create settings.gradle.kts if it doesn't exist
-    local settings_gradle_path="android/settings.gradle.kts"
-    cat > "$settings_gradle_path" << EOF
-import java.util.Properties
-import java.io.File
+    # Update root build.gradle
+    local root_build_gradle="android/build.gradle"
+    cat > "$root_build_gradle" << EOF
+buildscript {
+    ext.kotlin_version = '1.9.20'
+    repositories {
+        google()
+        mavenCentral()
+    }
 
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.2.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:\$kotlin_version"
+        classpath 'com.google.gms:google-services:4.4.0'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.buildDir = '../build'
+subprojects {
+    project.buildDir = "\${rootProject.buildDir}/\${project.name}"
+}
+EOF
+
+    # Update app build.gradle
+    local app_build_gradle="android/app/build.gradle"
+    cat > "$app_build_gradle" << EOF
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def flutterRoot = localProperties.getProperty('flutter.sdk')
+if (flutterRoot == null) {
+    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply from: "\$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+${has_firebase ? "apply plugin: 'com.google.gms.google-services'" : ""}
+
+android {
+    namespace "$PACKAGE_NAME"
+    compileSdkVersion flutter.compileSdkVersion
+    ndkVersion flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    defaultConfig {
+        applicationId "$PACKAGE_NAME"
+        minSdkVersion flutter.minSdkVersion
+        targetSdkVersion flutter.targetSdkVersion
+        versionCode $VERSION_CODE
+        versionName "$VERSION_NAME"
+    }
+
+    signingConfigs {
+        ${has_keystore ? "release {
+            storeFile file('$KEY_STORE')
+            storePassword '$KEY_STORE_PASSWORD'
+            keyAlias '$KEY_ALIAS'
+            keyPassword '$KEY_PASSWORD'
+        }" : ""}
+    }
+
+    buildTypes {
+        release {
+            signingConfig ${has_keystore ? "signingConfigs.release" : "null"}
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+flutter {
+    source '../..'
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:\$kotlin_version"
+    ${has_firebase ? "implementation platform('com.google.firebase:firebase-bom:32.7.0')
+    implementation 'com.google.firebase:firebase-messaging'" : ""}
+}
+EOF
+
+    # Update settings.gradle
+    local settings_gradle="android/settings.gradle"
+    cat > "$settings_gradle" << EOF
 pluginManagement {
     repositories {
         google()
@@ -419,34 +373,41 @@ dependencyResolutionManagement {
     }
 }
 
-include(":app")
+include ':app'
 
-// Flutter settings
-val flutterProjectRoot = rootProject.projectDir.parentFile
-val pluginsFile = File(flutterProjectRoot, ".flutter-plugins")
+def flutterProjectRoot = rootProject.projectDir.parentFile
+def pluginsFile = new File(flutterProjectRoot, '.flutter-plugins')
 if (pluginsFile.exists()) {
-    val plugins = Properties()
-    pluginsFile.inputStream().use { plugins.load(it) }
-    
-    plugins.entries.forEach { entry ->
-        val pluginName = entry.key.toString()
-        val pluginPath = entry.value.toString()
-        val pluginDirectory = File(flutterProjectRoot, pluginPath).resolve("android")
-        if (pluginDirectory.exists()) {
-            include(":\${pluginName}")
-            project(":\${pluginName}").projectDir = pluginDirectory
+    pluginsFile.withReader('UTF-8') { reader ->
+        def plugins = new Properties()
+        plugins.load(reader)
+        plugins.each { name, path ->
+            def pluginDirectory = new File(flutterProjectRoot, path).resolve('android')
+            if (pluginDirectory.exists()) {
+                include ":\$name"
+                project(":\$name").projectDir = pluginDirectory
+            }
         }
     }
 }
 
-// Include Flutter SDK
-val flutterSdkPath = System.getenv("FLUTTER_ROOT") ?: System.getProperty("user.home") + "/flutter"
-if (File(flutterSdkPath).exists()) {
-    include(":flutter")
-    project(":flutter").projectDir = File(flutterSdkPath)
+def flutterSdkPath = System.getenv('FLUTTER_ROOT') ?: System.getProperty('user.home') + '/flutter'
+if (new File(flutterSdkPath).exists()) {
+    include ':flutter'
+    project(':flutter').projectDir = new File(flutterSdkPath)
 }
 EOF
-    
+
+    # Create gradle.properties if it doesn't exist
+    local gradle_properties="android/gradle.properties"
+    if [ ! -f "$gradle_properties" ]; then
+        cat > "$gradle_properties" << EOF
+org.gradle.jvmargs=-Xmx1536M
+android.useAndroidX=true
+android.enableJetifier=true
+EOF
+    fi
+
     return 0
 }
 
@@ -490,14 +451,14 @@ build_android_app() {
     # Get dependencies
     flutter pub get
     
-    # Update Gradle wrapper
+    # Create/update Gradle wrapper
     cd android
     if [ ! -f "gradlew" ]; then
         echo "Creating Gradle wrapper..."
-        gradle wrapper --gradle-version 7.5
+        gradle wrapper --gradle-version 8.2
     else
         echo "Updating Gradle wrapper..."
-        ./gradlew wrapper --gradle-version 7.5
+        ./gradlew wrapper --gradle-version 8.2
     fi
     
     # Make gradlew executable
@@ -506,7 +467,6 @@ build_android_app() {
     # Verify Gradle wrapper
     if [ ! -f "gradlew" ]; then
         echo "Error: Failed to create/update Gradle wrapper"
-        cd ..
         return 1
     fi
     
@@ -615,12 +575,13 @@ build_android_app() {
     fi
     
     # Check build result
-    if [ $? -ne 0 ]; then
-        echo "Error: Build failed"
+    if [ $? -eq 0 ]; then
+        echo "Build completed successfully"
+        return 0
+    else
+        echo "Build failed"
         return 1
     fi
-    
-    return 0
 }
 
 # Main build process
