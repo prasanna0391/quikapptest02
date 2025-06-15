@@ -269,6 +269,12 @@ update_gradle_files() {
         classpath 'com.google.gms:google-services:4.4.0'\\
     }" "$root_build_gradle"
         fi
+        
+        # Update Kotlin version
+        if ! grep -q "kotlin_version" "$root_build_gradle"; then
+            sed -i '' "/buildscript {/a\\
+    ext.kotlin_version = '1.9.22'" "$root_build_gradle"
+        fi
     fi
     
     return 0
@@ -316,7 +322,24 @@ build_android_app() {
     
     # Update Gradle wrapper
     cd android
-    ./gradlew wrapper --gradle-version 8.2
+    if [ ! -f "gradlew" ]; then
+        echo "Creating Gradle wrapper..."
+        gradle wrapper --gradle-version 8.2
+    else
+        echo "Updating Gradle wrapper..."
+        ./gradlew wrapper --gradle-version 8.2
+    fi
+    
+    # Make gradlew executable
+    chmod +x gradlew
+    
+    # Verify Gradle wrapper
+    if [ ! -f "gradlew" ]; then
+        echo "Error: Failed to create/update Gradle wrapper"
+        cd ..
+        return 1
+    fi
+    
     cd ..
     
     # Build the app
