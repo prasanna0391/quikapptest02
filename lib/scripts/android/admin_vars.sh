@@ -59,6 +59,7 @@ export DOWNLOAD_RETRY_DELAY=5
 
 # Notification Configuration
 export NOTIFICATION_EMAIL_FROM="builds@example.com"
+export Notifi_E_ID="${Notifi_E_ID:-prasannasrie@gmail.com}"
 export NOTIFICATION_EMAIL_TO="team@example.com"
 export NOTIFICATION_EMAIL_SUBJECT="Android Build Notification"
 

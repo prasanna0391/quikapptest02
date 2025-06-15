@@ -283,6 +283,7 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("kotlin-kapt")
+    id("dev.flutter.flutter-gradle-plugin")
 EOF
 
     # Add Firebase plugin if enabled
@@ -427,11 +428,13 @@ if (pluginsFile.exists()) {
     val plugins = Properties()
     pluginsFile.inputStream().use { plugins.load(it) }
     
-    plugins.entries.forEach { (name, path) ->
-        val pluginDirectory = File(flutterProjectRoot, path.toString()).resolve("android")
+    plugins.entries.forEach { entry ->
+        val pluginName = entry.key.toString()
+        val pluginPath = entry.value.toString()
+        val pluginDirectory = File(flutterProjectRoot, pluginPath).resolve("android")
         if (pluginDirectory.exists()) {
-            include(":$name")
-            project(":$name").projectDir = pluginDirectory
+            include(":\${pluginName}")
+            project(":\${pluginName}").projectDir = pluginDirectory
         }
     }
 }

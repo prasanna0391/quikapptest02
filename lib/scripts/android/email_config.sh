@@ -20,7 +20,7 @@ export EMAIL_BCC=""
 # SMTP Configuration
 export EMAIL_SMTP_SERVER="smtp.gmail.com"
 export EMAIL_SMTP_PORT="587"
-export EMAIL_SMTP_USER="${API_EMAIL_ID:-prasannasrie@gmail.com}"
+export EMAIL_SMTP_USER="${Notifi_E_ID:-prasannasrie@gmail.com}"
 export EMAIL_SMTP_PASS="jbbf nzhm zoay lbwb"
 
 # Email Templates
