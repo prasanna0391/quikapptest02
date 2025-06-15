@@ -1,8 +1,8 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
 # Ensure we're using bash
-if [ -z "$BASH_VERSION" ]; then
+if [ -z "${BASH_VERSION:-}" ]; then
     exec /bin/bash "$0" "$@"
 fi
 
@@ -14,6 +14,45 @@ make_scripts_executable() {
     print_section "Making scripts executable"
     find "$SCRIPT_DIR/.." -type f -name "*.sh" -exec chmod +x {} \;
     echo "✅ All .sh files are now executable"
+    
+    # --- Clear Previous Build Files ---
+    echo "--- Clearing Previous Build Files ---"
+    echo "🧹 Cleaning Flutter build cache..."
+    flutter clean || {
+        echo "⚠️ Flutter clean failed, but continuing..."
+    }
+
+    echo "🗑️  Clearing output directory..."
+    OUTPUT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)/output"
+    if [ -d "$OUTPUT_DIR" ]; then
+        rm -rf "$OUTPUT_DIR"/* || {
+            echo "⚠️ Failed to clear output directory, but continuing..."
+        }
+        echo "✅ Cleared output directory"
+    else
+        mkdir -p "$OUTPUT_DIR" || {
+            echo "❌ Failed to create output directory"
+            return 1
+        }
+        echo "✅ Created output directory"
+    fi
+
+    echo "🗑️  Clearing Android build cache..."
+    if [ -d "android/app/build" ]; then
+        rm -rf android/app/build || {
+            echo "⚠️ Failed to clear Android build cache, but continuing..."
+        }
+        echo "✅ Cleared Android build cache"
+    fi
+
+    # Clear any old build.gradle files that might conflict with build.gradle.kts
+    if [ -f "android/app/build.gradle" ]; then
+        rm "android/app/build.gradle" || {
+            echo "⚠️ Failed to remove old build.gradle, but continuing..."
+        }
+        echo "✅ Removed conflicting android/app/build.gradle"
+    fi
+    echo ""
 }
 
 # Print section header
@@ -25,7 +64,7 @@ print_section() {
 if [ -f "${SCRIPT_DIR}/admin_vars.sh" ]; then
     source "${SCRIPT_DIR}/admin_vars.sh"
 else
-    echo "Error: admin_vars.sh not found in ${SCRIPT_DIR}"
+    echo "❌ Error: admin_vars.sh not found in ${SCRIPT_DIR}"
     exit 1
 fi
 
@@ -33,7 +72,7 @@ fi
 if [ -f "${SCRIPT_DIR}/../combined/download.sh" ]; then
     source "${SCRIPT_DIR}/../combined/download.sh"
 else
-    echo "Error: download.sh not found in ${SCRIPT_DIR}/../combined"
+    echo "❌ Error: download.sh not found in ${SCRIPT_DIR}/../combined"
     exit 1
 fi
 
@@ -41,7 +80,7 @@ fi
 if [ -f "${SCRIPT_DIR}/email_config.sh" ]; then
     source "${SCRIPT_DIR}/email_config.sh"
 else
-    echo "Error: email_config.sh not found in ${SCRIPT_DIR}"
+    echo "❌ Error: email_config.sh not found in ${SCRIPT_DIR}"
     exit 1
 fi
 
@@ -54,7 +93,7 @@ setup_build_environment() {
         source lib/scripts/android/admin_vars.sh
         echo "✅ Admin variables loaded successfully"
     else
-        echo "Error: admin_vars.sh not found"
+        echo "❌ Error: admin_vars.sh not found"
         return 1
     fi
     
@@ -66,7 +105,7 @@ setup_build_environment() {
     
     # Validate required variables
     if [ -z "${APP_NAME}" ] || [ -z "${PACKAGE_NAME}" ] || [ -z "${VERSION_NAME}" ] || [ -z "${VERSION_CODE}" ]; then
-        echo "Error: Required variables not set"
+        echo "❌ Error: Required variables not set"
         echo "APP_NAME: ${APP_NAME}"
         echo "PACKAGE_NAME: ${PACKAGE_NAME}"
         echo "VERSION_NAME: ${VERSION_NAME}"
@@ -81,10 +120,22 @@ setup_build_environment() {
     ANDROID_VALUES_DIR="${ANDROID_VALUES_DIR:-android/app/src/main/res/values}"
     
     # Create necessary directories
-    mkdir -p "${ASSETS_DIR}"
-    mkdir -p "${ANDROID_MIPMAP_DIR}"
-    mkdir -p "${ANDROID_DRAWABLE_DIR}"
-    mkdir -p "${ANDROID_VALUES_DIR}"
+    mkdir -p "${ASSETS_DIR}" || {
+        echo "❌ Failed to create assets directory"
+        return 1
+    }
+    mkdir -p "${ANDROID_MIPMAP_DIR}" || {
+        echo "❌ Failed to create mipmap directory"
+        return 1
+    }
+    mkdir -p "${ANDROID_DRAWABLE_DIR}" || {
+        echo "❌ Failed to create drawable directory"
+        return 1
+    }
+    mkdir -p "${ANDROID_VALUES_DIR}" || {
+        echo "❌ Failed to create values directory"
+        return 1
+    }
     
     echo "✅ Build environment setup completed"
     return 0
@@ -94,7 +145,10 @@ download_splash_assets() {
     echo "Downloading splash assets..."
     
     # Create assets directory if it doesn't exist
-    mkdir -p "${ASSETS_DIR}"
+    mkdir -p "${ASSETS_DIR}" || {
+        echo "❌ Failed to create assets directory"
+        return 1
+    }
     
     # Function to download and verify asset
     download_asset() {
@@ -102,13 +156,15 @@ download_splash_assets() {
         local output_path="$2"
         local asset_name="$3"
         
-        if [ -n "${url}" ]; then
+        if [ -n "${url:-}" ]; then
             echo "Downloading ${asset_name} from ${url}..."
             
             # Remove existing file if it exists
             if [ -f "${output_path}" ]; then
                 echo "Removing existing ${asset_name}..."
-                rm -f "${output_path}"
+                rm -f "${output_path}" || {
+                    echo "⚠️ Failed to remove existing ${asset_name}, but continuing..."
+                }
             fi
             
             # Download the asset
@@ -133,21 +189,27 @@ download_splash_assets() {
     
     # Check and download logo
     if [ -n "${LOGO_URL:-}" ]; then
-        download_asset "${LOGO_URL}" "${ASSETS_DIR}/logo.png" "Logo"
+        download_asset "${LOGO_URL}" "${ASSETS_DIR}/logo.png" "Logo" || {
+            echo "⚠️ Failed to download logo, but continuing..."
+        }
     else
         echo "⚠️ LOGO_URL not set in environment variables"
     fi
     
     # Check and download splash screen
     if [ -n "${SPLASH:-}" ]; then
-        download_asset "${SPLASH}" "${ASSETS_DIR}/splash.png" "Splash Screen"
+        download_asset "${SPLASH}" "${ASSETS_DIR}/splash.png" "Splash Screen" || {
+            echo "⚠️ Failed to download splash screen, but continuing..."
+        }
     else
         echo "⚠️ SPLASH not set in environment variables"
     fi
     
     # Check and download splash background (optional)
     if [ -n "${SPLASH_BG:-}" ]; then
-        download_asset "${SPLASH_BG}" "${ASSETS_DIR}/splash_bg.png" "Splash Background"
+        download_asset "${SPLASH_BG}" "${ASSETS_DIR}/splash_bg.png" "Splash Background" || {
+            echo "⚠️ Failed to download splash background, but continuing..."
+        }
     else
         echo "ℹ️ SPLASH_BG not set in environment variables (optional)"
     fi
@@ -155,6 +217,7 @@ download_splash_assets() {
     # Verify at least one asset was downloaded
     if [ ! -f "${ASSETS_DIR}/logo.png" ] && [ ! -f "${ASSETS_DIR}/splash.png" ]; then
         echo "❌ No required assets were downloaded"
+        return 1
     fi
     
     echo "✅ Asset download process completed"
@@ -166,12 +229,15 @@ generate_launcher_icons() {
     
     # Check if flutter_launcher_icons is in pubspec.yaml
     if ! grep -q "flutter_launcher_icons" pubspec.yaml; then
-        echo "Error: flutter_launcher_icons not found in pubspec.yaml"
+        echo "❌ Error: flutter_launcher_icons not found in pubspec.yaml"
         return 1
     fi
     
     # Run icon generation
-    flutter pub run flutter_launcher_icons:main
+    flutter pub run flutter_launcher_icons:main || {
+        echo "❌ Failed to generate launcher icons"
+        return 1
+    }
     
     # Verify icons were generated
     local icon_paths=(
@@ -185,13 +251,13 @@ generate_launcher_icons() {
     local missing_icons=0
     for icon_path in "${icon_paths[@]}"; do
         if [ ! -f "$icon_path" ]; then
-            echo "Error: Missing icon at $icon_path"
+            echo "❌ Error: Missing icon at $icon_path"
             missing_icons=$((missing_icons + 1))
         fi
     done
     
     if [ $missing_icons -gt 0 ]; then
-        echo "Error: $missing_icons icons are missing"
+        echo "❌ Error: $missing_icons icons are missing"
         return 1
     fi
     
@@ -204,35 +270,45 @@ setup_firebase() {
     
     # Check if Firebase is required
     if [ "${PUSH_NOTIFY:-false}" != "true" ]; then
-        echo "Firebase integration not required (PUSH_NOTIFY is false)"
+        echo "ℹ️ Firebase integration not required (PUSH_NOTIFY is false)"
         return 0
     fi
     
     # Check if Firebase config is provided
     if [ -z "${firebase_config_android:-}" ]; then
-        echo "Error: Firebase configuration not provided"
+        echo "❌ Error: Firebase configuration not provided"
         return 1
     fi
     
     # Remove any existing google-services.json
-    rm -f "${ANDROID_FIREBASE_CONFIG_PATH:-android/app/google-services.json}"
+    rm -f "${ANDROID_FIREBASE_CONFIG_PATH:-android/app/google-services.json}" || {
+        echo "⚠️ Failed to remove existing google-services.json, but continuing..."
+    }
     
     # Create Firebase config directory
-    mkdir -p "$(dirname "${ANDROID_FIREBASE_CONFIG_PATH:-android/app/google-services.json}")"
+    mkdir -p "$(dirname "${ANDROID_FIREBASE_CONFIG_PATH:-android/app/google-services.json}")" || {
+        echo "❌ Failed to create Firebase config directory"
+        return 1
+    }
     
     # Write Firebase config to file
-    echo "${firebase_config_android}" > "${ANDROID_FIREBASE_CONFIG_PATH:-android/app/google-services.json}"
+    echo "${firebase_config_android}" > "${ANDROID_FIREBASE_CONFIG_PATH:-android/app/google-services.json}" || {
+        echo "❌ Failed to write Firebase configuration file"
+        return 1
+    }
     
     # Copy to assets if needed
-    cp "${ANDROID_FIREBASE_CONFIG_PATH:-android/app/google-services.json}" "${ASSETS_DIR:-assets}/google-services.json"
+    cp "${ANDROID_FIREBASE_CONFIG_PATH:-android/app/google-services.json}" "${ASSETS_DIR:-assets}/google-services.json" || {
+        echo "⚠️ Failed to copy Firebase config to assets, but continuing..."
+    }
     
     # Verify Firebase config was created
     if [ ! -f "${ANDROID_FIREBASE_CONFIG_PATH:-android/app/google-services.json}" ]; then
-        echo "Error: Failed to create Firebase configuration file"
+        echo "❌ Error: Failed to create Firebase configuration file"
         return 1
     fi
     
-    echo "Firebase configuration setup completed successfully"
+    echo "✅ Firebase configuration setup completed successfully"
     return 0
 }
 
@@ -241,22 +317,30 @@ setup_keystore() {
     
     # Check if keystore is required
     if [ -z "${KEY_STORE:-}" ]; then
-        echo "Keystore not provided, using debug keystore"
+        echo "ℹ️ Keystore not provided, using debug keystore"
         return 0
     fi
     
     # Create keystore directory
-    mkdir -p "$(dirname "${ANDROID_KEYSTORE_PATH:-android/app/keystore.jks}")"
+    mkdir -p "$(dirname "${ANDROID_KEYSTORE_PATH:-android/app/keystore.jks}")" || {
+        echo "❌ Failed to create keystore directory"
+        return 1
+    }
     
     # Remove any existing keystore
-    rm -f "${ANDROID_KEYSTORE_PATH:-android/app/keystore.jks}"
+    rm -f "${ANDROID_KEYSTORE_PATH:-android/app/keystore.jks}" || {
+        echo "⚠️ Failed to remove existing keystore, but continuing..."
+    }
     
     # Write keystore to file
-    echo "${KEY_STORE}" > "${ANDROID_KEYSTORE_PATH:-android/app/keystore.jks}"
+    echo "${KEY_STORE}" > "${ANDROID_KEYSTORE_PATH:-android/app/keystore.jks}" || {
+        echo "❌ Failed to write keystore file"
+        return 1
+    }
     
     # Verify keystore was created
     if [ ! -f "${ANDROID_KEYSTORE_PATH:-android/app/keystore.jks}" ]; then
-        echo "Error: Failed to create keystore file"
+        echo "❌ Error: Failed to create keystore file"
         return 1
     fi
     
@@ -268,18 +352,18 @@ keyAlias=${KEY_ALIAS:-}
 keyPassword=${KEY_PASSWORD:-}
 EOF
     
-    echo "Keystore setup completed successfully"
+    echo "✅ Keystore setup completed successfully"
     return 0
 }
 
 # Email notification functions
 handle_build_error() {
     local error_message="$1"
-    echo "Build Error: $error_message"
+    echo "❌ Build Error: $error_message"
     
     # Send error notification if email is configured
     if [ -n "${EMAIL_ID:-}" ]; then
-        echo "Sending error notification to ${EMAIL_ID}"
+        echo "📧 Sending error notification to ${EMAIL_ID}"
         if [ -f "lib/scripts/android/email_config.sh" ]; then
             source "lib/scripts/android/email_config.sh"
             send_email_notification "error" "Build Failed" "$error_message"
@@ -312,7 +396,7 @@ handle_build_success() {
     
     # Send success notification
     if [ -n "${EMAIL_ID:-}" ]; then
-        echo "Sending success notification..."
+        echo "📧 Sending success notification..."
         if [ -f "lib/scripts/android/email_config.sh" ]; then
             source "lib/scripts/android/email_config.sh"
             send_email_notification "success" "$build_status" "$build_paths"
@@ -330,6 +414,14 @@ handle_build_success() {
 generate_build_gradle_kts() {
     local has_firebase="$1"
     local has_keystore="$2"
+    
+    # Clear any old build.gradle files that might conflict with build.gradle.kts
+    if [ -f "android/app/build.gradle" ]; then
+        rm "android/app/build.gradle" || {
+            echo "⚠️ Failed to remove old build.gradle, but continuing..."
+        }
+        echo "✅ Removed conflicting android/app/build.gradle"
+    fi
     
     # Generate root build.gradle
     cat > "android/build.gradle" << EOF
@@ -547,7 +639,10 @@ update_gradle_files() {
     fi
     
     # Generate appropriate build.gradle.kts
-    generate_build_gradle_kts "$has_firebase" "$has_keystore"
+    generate_build_gradle_kts "$has_firebase" "$has_keystore" || {
+        echo "❌ Failed to generate Gradle files"
+        return 1
+    }
     
     return 0
 }
@@ -558,25 +653,25 @@ verify_requirements() {
     
     # Check Flutter environment
     if ! command -v flutter &> /dev/null; then
-        echo "Error: Flutter not found"
+        echo "❌ Error: Flutter not found"
         return 1
     fi
     
     # Check Android SDK
     if [ -z "${ANDROID_HOME:-}" ]; then
-        echo "Error: ANDROID_HOME not set"
+        echo "❌ Error: ANDROID_HOME not set"
         return 1
     fi
     
     # Check Firebase config if needed
     if [ "${PUSH_NOTIFY:-false}" = "true" ] && [ ! -f "${ANDROID_FIREBASE_CONFIG_PATH:-android/app/google-services.json}" ]; then
-        echo "Error: Firebase config not found"
+        echo "❌ Error: Firebase config not found"
         return 1
     fi
     
     # Check keystore if provided
     if [ -n "${KEY_STORE:-}" ] && [ ! -f "${ANDROID_KEYSTORE_PATH:-android/app/keystore.jks}" ]; then
-        echo "Error: Keystore not found"
+        echo "❌ Error: Keystore not found"
         return 1
     fi
     
@@ -587,20 +682,34 @@ build_android_app() {
     echo "Building Android app..."
     
     # Clean the project
-    flutter clean
+    flutter clean || {
+        echo "⚠️ Flutter clean failed, but continuing..."
+    }
     
     # Get dependencies
-    flutter pub get
+    flutter pub get || {
+        echo "❌ Failed to get dependencies"
+        return 1
+    }
     
     # Create android directory if it doesn't exist
-    mkdir -p android
+    mkdir -p android || {
+        echo "❌ Failed to create android directory"
+        return 1
+    }
     
     # Update Gradle files
-    update_gradle_files
+    update_gradle_files || {
+        echo "❌ Failed to update Gradle files"
+        return 1
+    }
     
     # Create Gradle wrapper with specific version
     echo "Creating Gradle wrapper..."
-    cd android
+    cd android || {
+        echo "❌ Failed to change to android directory"
+        return 1
+    }
     
     # Remove existing wrapper if it exists
     rm -f gradlew
@@ -608,7 +717,11 @@ build_android_app() {
     rm -rf gradle/wrapper
     
     # Create wrapper directory
-    mkdir -p gradle/wrapper
+    mkdir -p gradle/wrapper || {
+        echo "❌ Failed to create wrapper directory"
+        cd ..
+        return 1
+    }
     
     # Create gradle-wrapper.properties
     cat > gradle/wrapper/gradle-wrapper.properties << EOF
@@ -620,7 +733,11 @@ distributionUrl=https\://services.gradle.org/distributions/gradle-8.2-all.zip
 EOF
     
     # Download Gradle wrapper
-    curl -o gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/v8.2.0/gradle/wrapper/gradle-wrapper.jar
+    curl -o gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/v8.2.0/gradle/wrapper/gradle-wrapper.jar || {
+        echo "❌ Failed to download Gradle wrapper"
+        cd ..
+        return 1
+    }
     
     # Create gradlew script
     cat > gradlew << EOF
@@ -810,7 +927,11 @@ exec "\$JAVACMD" "\$@"
 EOF
     
     # Make gradlew executable
-    chmod +x gradlew
+    chmod +x gradlew || {
+        echo "❌ Failed to make gradlew executable"
+        cd ..
+        return 1
+    }
     
     # Verify wrapper creation
     if [ ! -f "gradlew" ] || [ ! -f "gradle/wrapper/gradle-wrapper.jar" ]; then
@@ -849,28 +970,31 @@ EOF
     if [ "${has_keystore}" = "true" ]; then
         # Build both APK and AAB for release
         echo "Building release APK..."
-        flutter build apk --release --verbose --target lib/main.dart $dart_defines
+        flutter build apk --release --verbose --target lib/main.dart $dart_defines || {
+            echo "❌ Failed to build release APK"
+            return 1
+        }
         
-        if [ $? -eq 0 ]; then
-            echo "Building release AAB..."
-            flutter build appbundle --release --verbose --target lib/main.dart $dart_defines
-            
-            if [ $? -eq 0 ]; then
-                local build_paths="build/app/outputs/flutter-apk/app-release.apk
+        echo "Building release AAB..."
+        flutter build appbundle --release --verbose --target lib/main.dart $dart_defines || {
+            echo "❌ Failed to build release AAB"
+            return 1
+        }
+        
+        local build_paths="build/app/outputs/flutter-apk/app-release.apk
 build/app/outputs/bundle/release/app-release.aab"
-                handle_build_success "Release" "$build_paths" "$has_keystore" "$has_push"
-                return 0
-            fi
-        fi
+        handle_build_success "Release" "$build_paths" "$has_keystore" "$has_push"
+        return 0
     else
         # Build only APK for release
         echo "Building release APK..."
-        flutter build apk --release --verbose --target lib/main.dart $dart_defines
+        flutter build apk --release --verbose --target lib/main.dart $dart_defines || {
+            echo "❌ Failed to build release APK"
+            return 1
+        }
         
-        if [ $? -eq 0 ]; then
-            handle_build_success "Release" "build/app/outputs/flutter-apk/app-release.apk" "$has_keystore" "$has_push"
-            return 0
-        fi
+        handle_build_success "Release" "build/app/outputs/flutter-apk/app-release.apk" "$has_keystore" "$has_push"
+        return 0
     fi
     
     handle_build_error "Build failed"
