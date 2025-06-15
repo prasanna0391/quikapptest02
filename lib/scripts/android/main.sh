@@ -58,16 +58,16 @@ setup_build_environment() {
     fi
     
     # Validate required variables
-    if [ -z "$APP_NAME" ] || [ -z "$PKG_NAME" ] || [ -z "$VERSION_NAME" ] || [ -z "$VERSION_CODE" ]; then
+    if [ -z "${APP_NAME:-}" ] || [ -z "${PACKAGE_NAME:-}" ] || [ -z "${VERSION_NAME:-}" ] || [ -z "${VERSION_CODE:-}" ]; then
         echo "Error: Required variables not set"
         return 1
     fi
     
     # Create necessary directories
-    mkdir -p "$ASSETS_DIR"
-    mkdir -p "$ANDROID_MIPMAP_DIR"
-    mkdir -p "$ANDROID_DRAWABLE_DIR"
-    mkdir -p "$ANDROID_VALUES_DIR"
+    mkdir -p "${ASSETS_DIR:-assets}"
+    mkdir -p "${ANDROID_MIPMAP_DIR:-android/app/src/main/res/mipmap}"
+    mkdir -p "${ANDROID_DRAWABLE_DIR:-android/app/src/main/res/drawable}"
+    mkdir -p "${ANDROID_VALUES_DIR:-android/app/src/main/res/values}"
     
     return 0
 }
@@ -76,18 +76,18 @@ download_splash_assets() {
     echo "Downloading splash assets..."
     
     # Download logo if provided
-    if [ -n "$LOGO_URL" ]; then
-        curl -L "$LOGO_URL" -o "$ASSETS_DIR/logo.png"
+    if [ -n "${LOGO_URL:-}" ]; then
+        curl -L "${LOGO_URL}" -o "${ASSETS_DIR:-assets}/logo.png"
     fi
     
     # Download splash screen if provided
-    if [ -n "$SPLASH" ]; then
-        curl -L "$SPLASH" -o "$ASSETS_DIR/splash.png"
+    if [ -n "${SPLASH:-}" ]; then
+        curl -L "${SPLASH}" -o "${ASSETS_DIR:-assets}/splash.png"
     fi
     
     # Download splash background if provided
-    if [ -n "$SPLASH_BG" ]; then
-        curl -L "$SPLASH_BG" -o "$ASSETS_DIR/splash_bg.png"
+    if [ -n "${SPLASH_BG:-}" ]; then
+        curl -L "${SPLASH_BG}" -o "${ASSETS_DIR:-assets}/splash_bg.png"
     fi
     
     return 0
@@ -107,11 +107,11 @@ generate_launcher_icons() {
     
     # Verify icons were generated
     local icon_paths=(
-        "$ANDROID_MIPMAP_DIR-hdpi/ic_launcher.png"
-        "$ANDROID_MIPMAP_DIR-mdpi/ic_launcher.png"
-        "$ANDROID_MIPMAP_DIR-xhdpi/ic_launcher.png"
-        "$ANDROID_MIPMAP_DIR-xxhdpi/ic_launcher.png"
-        "$ANDROID_MIPMAP_DIR-xxxhdpi/ic_launcher.png"
+        "${ANDROID_MIPMAP_DIR:-android/app/src/main/res/mipmap}-hdpi/ic_launcher.png"
+        "${ANDROID_MIPMAP_DIR:-android/app/src/main/res/mipmap}-mdpi/ic_launcher.png"
+        "${ANDROID_MIPMAP_DIR:-android/app/src/main/res/mipmap}-xhdpi/ic_launcher.png"
+        "${ANDROID_MIPMAP_DIR:-android/app/src/main/res/mipmap}-xxhdpi/ic_launcher.png"
+        "${ANDROID_MIPMAP_DIR:-android/app/src/main/res/mipmap}-xxxhdpi/ic_launcher.png"
     )
     
     local missing_icons=0
@@ -135,31 +135,31 @@ setup_firebase() {
     echo "Setting up Firebase configuration..."
     
     # Check if Firebase is required
-    if [ "$PUSH_NOTIFY" != "true" ]; then
+    if [ "${PUSH_NOTIFY:-false}" != "true" ]; then
         echo "Firebase integration not required (PUSH_NOTIFY is false)"
         return 0
     fi
     
     # Check if Firebase config is provided
-    if [ -z "$firebase_config_android" ]; then
+    if [ -z "${firebase_config_android:-}" ]; then
         echo "Error: Firebase configuration not provided"
         return 1
     fi
     
     # Remove any existing google-services.json
-    rm -f "$ANDROID_FIREBASE_CONFIG_PATH"
+    rm -f "${ANDROID_FIREBASE_CONFIG_PATH:-android/app/google-services.json}"
     
     # Create Firebase config directory
-    mkdir -p "$(dirname "$ANDROID_FIREBASE_CONFIG_PATH")"
+    mkdir -p "$(dirname "${ANDROID_FIREBASE_CONFIG_PATH:-android/app/google-services.json}")"
     
     # Write Firebase config to file
-    echo "$firebase_config_android" > "$ANDROID_FIREBASE_CONFIG_PATH"
+    echo "${firebase_config_android}" > "${ANDROID_FIREBASE_CONFIG_PATH:-android/app/google-services.json}"
     
     # Copy to assets if needed
-    cp "$ANDROID_FIREBASE_CONFIG_PATH" "$ASSETS_DIR/google-services.json"
+    cp "${ANDROID_FIREBASE_CONFIG_PATH:-android/app/google-services.json}" "${ASSETS_DIR:-assets}/google-services.json"
     
     # Verify Firebase config was created
-    if [ ! -f "$ANDROID_FIREBASE_CONFIG_PATH" ]; then
+    if [ ! -f "${ANDROID_FIREBASE_CONFIG_PATH:-android/app/google-services.json}" ]; then
         echo "Error: Failed to create Firebase configuration file"
         return 1
     fi
@@ -172,32 +172,32 @@ setup_keystore() {
     echo "Setting up Android keystore..."
     
     # Check if keystore is required
-    if [ -z "$KEY_STORE" ]; then
+    if [ -z "${KEY_STORE:-}" ]; then
         echo "Keystore not provided, using debug keystore"
         return 0
     fi
     
     # Create keystore directory
-    mkdir -p "$(dirname "$ANDROID_KEYSTORE_PATH")"
+    mkdir -p "$(dirname "${ANDROID_KEYSTORE_PATH:-android/app/keystore.jks}")"
     
     # Remove any existing keystore
-    rm -f "$ANDROID_KEYSTORE_PATH"
+    rm -f "${ANDROID_KEYSTORE_PATH:-android/app/keystore.jks}"
     
     # Write keystore to file
-    echo "$KEY_STORE" > "$ANDROID_KEYSTORE_PATH"
+    echo "${KEY_STORE}" > "${ANDROID_KEYSTORE_PATH:-android/app/keystore.jks}"
     
     # Verify keystore was created
-    if [ ! -f "$ANDROID_KEYSTORE_PATH" ]; then
+    if [ ! -f "${ANDROID_KEYSTORE_PATH:-android/app/keystore.jks}" ]; then
         echo "Error: Failed to create keystore file"
         return 1
     fi
     
     # Create key.properties file
-    cat > "$ANDROID_KEY_PROPERTIES_PATH" << EOF
+    cat > "${ANDROID_KEY_PROPERTIES_PATH:-android/key.properties}" << EOF
 storeFile=keystore.jks
-storePassword=$CM_KEYSTORE_PASSWORD
-keyAlias=$CM_KEY_ALIAS
-keyPassword=$CM_KEY_PASSWORD
+storePassword=${STORE_PASSWORD:-}
+keyAlias=${KEY_ALIAS:-}
+keyPassword=${KEY_PASSWORD:-}
 EOF
     
     echo "Keystore setup completed successfully"
@@ -210,9 +210,14 @@ handle_build_error() {
     echo "Build Error: $error_message"
     
     # Send error notification if email is configured
-    if [ -n "$EMAIL_ID" ]; then
-        echo "Sending error notification to $EMAIL_ID"
-        python3 lib/scripts/email_notification.py error "Build Failed" "$error_message"
+    if [ -n "${EMAIL_ID:-}" ]; then
+        echo "Sending error notification to ${EMAIL_ID}"
+        if [ -f "lib/scripts/android/email_config.sh" ]; then
+            source "lib/scripts/android/email_config.sh"
+            send_email_notification "error" "Build Failed" "$error_message"
+        else
+            echo "❌ Email configuration not found"
+        fi
     fi
     
     exit 1
@@ -231,14 +236,14 @@ handle_build_success() {
     build_status+="- Build Type: Release\n"
     build_status+="- Push Notification: ${has_push:-No}\n"
     build_status+="- Keystore: ${has_keystore:-No}\n"
-    if [ "$has_keystore" = "true" ]; then
+    if [ "${has_keystore:-false}" = "true" ]; then
         build_status+="- Output: APK, AAB\n"
     else
         build_status+="- Output: APK\n"
     fi
     
     # Send success notification
-    if [ -n "$EMAIL_ID" ]; then
+    if [ -n "${EMAIL_ID:-}" ]; then
         echo "Sending success notification..."
         if [ -f "lib/scripts/android/email_config.sh" ]; then
             source "lib/scripts/android/email_config.sh"
@@ -424,6 +429,23 @@ if (new File(flutterSdkPath).exists()) {
 }
 EOF
 
+    # Create gradle.properties
+    cat > "android/gradle.properties" << EOF
+org.gradle.jvmargs=-Xmx1536M
+android.useAndroidX=true
+android.enableJetifier=true
+EOF
+
+    # Create gradle-wrapper.properties
+    mkdir -p android/gradle/wrapper
+    cat > "android/gradle/wrapper/gradle-wrapper.properties" << EOF
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.2-all.zip
+EOF
+
     return 0
 }
 
@@ -434,66 +456,16 @@ update_gradle_files() {
     local has_firebase="false"
     local has_keystore="false"
     
-    if [ "$PUSH_NOTIFY" = "true" ]; then
+    if [ "${PUSH_NOTIFY:-false}" = "true" ]; then
         has_firebase="true"
     fi
     
-    if [ -n "$KEY_STORE" ]; then
+    if [ -n "${KEY_STORE:-}" ]; then
         has_keystore="true"
     fi
     
     # Generate appropriate build.gradle.kts
     generate_build_gradle_kts "$has_firebase" "$has_keystore"
-    
-    # Update settings.gradle to use only one settings file
-    if [ -f "android/settings.gradle" ] && [ -f "android/settings.gradle.kts" ]; then
-        rm "android/settings.gradle"
-    fi
-    
-    # Create settings.gradle if it doesn't exist
-    local settings_gradle_path="android/settings.gradle"
-    cat > "$settings_gradle_path" << EOF
-pluginManagement {
-    repositories {
-        google()
-        mavenCentral()
-        gradlePluginPortal()
-    }
-}
-
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-
-include ':app'
-
-// Flutter settings
-def flutterProjectRoot = rootProject.projectDir.parentFile
-def pluginsFile = new File(flutterProjectRoot, '.flutter-plugins')
-if (pluginsFile.exists()) {
-    def plugins = new Properties()
-    pluginsFile.withInputStream { plugins.load(it) }
-    
-    plugins.each { name, path ->
-        def pluginDirectory = new File(new File(flutterProjectRoot, path), 'android')
-        if (pluginDirectory.exists()) {
-            include ":\${name}"
-            project(":\${name}").projectDir = pluginDirectory
-        }
-    }
-}
-
-// Include Flutter SDK
-def flutterSdkPath = System.getenv('FLUTTER_ROOT') ?: System.getProperty('user.home') + '/flutter'
-if (new File(flutterSdkPath).exists()) {
-    include ':flutter'
-    project(':flutter').projectDir = new File(flutterSdkPath)
-}
-EOF
     
     return 0
 }
@@ -509,19 +481,19 @@ verify_requirements() {
     fi
     
     # Check Android SDK
-    if [ -z "$ANDROID_HOME" ]; then
+    if [ -z "${ANDROID_HOME:-}" ]; then
         echo "Error: ANDROID_HOME not set"
         return 1
     fi
     
     # Check Firebase config if needed
-    if [ "$PUSH_NOTIFY" = "true" ] && [ ! -f "$ANDROID_FIREBASE_CONFIG_PATH" ]; then
+    if [ "${PUSH_NOTIFY:-false}" = "true" ] && [ ! -f "${ANDROID_FIREBASE_CONFIG_PATH:-android/app/google-services.json}" ]; then
         echo "Error: Firebase config not found"
         return 1
     fi
     
     # Check keystore if provided
-    if [ -n "$KEY_STORE" ] && [ ! -f "$ANDROID_KEYSTORE_PATH" ]; then
+    if [ -n "${KEY_STORE:-}" ] && [ ! -f "${ANDROID_KEYSTORE_PATH:-android/app/keystore.jks}" ]; then
         echo "Error: Keystore not found"
         return 1
     fi
@@ -541,18 +513,14 @@ build_android_app() {
     # Create android directory if it doesn't exist
     mkdir -p android
     
-    # Check if gradlew exists
-    if [ ! -f "android/gradlew" ]; then
-        echo "Creating Gradle wrapper..."
-        cd android
-        gradle wrapper --gradle-version 8.2 --distribution-type all
-        cd ..
-    else
-        echo "Updating Gradle wrapper..."
-        cd android
-        ./gradlew wrapper --gradle-version 8.2 --distribution-type all
-        cd ..
-    fi
+    # Update Gradle files
+    update_gradle_files
+    
+    # Create Gradle wrapper
+    echo "Creating Gradle wrapper..."
+    cd android
+    gradle wrapper --gradle-version 8.2 --distribution-type all
+    cd ..
     
     # Make gradlew executable
     if [ -f "android/gradlew" ]; then
@@ -562,35 +530,32 @@ build_android_app() {
         return 1
     fi
     
-    # Update Gradle files
-    update_gradle_files
-    
     # Determine build type and keystore presence
     local has_keystore="false"
-    if [ -n "$KEY_STORE" ]; then
+    if [ -n "${KEY_STORE:-}" ]; then
         has_keystore="true"
     fi
     
     local has_push="false"
-    if [ "$PUSH_NOTIFY" = "true" ]; then
+    if [ "${PUSH_NOTIFY:-false}" = "true" ]; then
         has_push="true"
     fi
     
     # Common Dart defines for all builds
-    local dart_defines="--dart-define=APP_NAME=\"$APP_NAME\" \
-        --dart-define=PACKAGE_NAME=\"$PACKAGE_NAME\" \
-        --dart-define=VERSION_NAME=\"$VERSION_NAME\" \
-        --dart-define=VERSION_CODE=\"$VERSION_CODE\" \
-        --dart-define=IS_PULLDOWN=\"$IS_PULLDOWN\" \
-        --dart-define=LOGO_URL=\"$LOGO_URL\" \
-        --dart-define=IS_DEEPLINK=\"$IS_DEEPLINK\" \
-        --dart-define=IS_LOAD_IND=\"$IS_LOAD_IND\" \
-        --dart-define=IS_CALENDAR=\"$IS_CALENDAR\" \
-        --dart-define=IS_NOTIFICATION=\"$IS_NOTIFICATION\" \
-        --dart-define=IS_STORAGE=\"$IS_STORAGE\""
+    local dart_defines="--dart-define=APP_NAME=\"${APP_NAME}\" \
+        --dart-define=PACKAGE_NAME=\"${PACKAGE_NAME}\" \
+        --dart-define=VERSION_NAME=\"${VERSION_NAME}\" \
+        --dart-define=VERSION_CODE=\"${VERSION_CODE}\" \
+        --dart-define=IS_PULLDOWN=\"${IS_PULLDOWN:-false}\" \
+        --dart-define=LOGO_URL=\"${LOGO_URL:-}\" \
+        --dart-define=IS_DEEPLINK=\"${IS_DEEPLINK:-false}\" \
+        --dart-define=IS_LOAD_IND=\"${IS_LOAD_IND:-false}\" \
+        --dart-define=IS_CALENDAR=\"${IS_CALENDAR:-false}\" \
+        --dart-define=IS_NOTIFICATION=\"${IS_NOTIFICATION:-false}\" \
+        --dart-define=IS_STORAGE=\"${IS_STORAGE:-false}\""
     
     # Build based on keystore presence
-    if [ "$has_keystore" = "true" ]; then
+    if [ "${has_keystore}" = "true" ]; then
         # Build both APK and AAB for release
         echo "Building release APK..."
         flutter build apk --release --verbose $dart_defines
@@ -638,9 +603,6 @@ main() {
     # Phase 3: Verification & Build
     verify_requirements || handle_build_error "Failed to verify requirements"
     build_android_app || handle_build_error "Failed to build Android app"
-    
-    # Success
-    handle_build_success
 }
 
 # Run the main process
