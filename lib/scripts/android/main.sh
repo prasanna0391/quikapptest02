@@ -97,8 +97,24 @@ generate_launcher_icons() {
     fi
     
     # Verify icons were generated
-    if [ ! -f "$ANDROID_MIPMAP_DIR/ic_launcher.png" ]; then
-        echo "❌ Launcher icon not generated"
+    local icon_paths=(
+        "$ANDROID_ROOT/app/src/main/res/mipmap-hdpi/ic_launcher.png"
+        "$ANDROID_ROOT/app/src/main/res/mipmap-mdpi/ic_launcher.png"
+        "$ANDROID_ROOT/app/src/main/res/mipmap-xhdpi/ic_launcher.png"
+        "$ANDROID_ROOT/app/src/main/res/mipmap-xxhdpi/ic_launcher.png"
+        "$ANDROID_ROOT/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png"
+    )
+    
+    local missing_icons=0
+    for icon_path in "${icon_paths[@]}"; do
+        if [ ! -f "$icon_path" ]; then
+            echo "❌ Launcher icon not found at: $icon_path"
+            missing_icons=$((missing_icons + 1))
+        fi
+    done
+    
+    if [ $missing_icons -gt 0 ]; then
+        echo "❌ $missing_icons launcher icons are missing"
         return 1
     fi
     
