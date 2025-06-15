@@ -219,15 +219,39 @@ handle_build_error() {
 }
 
 handle_build_success() {
-    echo "Build completed successfully"
+    local build_type="$1"
+    local build_paths="$2"
+    local has_keystore="$3"
+    local has_push="$4"
     
-    # Send success notification if email is configured
-    if [ -n "$EMAIL_ID" ]; then
-        echo "Sending success notification to $EMAIL_ID"
-        python3 lib/scripts/email_notification.py success
+    echo "✅ Build completed successfully!"
+    
+    # Prepare build status message
+    local build_status="App Build Status:\n"
+    build_status+="- Build Type: Release\n"
+    build_status+="- Push Notification: ${has_push:-No}\n"
+    build_status+="- Keystore: ${has_keystore:-No}\n"
+    if [ "$has_keystore" = "true" ]; then
+        build_status+="- Output: APK, AAB\n"
+    else
+        build_status+="- Output: APK\n"
     fi
     
-    exit 0
+    # Send success notification
+    if [ -n "$EMAIL_ID" ]; then
+        echo "Sending success notification..."
+        if [ -f "lib/scripts/android/email_config.sh" ]; then
+            source "lib/scripts/android/email_config.sh"
+            send_email_notification "success" "$build_status" "$build_paths"
+        else
+            echo "❌ Email configuration not found"
+        fi
+    fi
+    
+    echo "📦 Build artifacts:"
+    echo "$build_paths" | while read -r path; do
+        echo "   - $path"
+    done
 }
 
 generate_build_gradle_kts() {
@@ -396,7 +420,57 @@ update_gradle_files() {
     if [ -f "android/settings.gradle" ] && [ -f "android/settings.gradle.kts" ]; then
         rm "android/settings.gradle"
     fi
-    
+     # Create settings.gradle if it doesn't exist
+        local settings_gradle_path="android/settings.gradle"
+        cat > "$settings_gradle_path" << EOF
+    import java.util.Properties
+    import java.io.File
+
+    pluginManagement {
+        repositories {
+            google()
+            mavenCentral()
+            gradlePluginPortal()
+        }
+    }
+
+    dependencyResolutionManagement {
+        repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
+        repositories {
+            google()
+            mavenCentral()
+        }
+    }
+
+    include(":app")
+
+    // Flutter settings
+    val flutterProjectRoot = rootProject.projectDir.parentFile
+    val pluginsFile = File(flutterProjectRoot, ".flutter-plugins")
+    if (pluginsFile.exists()) {
+        val plugins = Properties()
+        pluginsFile.inputStream().use { plugins.load(it) }
+
+        plugins.entries.forEach { entry ->
+            val pluginName = entry.key.toString()
+            val pluginPath = entry.value.toString()
+            val pluginDirectory = File(flutterProjectRoot, pluginPath).resolve("android")
+            if (pluginDirectory.exists()) {
+                include(":\${pluginName}")
+                project(":\${pluginName}").projectDir = pluginDirectory
+            }
+        }
+    }
+
+    // Include Flutter SDK
+    val flutterSdkPath = System.getenv("FLUTTER_ROOT") ?: System.getProperty("user.home") + "/flutter"
+    if (File(flutterSdkPath).exists()) {
+        include(":flutter")
+        project(":flutter").projectDir = File(flutterSdkPath)
+    }
+    EOF
+
+
     # Create settings.gradle.kts if it doesn't exist
     local settings_gradle_path="android/settings.gradle.kts"
     cat > "$settings_gradle_path" << EOF
@@ -490,137 +564,85 @@ build_android_app() {
     # Get dependencies
     flutter pub get
     
-    # Update Gradle wrapper
-    cd android
-    if [ ! -f "gradlew" ]; then
+    # Check if gradlew exists
+    if [ ! -f "android/gradlew" ]; then
         echo "Creating Gradle wrapper..."
-        gradle wrapper --gradle-version 7.5
+        cd android
+        gradle wrapper --gradle-version 8.2
+        cd ..
     else
         echo "Updating Gradle wrapper..."
-        ./gradlew wrapper --gradle-version 7.5
+        cd android
+        ./gradlew wrapper --gradle-version 8.2
+        cd ..
     fi
     
     # Make gradlew executable
-    chmod +x gradlew
+    chmod +x android/gradlew
     
-    # Verify Gradle wrapper
-    if [ ! -f "gradlew" ]; then
-        echo "Error: Failed to create/update Gradle wrapper"
-        cd ..
+    # Check if gradlew was created/updated successfully
+    if [ ! -f "android/gradlew" ]; then
+        echo "❌ Failed to create/update Gradle wrapper"
         return 1
     fi
     
-    # Clean Gradle
-    ./gradlew clean
+    # Update Gradle files
+    update_gradle_files
     
-    cd ..
-    
-    # Build the app with all Dart defines
+    # Determine build type and keystore presence
+    local has_keystore="false"
     if [ -n "$KEY_STORE" ]; then
-        flutter build apk --release --verbose \
-            --dart-define=WEB_URL="$WEB_URL" \
-            --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY" \
-            --dart-define=PKG_NAME="$PKG_NAME" \
-            --dart-define=APP_NAME="$APP_NAME" \
-            --dart-define=ORG_NAME="$ORG_NAME" \
-            --dart-define=VERSION_NAME="$VERSION_NAME" \
-            --dart-define=VERSION_CODE="$VERSION_CODE" \
-            --dart-define=EMAIL_ID="$EMAIL_ID" \
-            --dart-define=IS_SPLASH="$IS_SPLASH" \
-            --dart-define=SPLASH="$SPLASH" \
-            --dart-define=SPLASH_BG="$SPLASH_BG" \
-            --dart-define=SPLASH_ANIMATION="$SPLASH_ANIMATION" \
-            --dart-define=SPLASH_BG_COLOR="$SPLASH_BG_COLOR" \
-            --dart-define=SPLASH_TAGLINE="$SPLASH_TAGLINE" \
-            --dart-define=SPLASH_TAGLINE_COLOR="$SPLASH_TAGLINE_COLOR" \
-            --dart-define=SPLASH_DURATION="$SPLASH_DURATION" \
-            --dart-define=IS_PULLDOWN="$IS_PULLDOWN" \
-            --dart-define=LOGO_URL="$LOGO_URL" \
-            --dart-define=IS_BOTTOMMENU="$IS_BOTTOMMENU" \
-            --dart-define=BOTTOMMENU_ITEMS="$BOTTOMMENU_ITEMS" \
-            --dart-define=BOTTOMMENU_BG_COLOR="$BOTTOMMENU_BG_COLOR" \
-            --dart-define=BOTTOMMENU_ICON_COLOR="$BOTTOMMENU_ICON_COLOR" \
-            --dart-define=BOTTOMMENU_TEXT_COLOR="$BOTTOMMENU_TEXT_COLOR" \
-            --dart-define=BOTTOMMENU_FONT="$BOTTOMMENU_FONT" \
-            --dart-define=BOTTOMMENU_FONT_SIZE="$BOTTOMMENU_FONT_SIZE" \
-            --dart-define=BOTTOMMENU_FONT_BOLD="$BOTTOMMENU_FONT_BOLD" \
-            --dart-define=BOTTOMMENU_FONT_ITALIC="$BOTTOMMENU_FONT_ITALIC" \
-            --dart-define=BOTTOMMENU_ACTIVE_TAB_COLOR="$BOTTOMMENU_ACTIVE_TAB_COLOR" \
-            --dart-define=BOTTOMMENU_ICON_POSITION="$BOTTOMMENU_ICON_POSITION" \
-            --dart-define=BOTTOMMENU_VISIBLE_ON="$BOTTOMMENU_VISIBLE_ON" \
-            --dart-define=IS_DEEPLINK="$IS_DEEPLINK" \
-            --dart-define=IS_LOAD_IND="$IS_LOAD_IND" \
-            --dart-define=IS_CHATBOT="$IS_CHATBOT" \
-            --dart-define=IS_CAMERA="$IS_CAMERA" \
-            --dart-define=IS_LOCATION="$IS_LOCATION" \
-            --dart-define=IS_BIOMETRIC="$IS_BIOMETRIC" \
-            --dart-define=IS_MIC="$IS_MIC" \
-            --dart-define=IS_CONTACT="$IS_CONTACT" \
-            --dart-define=IS_CALENDAR="$IS_CALENDAR" \
-            --dart-define=IS_NOTIFICATION="$IS_NOTIFICATION" \
-            --dart-define=IS_STORAGE="$IS_STORAGE" \
-            --dart-define=firebase_config_android="$firebase_config_android" \
-            --dart-define=firebase_config_ios="$firebase_config_ios" \
-            --dart-define=APNS_KEY_ID="$APNS_KEY_ID" \
-            --dart-define=APPLE_TEAM_ID="$APPLE_TEAM_ID" \
-            --dart-define=APNS_AUTH_KEY_URL="$APNS_AUTH_KEY_URL"
+        has_keystore="true"
+    fi
+    
+    local has_push="false"
+    if [ "$PUSH_NOTIFY" = "true" ]; then
+        has_push="true"
+    fi
+    
+    # Common Dart defines for all builds
+    local dart_defines="--dart-define=APP_NAME=\"$APP_NAME\" \
+        --dart-define=PACKAGE_NAME=\"$PACKAGE_NAME\" \
+        --dart-define=VERSION_NAME=\"$VERSION_NAME\" \
+        --dart-define=VERSION_CODE=\"$VERSION_CODE\" \
+        --dart-define=IS_PULLDOWN=\"$IS_PULLDOWN\" \
+        --dart-define=LOGO_URL=\"$LOGO_URL\" \
+        --dart-define=IS_DEEPLINK=\"$IS_DEEPLINK\" \
+        --dart-define=IS_LOAD_IND=\"$IS_LOAD_IND\" \
+        --dart-define=IS_CALENDAR=\"$IS_CALENDAR\" \
+        --dart-define=IS_NOTIFICATION=\"$IS_NOTIFICATION\" \
+        --dart-define=IS_STORAGE=\"$IS_STORAGE\""
+    
+    # Build based on keystore presence
+    if [ "$has_keystore" = "true" ]; then
+        # Build both APK and AAB for release
+        echo "Building release APK..."
+        flutter build apk --release --verbose $dart_defines
+        
+        if [ $? -eq 0 ]; then
+            echo "Building release AAB..."
+            flutter build appbundle --release --verbose $dart_defines
+            
+            if [ $? -eq 0 ]; then
+                local build_paths="build/app/outputs/flutter-apk/app-release.apk
+build/app/outputs/bundle/release/app-release.aab"
+                handle_build_success "Release" "$build_paths" "$has_keystore" "$has_push"
+                return 0
+            fi
+        fi
     else
-        flutter build apk --debug --verbose \
-            --dart-define=WEB_URL="$WEB_URL" \
-            --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY" \
-            --dart-define=PKG_NAME="$PKG_NAME" \
-            --dart-define=APP_NAME="$APP_NAME" \
-            --dart-define=ORG_NAME="$ORG_NAME" \
-            --dart-define=VERSION_NAME="$VERSION_NAME" \
-            --dart-define=VERSION_CODE="$VERSION_CODE" \
-            --dart-define=EMAIL_ID="$EMAIL_ID" \
-            --dart-define=IS_SPLASH="$IS_SPLASH" \
-            --dart-define=SPLASH="$SPLASH" \
-            --dart-define=SPLASH_BG="$SPLASH_BG" \
-            --dart-define=SPLASH_ANIMATION="$SPLASH_ANIMATION" \
-            --dart-define=SPLASH_BG_COLOR="$SPLASH_BG_COLOR" \
-            --dart-define=SPLASH_TAGLINE="$SPLASH_TAGLINE" \
-            --dart-define=SPLASH_TAGLINE_COLOR="$SPLASH_TAGLINE_COLOR" \
-            --dart-define=SPLASH_DURATION="$SPLASH_DURATION" \
-            --dart-define=IS_PULLDOWN="$IS_PULLDOWN" \
-            --dart-define=LOGO_URL="$LOGO_URL" \
-            --dart-define=IS_BOTTOMMENU="$IS_BOTTOMMENU" \
-            --dart-define=BOTTOMMENU_ITEMS="$BOTTOMMENU_ITEMS" \
-            --dart-define=BOTTOMMENU_BG_COLOR="$BOTTOMMENU_BG_COLOR" \
-            --dart-define=BOTTOMMENU_ICON_COLOR="$BOTTOMMENU_ICON_COLOR" \
-            --dart-define=BOTTOMMENU_TEXT_COLOR="$BOTTOMMENU_TEXT_COLOR" \
-            --dart-define=BOTTOMMENU_FONT="$BOTTOMMENU_FONT" \
-            --dart-define=BOTTOMMENU_FONT_SIZE="$BOTTOMMENU_FONT_SIZE" \
-            --dart-define=BOTTOMMENU_FONT_BOLD="$BOTTOMMENU_FONT_BOLD" \
-            --dart-define=BOTTOMMENU_FONT_ITALIC="$BOTTOMMENU_FONT_ITALIC" \
-            --dart-define=BOTTOMMENU_ACTIVE_TAB_COLOR="$BOTTOMMENU_ACTIVE_TAB_COLOR" \
-            --dart-define=BOTTOMMENU_ICON_POSITION="$BOTTOMMENU_ICON_POSITION" \
-            --dart-define=BOTTOMMENU_VISIBLE_ON="$BOTTOMMENU_VISIBLE_ON" \
-            --dart-define=IS_DEEPLINK="$IS_DEEPLINK" \
-            --dart-define=IS_LOAD_IND="$IS_LOAD_IND" \
-            --dart-define=IS_CHATBOT="$IS_CHATBOT" \
-            --dart-define=IS_CAMERA="$IS_CAMERA" \
-            --dart-define=IS_LOCATION="$IS_LOCATION" \
-            --dart-define=IS_BIOMETRIC="$IS_BIOMETRIC" \
-            --dart-define=IS_MIC="$IS_MIC" \
-            --dart-define=IS_CONTACT="$IS_CONTACT" \
-            --dart-define=IS_CALENDAR="$IS_CALENDAR" \
-            --dart-define=IS_NOTIFICATION="$IS_NOTIFICATION" \
-            --dart-define=IS_STORAGE="$IS_STORAGE" \
-            --dart-define=firebase_config_android="$firebase_config_android" \
-            --dart-define=firebase_config_ios="$firebase_config_ios" \
-            --dart-define=APNS_KEY_ID="$APNS_KEY_ID" \
-            --dart-define=APPLE_TEAM_ID="$APPLE_TEAM_ID" \
-            --dart-define=APNS_AUTH_KEY_URL="$APNS_AUTH_KEY_URL"
+        # Build only APK for release
+        echo "Building release APK..."
+        flutter build apk --release --verbose $dart_defines
+        
+        if [ $? -eq 0 ]; then
+            handle_build_success "Release" "build/app/outputs/flutter-apk/app-release.apk" "$has_keystore" "$has_push"
+            return 0
+        fi
     fi
     
-    # Check build result
-    if [ $? -ne 0 ]; then
-        echo "Error: Build failed"
-        return 1
-    fi
-    
-    return 0
+    handle_build_error "Build failed"
+    return 1
 }
 
 # Main build process
