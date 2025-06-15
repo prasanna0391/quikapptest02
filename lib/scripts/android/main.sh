@@ -403,12 +403,12 @@ android {
     ndkVersion flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
     }
 
     sourceSets {
@@ -417,7 +417,7 @@ android {
 
     defaultConfig {
         applicationId "${PACKAGE_NAME}"
-        minSdkVersion flutter.minSdkVersion
+        minSdkVersion 21
         targetSdkVersion flutter.targetSdkVersion
         versionCode ${VERSION_CODE}
         versionName "${VERSION_NAME}"
@@ -436,7 +436,8 @@ android {
         release {
             signingConfig ${has_keystore:+signingConfigs.release}
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }
@@ -446,7 +447,7 @@ flutter {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:\$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:\$kotlin_version"
     ${has_firebase:+implementation platform('com.google.firebase:firebase-bom:32.7.0')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-messaging'}
@@ -499,19 +500,30 @@ EOF
 
     # Create gradle.properties
     cat > "android/gradle.properties" << EOF
-org.gradle.jvmargs=-Xmx1536M
+org.gradle.jvmargs=-Xmx4096M -Dfile.encoding=UTF-8
 android.useAndroidX=true
 android.enableJetifier=true
+android.defaults.buildfeatures.buildconfig=true
+android.nonTransitiveRClass=false
+android.nonFinalResIds=false
 EOF
 
-    # Create gradle-wrapper.properties
-    mkdir -p android/gradle/wrapper
-    cat > "android/gradle/wrapper/gradle-wrapper.properties" << EOF
-distributionBase=GRADLE_USER_HOME
-distributionPath=wrapper/dists
-zipStoreBase=GRADLE_USER_HOME
-zipStorePath=wrapper/dists
-distributionUrl=https\://services.gradle.org/distributions/gradle-8.2-all.zip
+    # Create proguard-rules.pro
+    cat > "android/app/proguard-rules.pro" << EOF
+# Flutter wrapper
+-keep class io.flutter.app.** { *; }
+-keep class io.flutter.plugin.** { *; }
+-keep class io.flutter.util.** { *; }
+-keep class io.flutter.view.** { *; }
+-keep class io.flutter.** { *; }
+-keep class io.flutter.plugins.** { *; }
+
+# Firebase
+-keep class com.google.firebase.** { *; }
+-keep class com.google.android.gms.** { *; }
+
+# Keep your application classes
+-keep class ${PACKAGE_NAME}.** { *; }
 EOF
 
     return 0
