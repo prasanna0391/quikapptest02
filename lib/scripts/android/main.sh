@@ -204,6 +204,18 @@ EOF
     return 0
 }
 
+# Error handling functions
+handle_build_error() {
+    local error_message="$1"
+    echo "Build Error: $error_message"
+    exit 1
+}
+
+handle_build_success() {
+    echo "Build completed successfully"
+    exit 0
+}
+
 update_gradle_files() {
     echo "Updating Gradle files..."
     
@@ -215,11 +227,22 @@ update_gradle_files() {
     # Add Firebase dependencies if needed
     if [ "$PUSH_NOTIFY" = "true" ]; then
         if ! grep -q "com.google.firebase" "$ANDROID_BUILD_GRADLE_PATH"; then
+            # Add Firebase BOM and dependencies
             sed -i '' "/dependencies {/a\\
     implementation platform('com.google.firebase:firebase-bom:32.7.0')\\
     implementation 'com.google.firebase:firebase-analytics'\\
-    implementation 'com.google.firebase:firebase-messaging'" "$ANDROID_BUILD_GRADLE_PATH"
+    implementation 'com.google.firebase:firebase-messaging'\\
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.22'" "$ANDROID_BUILD_GRADLE_PATH"
+            
+            # Add Firebase plugin
+            sed -i '' "/plugins {/a\\
+    id 'com.google.gms.google-services'" "$ANDROID_BUILD_GRADLE_PATH"
         fi
+    fi
+    
+    # Update settings.gradle to use only one settings file
+    if [ -f "android/settings.gradle" ] && [ -f "android/settings.gradle.kts" ]; then
+        rm "android/settings.gradle.kts"
     fi
     
     return 0
@@ -267,9 +290,9 @@ build_android_app() {
     
     # Build the app
     if [ -n "$KEY_STORE" ]; then
-        flutter build apk --release
+        flutter build apk --release --verbose
     else
-        flutter build apk --debug
+        flutter build apk --debug --verbose
     fi
     
     # Check build result
