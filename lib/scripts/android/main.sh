@@ -450,7 +450,7 @@ if (pluginsFile.exists()) {
     pluginsFile.withInputStream { plugins.load(it) }
     
     plugins.each { name, path ->
-        def pluginDirectory = new File(flutterProjectRoot, path).resolve('android')
+        def pluginDirectory = new File(new File(flutterProjectRoot, path), 'android')
         if (pluginDirectory.exists()) {
             include ":\${name}"
             project(":\${name}").projectDir = pluginDirectory
