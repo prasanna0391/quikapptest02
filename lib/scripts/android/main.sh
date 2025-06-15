@@ -52,23 +52,41 @@ setup_build_environment() {
     # Source variables from admin panel
     if [ -f "lib/scripts/android/admin_vars.sh" ]; then
         source lib/scripts/android/admin_vars.sh
+        echo "✅ Admin variables loaded successfully"
     else
         echo "Error: admin_vars.sh not found"
         return 1
     fi
     
+    # Set default values for required variables
+    APP_NAME="${APP_NAME:-Garbcode App}"
+    PACKAGE_NAME="${PACKAGE_NAME:-com.garbcode.app}"
+    VERSION_NAME="${VERSION_NAME:-1.0.0}"
+    VERSION_CODE="${VERSION_CODE:-1}"
+    
     # Validate required variables
-    if [ -z "${APP_NAME:-}" ] || [ -z "${PACKAGE_NAME:-}" ] || [ -z "${VERSION_NAME:-}" ] || [ -z "${VERSION_CODE:-}" ]; then
+    if [ -z "${APP_NAME}" ] || [ -z "${PACKAGE_NAME}" ] || [ -z "${VERSION_NAME}" ] || [ -z "${VERSION_CODE}" ]; then
         echo "Error: Required variables not set"
+        echo "APP_NAME: ${APP_NAME}"
+        echo "PACKAGE_NAME: ${PACKAGE_NAME}"
+        echo "VERSION_NAME: ${VERSION_NAME}"
+        echo "VERSION_CODE: ${VERSION_CODE}"
         return 1
     fi
     
-    # Create necessary directories
-    mkdir -p "${ASSETS_DIR:-assets}"
-    mkdir -p "${ANDROID_MIPMAP_DIR:-android/app/src/main/res/mipmap}"
-    mkdir -p "${ANDROID_DRAWABLE_DIR:-android/app/src/main/res/drawable}"
-    mkdir -p "${ANDROID_VALUES_DIR:-android/app/src/main/res/values}"
+    # Set default paths if not provided
+    ASSETS_DIR="${ASSETS_DIR:-assets}"
+    ANDROID_MIPMAP_DIR="${ANDROID_MIPMAP_DIR:-android/app/src/main/res/mipmap}"
+    ANDROID_DRAWABLE_DIR="${ANDROID_DRAWABLE_DIR:-android/app/src/main/res/drawable}"
+    ANDROID_VALUES_DIR="${ANDROID_VALUES_DIR:-android/app/src/main/res/values}"
     
+    # Create necessary directories
+    mkdir -p "${ASSETS_DIR}"
+    mkdir -p "${ANDROID_MIPMAP_DIR}"
+    mkdir -p "${ANDROID_DRAWABLE_DIR}"
+    mkdir -p "${ANDROID_VALUES_DIR}"
+    
+    echo "✅ Build environment setup completed"
     return 0
 }
 
