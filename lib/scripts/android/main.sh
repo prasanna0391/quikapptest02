@@ -835,11 +835,11 @@ EOF
     if [ "${has_keystore}" = "true" ]; then
         # Build both APK and AAB for release
         echo "Building release APK..."
-        flutter build apk --release --verbose $dart_defines
+        flutter build apk --release --verbose --target lib/main.dart $dart_defines
         
         if [ $? -eq 0 ]; then
             echo "Building release AAB..."
-            flutter build appbundle --release --verbose $dart_defines
+            flutter build appbundle --release --verbose --target lib/main.dart $dart_defines
             
             if [ $? -eq 0 ]; then
                 local build_paths="build/app/outputs/flutter-apk/app-release.apk
@@ -851,7 +851,7 @@ build/app/outputs/bundle/release/app-release.aab"
     else
         # Build only APK for release
         echo "Building release APK..."
-        flutter build apk --release --verbose $dart_defines
+        flutter build apk --release --verbose --target lib/main.dart $dart_defines
         
         if [ $? -eq 0 ]; then
             handle_build_success "Release" "build/app/outputs/flutter-apk/app-release.apk" "$has_keystore" "$has_push"
