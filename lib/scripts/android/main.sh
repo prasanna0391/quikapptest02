@@ -420,63 +420,10 @@ update_gradle_files() {
     if [ -f "android/settings.gradle" ] && [ -f "android/settings.gradle.kts" ]; then
         rm "android/settings.gradle"
     fi
-     # Create settings.gradle if it doesn't exist
-        local settings_gradle_path="android/settings.gradle"
-        cat > "$settings_gradle_path" << EOF
-    import java.util.Properties
-    import java.io.File
-
-    pluginManagement {
-        repositories {
-            google()
-            mavenCentral()
-            gradlePluginPortal()
-        }
-    }
-
-    dependencyResolutionManagement {
-        repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
-        repositories {
-            google()
-            mavenCentral()
-        }
-    }
-
-    include(":app")
-
-    // Flutter settings
-    val flutterProjectRoot = rootProject.projectDir.parentFile
-    val pluginsFile = File(flutterProjectRoot, ".flutter-plugins")
-    if (pluginsFile.exists()) {
-        val plugins = Properties()
-        pluginsFile.inputStream().use { plugins.load(it) }
-
-        plugins.entries.forEach { entry ->
-            val pluginName = entry.key.toString()
-            val pluginPath = entry.value.toString()
-            val pluginDirectory = File(flutterProjectRoot, pluginPath).resolve("android")
-            if (pluginDirectory.exists()) {
-                include(":\${pluginName}")
-                project(":\${pluginName}").projectDir = pluginDirectory
-            }
-        }
-    }
-
-    // Include Flutter SDK
-    val flutterSdkPath = System.getenv("FLUTTER_ROOT") ?: System.getProperty("user.home") + "/flutter"
-    if (File(flutterSdkPath).exists()) {
-        include(":flutter")
-        project(":flutter").projectDir = File(flutterSdkPath)
-    }
-    EOF
-
-
-    # Create settings.gradle.kts if it doesn't exist
-    local settings_gradle_path="android/settings.gradle.kts"
+    
+    # Create settings.gradle if it doesn't exist
+    local settings_gradle_path="android/settings.gradle"
     cat > "$settings_gradle_path" << EOF
-import java.util.Properties
-import java.io.File
-
 pluginManagement {
     repositories {
         google()
@@ -493,31 +440,29 @@ dependencyResolutionManagement {
     }
 }
 
-include(":app")
+include ':app'
 
 // Flutter settings
-val flutterProjectRoot = rootProject.projectDir.parentFile
-val pluginsFile = File(flutterProjectRoot, ".flutter-plugins")
+def flutterProjectRoot = rootProject.projectDir.parentFile
+def pluginsFile = new File(flutterProjectRoot, '.flutter-plugins')
 if (pluginsFile.exists()) {
-    val plugins = Properties()
-    pluginsFile.inputStream().use { plugins.load(it) }
+    def plugins = new Properties()
+    pluginsFile.withInputStream { plugins.load(it) }
     
-    plugins.entries.forEach { entry ->
-        val pluginName = entry.key.toString()
-        val pluginPath = entry.value.toString()
-        val pluginDirectory = File(flutterProjectRoot, pluginPath).resolve("android")
+    plugins.each { name, path ->
+        def pluginDirectory = new File(flutterProjectRoot, path).resolve('android')
         if (pluginDirectory.exists()) {
-            include(":\${pluginName}")
-            project(":\${pluginName}").projectDir = pluginDirectory
+            include ":\${name}"
+            project(":\${name}").projectDir = pluginDirectory
         }
     }
 }
 
 // Include Flutter SDK
-val flutterSdkPath = System.getenv("FLUTTER_ROOT") ?: System.getProperty("user.home") + "/flutter"
-if (File(flutterSdkPath).exists()) {
-    include(":flutter")
-    project(":flutter").projectDir = File(flutterSdkPath)
+def flutterSdkPath = System.getenv('FLUTTER_ROOT') ?: System.getProperty('user.home') + '/flutter'
+if (new File(flutterSdkPath).exists()) {
+    include ':flutter'
+    project(':flutter').projectDir = new File(flutterSdkPath)
 }
 EOF
     
@@ -564,24 +509,26 @@ build_android_app() {
     # Get dependencies
     flutter pub get
     
+    # Create android directory if it doesn't exist
+    mkdir -p android
+    
     # Check if gradlew exists
     if [ ! -f "android/gradlew" ]; then
         echo "Creating Gradle wrapper..."
         cd android
-        gradle wrapper --gradle-version 8.2
+        gradle wrapper --gradle-version 8.2 --distribution-type all
         cd ..
     else
         echo "Updating Gradle wrapper..."
         cd android
-        ./gradlew wrapper --gradle-version 8.2
+        ./gradlew wrapper --gradle-version 8.2 --distribution-type all
         cd ..
     fi
     
     # Make gradlew executable
-    chmod +x android/gradlew
-    
-    # Check if gradlew was created/updated successfully
-    if [ ! -f "android/gradlew" ]; then
+    if [ -f "android/gradlew" ]; then
+        chmod +x android/gradlew
+    else
         echo "❌ Failed to create/update Gradle wrapper"
         return 1
     fi
