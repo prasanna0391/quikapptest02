@@ -246,7 +246,7 @@ update_gradle_files() {
     implementation platform('com.google.firebase:firebase-bom:32.7.0')\\
     implementation 'com.google.firebase:firebase-analytics'\\
     implementation 'com.google.firebase:firebase-messaging'\\
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.22'" "$ANDROID_BUILD_GRADLE_PATH"
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.10'" "$ANDROID_BUILD_GRADLE_PATH"
             
             # Add Firebase plugin
             sed -i '' "/plugins {/a\\
@@ -262,18 +262,14 @@ update_gradle_files() {
     # Update root build.gradle
     local root_build_gradle="android/build.gradle"
     if [ -f "$root_build_gradle" ]; then
-        # Add Google services plugin
+        # Add Google services plugin and Kotlin version
         if ! grep -q "com.google.gms.google-services" "$root_build_gradle"; then
             sed -i '' "/buildscript {/a\\
+    ext.kotlin_version = '1.8.10'\\
     dependencies {\\
         classpath 'com.google.gms:google-services:4.4.0'\\
+        classpath \"org.jetbrains.kotlin:kotlin-gradle-plugin:\$kotlin_version\"\\
     }" "$root_build_gradle"
-        fi
-        
-        # Update Kotlin version
-        if ! grep -q "kotlin_version" "$root_build_gradle"; then
-            sed -i '' "/buildscript {/a\\
-    ext.kotlin_version = '1.9.22'" "$root_build_gradle"
         fi
     fi
     
@@ -324,10 +320,10 @@ build_android_app() {
     cd android
     if [ ! -f "gradlew" ]; then
         echo "Creating Gradle wrapper..."
-        gradle wrapper --gradle-version 8.2
+        gradle wrapper --gradle-version 7.5
     else
         echo "Updating Gradle wrapper..."
-        ./gradlew wrapper --gradle-version 8.2
+        ./gradlew wrapper --gradle-version 7.5
     fi
     
     # Make gradlew executable
@@ -339,6 +335,9 @@ build_android_app() {
         cd ..
         return 1
     fi
+    
+    # Clean Gradle
+    ./gradlew clean
     
     cd ..
     
