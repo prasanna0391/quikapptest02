@@ -45,242 +45,263 @@ else
     exit 1
 fi
 
-# Function to setup build environment
+# Phase 1: Project Setup & Core Configuration
 setup_build_environment() {
-    print_section "Setting up build environment"
+    echo "Setting up build environment..."
     
-    # Set up Java environment
-    export JAVA_HOME="/opt/homebrew/opt/openjdk@17"
-    export PATH="$JAVA_HOME/bin:$PATH"
-    
-    # Set up Android environment
-    export ANDROID_HOME="$HOME/Library/Android/sdk"
-    export PATH="$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH"
-    
-    # Set up Flutter environment
-    export FLUTTER_ROOT="/opt/homebrew/bin/flutter"
-    export PATH="$FLUTTER_ROOT/bin:$PATH"
-    
-    # Verify environment
-    if ! command -v java &> /dev/null; then
-        echo "❌ Java not found"
+    # Source variables from admin panel
+    if [ -f "lib/scripts/android/admin_vars.sh" ]; then
+        source lib/scripts/android/admin_vars.sh
+    else
+        echo "Error: admin_vars.sh not found"
         return 1
     fi
     
-    if ! command -v adb &> /dev/null; then
-        echo "❌ Android SDK not found"
+    # Validate required variables
+    if [ -z "$APP_NAME" ] || [ -z "$PKG_NAME" ] || [ -z "$VERSION_NAME" ] || [ -z "$VERSION_CODE" ]; then
+        echo "Error: Required variables not set"
         return 1
     fi
     
-    if ! command -v flutter &> /dev/null; then
-        echo "❌ Flutter not found"
-        return 1
-    fi
+    # Create necessary directories
+    mkdir -p "$ASSETS_DIR"
+    mkdir -p "$ANDROID_MIPMAP_DIR"
+    mkdir -p "$ANDROID_DRAWABLE_DIR"
+    mkdir -p "$ANDROID_VALUES_DIR"
     
-    echo "✅ Build environment setup complete"
     return 0
 }
 
-# Function to setup keystore
-setup_keystore() {
-    print_section "Setting up keystore"
+download_splash_assets() {
+    echo "Downloading splash assets..."
     
-    # Create keystore directory if it doesn't exist
-    mkdir -p "$(dirname "$ANDROID_KEYSTORE_PATH")"
-    
-    # Check if keystore exists
-    if [ -f "$ANDROID_KEYSTORE_PATH" ]; then
-        echo "✅ Keystore already exists at $ANDROID_KEYSTORE_PATH"
-        return 0
+    # Download logo if provided
+    if [ -n "$LOGO_URL" ]; then
+        curl -L "$LOGO_URL" -o "$ASSETS_DIR/logo.png"
     fi
     
-    # Check if we have base64 encoded keystore
-    if [ -n "$ANDROID_KEYSTORE_BASE64" ]; then
-        echo "🔐 Creating keystore from base64..."
-        echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$ANDROID_KEYSTORE_PATH"
-        
-        if [ ! -f "$ANDROID_KEYSTORE_PATH" ]; then
-            echo "❌ Failed to create keystore from base64"
-            return 1
-        fi
-        
-        echo "✅ Keystore created successfully from base64"
-        return 0
+    # Download splash screen if provided
+    if [ -n "$SPLASH" ]; then
+        curl -L "$SPLASH" -o "$ASSETS_DIR/splash.png"
     fi
     
-    # Create debug keystore if no keystore provided
-    echo "⚠️ No keystore provided, creating debug keystore..."
-    keytool -genkey -v \
-        -keystore "$ANDROID_KEYSTORE_PATH" \
-        -alias androiddebugkey \
-        -keyalg RSA \
-        -keysize 2048 \
-        -validity 10000 \
-        -storepass android \
-        -keypass android \
-        -dname "CN=Android Debug,O=Android,C=US"
-    
-    if [ ! -f "$ANDROID_KEYSTORE_PATH" ]; then
-        echo "❌ Failed to create debug keystore"
-        return 1
+    # Download splash background if provided
+    if [ -n "$SPLASH_BG" ]; then
+        curl -L "$SPLASH_BG" -o "$ASSETS_DIR/splash_bg.png"
     fi
     
-    echo "✅ Debug keystore created successfully"
     return 0
 }
 
-# Function to generate launcher icons
 generate_launcher_icons() {
-    print_section "Generating launcher icons"
-    
-    # Check if flutter_launcher_icons package is available
-    if ! flutter pub get; then
-        echo "❌ Failed to get Flutter dependencies"
-        return 1
-    fi
+    echo "Generating launcher icons..."
     
     # Check if flutter_launcher_icons is in pubspec.yaml
-    if ! grep -q "flutter_launcher_icons" "pubspec.yaml"; then
-        echo "❌ flutter_launcher_icons not found in pubspec.yaml"
+    if ! grep -q "flutter_launcher_icons" pubspec.yaml; then
+        echo "Error: flutter_launcher_icons not found in pubspec.yaml"
         return 1
     fi
     
-    # Generate icons
-    if ! flutter pub run flutter_launcher_icons; then
-        echo "❌ Failed to generate launcher icons"
-        return 1
-    fi
+    # Run icon generation
+    flutter pub run flutter_launcher_icons:main
     
     # Verify icons were generated
     local icon_paths=(
-        "$ANDROID_ROOT/app/src/main/res/mipmap-hdpi/ic_launcher.png"
-        "$ANDROID_ROOT/app/src/main/res/mipmap-mdpi/ic_launcher.png"
-        "$ANDROID_ROOT/app/src/main/res/mipmap-xhdpi/ic_launcher.png"
-        "$ANDROID_ROOT/app/src/main/res/mipmap-xxhdpi/ic_launcher.png"
-        "$ANDROID_ROOT/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png"
+        "$ANDROID_MIPMAP_DIR-hdpi/ic_launcher.png"
+        "$ANDROID_MIPMAP_DIR-mdpi/ic_launcher.png"
+        "$ANDROID_MIPMAP_DIR-xhdpi/ic_launcher.png"
+        "$ANDROID_MIPMAP_DIR-xxhdpi/ic_launcher.png"
+        "$ANDROID_MIPMAP_DIR-xxxhdpi/ic_launcher.png"
     )
     
     local missing_icons=0
     for icon_path in "${icon_paths[@]}"; do
         if [ ! -f "$icon_path" ]; then
-            echo "❌ Launcher icon not found at: $icon_path"
+            echo "Error: Missing icon at $icon_path"
             missing_icons=$((missing_icons + 1))
         fi
     done
     
     if [ $missing_icons -gt 0 ]; then
-        echo "❌ $missing_icons launcher icons are missing"
+        echo "Error: $missing_icons icons are missing"
         return 1
     fi
     
-    echo "✅ Launcher icons generated successfully"
     return 0
 }
 
-# Error handling function
-handle_error() {
-    local error_message="$1"
-    local error_details="$2"
+# Phase 2: Conditional Integration (Firebase & Keystore)
+setup_firebase() {
+    echo "Setting up Firebase configuration..."
     
-    print_section "Build failed"
-    print_section "Sending error notification"
-    send_error_notification "$error_message" "$error_details"
-    exit 1
+    # Check if Firebase is required
+    if [ "$PUSH_NOTIFY" != "true" ]; then
+        echo "Firebase integration not required (PUSH_NOTIFY is false)"
+        return 0
+    fi
+    
+    # Check if Firebase config is provided
+    if [ -z "$firebase_config_android" ]; then
+        echo "Error: Firebase configuration not provided"
+        return 1
+    fi
+    
+    # Remove any existing google-services.json
+    rm -f "$ANDROID_FIREBASE_CONFIG_PATH"
+    
+    # Create Firebase config directory
+    mkdir -p "$(dirname "$ANDROID_FIREBASE_CONFIG_PATH")"
+    
+    # Write Firebase config to file
+    echo "$firebase_config_android" > "$ANDROID_FIREBASE_CONFIG_PATH"
+    
+    # Copy to assets if needed
+    cp "$ANDROID_FIREBASE_CONFIG_PATH" "$ASSETS_DIR/google-services.json"
+    
+    # Verify Firebase config was created
+    if [ ! -f "$ANDROID_FIREBASE_CONFIG_PATH" ]; then
+        echo "Error: Failed to create Firebase configuration file"
+        return 1
+    fi
+    
+    echo "Firebase configuration setup completed successfully"
+    return 0
 }
 
-# Function to handle build success
-handle_build_success() {
-    print_section "Build completed successfully"
-    print_section "Sending success notification"
-    send_success_notification
-    exit 0
+setup_keystore() {
+    echo "Setting up Android keystore..."
+    
+    # Check if keystore is required
+    if [ -z "$KEY_STORE" ]; then
+        echo "Keystore not provided, using debug keystore"
+        return 0
+    fi
+    
+    # Create keystore directory
+    mkdir -p "$(dirname "$ANDROID_KEYSTORE_PATH")"
+    
+    # Remove any existing keystore
+    rm -f "$ANDROID_KEYSTORE_PATH"
+    
+    # Write keystore to file
+    echo "$KEY_STORE" > "$ANDROID_KEYSTORE_PATH"
+    
+    # Verify keystore was created
+    if [ ! -f "$ANDROID_KEYSTORE_PATH" ]; then
+        echo "Error: Failed to create keystore file"
+        return 1
+    fi
+    
+    # Create key.properties file
+    cat > "$ANDROID_KEY_PROPERTIES_PATH" << EOF
+storeFile=keystore.jks
+storePassword=$CM_KEYSTORE_PASSWORD
+keyAlias=$CM_KEY_ALIAS
+keyPassword=$CM_KEY_PASSWORD
+EOF
+    
+    echo "Keystore setup completed successfully"
+    return 0
 }
 
-# Function to handle build error
-handle_build_error() {
-    local error_message="$1"
-    local error_details="$2"
+update_gradle_files() {
+    echo "Updating Gradle files..."
     
-    print_section "Build failed"
-    print_section "Sending error notification"
-    send_error_notification "$error_message" "$error_details"
-    exit 1
+    # Update build.gradle
+    sed -i '' "s/applicationId \".*\"/applicationId \"$PKG_NAME\"/" "$ANDROID_BUILD_GRADLE_PATH"
+    sed -i '' "s/versionCode .*/versionCode $VERSION_CODE/" "$ANDROID_BUILD_GRADLE_PATH"
+    sed -i '' "s/versionName \".*\"/versionName \"$VERSION_NAME\"/" "$ANDROID_BUILD_GRADLE_PATH"
+    
+    # Add Firebase dependencies if needed
+    if [ "$PUSH_NOTIFY" = "true" ]; then
+        if ! grep -q "com.google.firebase" "$ANDROID_BUILD_GRADLE_PATH"; then
+            sed -i '' "/dependencies {/a\\
+    implementation platform('com.google.firebase:firebase-bom:32.7.0')\\
+    implementation 'com.google.firebase:firebase-analytics'\\
+    implementation 'com.google.firebase:firebase-messaging'" "$ANDROID_BUILD_GRADLE_PATH"
+        fi
+    fi
+    
+    return 0
+}
+
+# Phase 3: Verification & Build
+verify_requirements() {
+    echo "Verifying requirements..."
+    
+    # Check Flutter environment
+    if ! command -v flutter &> /dev/null; then
+        echo "Error: Flutter not found"
+        return 1
+    fi
+    
+    # Check Android SDK
+    if [ -z "$ANDROID_HOME" ]; then
+        echo "Error: ANDROID_HOME not set"
+        return 1
+    fi
+    
+    # Check Firebase config if needed
+    if [ "$PUSH_NOTIFY" = "true" ] && [ ! -f "$ANDROID_FIREBASE_CONFIG_PATH" ]; then
+        echo "Error: Firebase config not found"
+        return 1
+    fi
+    
+    # Check keystore if provided
+    if [ -n "$KEY_STORE" ] && [ ! -f "$ANDROID_KEYSTORE_PATH" ]; then
+        echo "Error: Keystore not found"
+        return 1
+    fi
+    
+    return 0
+}
+
+build_android_app() {
+    echo "Building Android app..."
+    
+    # Clean the project
+    flutter clean
+    
+    # Get dependencies
+    flutter pub get
+    
+    # Build the app
+    if [ -n "$KEY_STORE" ]; then
+        flutter build apk --release
+    else
+        flutter build apk --debug
+    fi
+    
+    # Check build result
+    if [ $? -ne 0 ]; then
+        echo "Error: Build failed"
+        return 1
+    fi
+    
+    return 0
 }
 
 # Main build process
-print_section "Starting Android Build Process"
-
-# Make all scripts executable
-make_scripts_executable
-
-# Setup environment
-print_section "Setting up environment"
-
-# Ensure CM_BUILD_DIR is set
-if [ -z "$CM_BUILD_DIR" ]; then
-    CM_BUILD_DIR="$PWD"
-    echo "CM_BUILD_DIR not set, using current directory: $CM_BUILD_DIR"
-fi
-
-# Create required directories with validation
-print_section "Creating required directories"
-create_directory() {
-    local dir="$1"
-    local desc="$2"
-    echo "Creating $desc directory: $dir"
-    if ! mkdir -p "$dir"; then
-        echo "❌ Failed to create $desc directory: $dir"
-        exit 1
-    fi
-    if [ ! -d "$dir" ]; then
-        echo "❌ Directory not created: $dir"
-        exit 1
-    fi
-    echo "✅ Created $desc directory: $dir"
+main() {
+    echo "Starting Android build process..."
+    
+    # Phase 1: Project Setup & Core Configuration
+    setup_build_environment || handle_build_error "Failed to setup build environment"
+    download_splash_assets || handle_build_error "Failed to download splash assets"
+    generate_launcher_icons || handle_build_error "Failed to generate launcher icons"
+    
+    # Phase 2: Conditional Integration
+    setup_firebase || handle_build_error "Failed to setup Firebase"
+    setup_keystore || handle_build_error "Failed to setup keystore"
+    update_gradle_files || handle_build_error "Failed to update Gradle files"
+    
+    # Phase 3: Verification & Build
+    verify_requirements || handle_build_error "Failed to verify requirements"
+    build_android_app || handle_build_error "Failed to build Android app"
+    
+    # Success
+    handle_build_success
 }
 
-# Create main directories
-create_directory "$CM_BUILD_DIR" "build root"
-create_directory "$OUTPUT_DIR" "output"
-create_directory "$ANDROID_ROOT" "Android root"
-create_directory "$ASSETS_DIR" "assets"
-create_directory "$TEMP_DIR" "temporary"
-
-# Create Android resource directories
-create_directory "$ANDROID_ROOT/app/src/main/res/mipmap" "mipmap resources"
-create_directory "$ANDROID_ROOT/app/src/main/res/drawable" "drawable resources"
-create_directory "$ANDROID_ROOT/app/src/main/res/values" "values resources"
-
-# Create build output directories
-create_directory "$(dirname "$APK_OUTPUT_PATH")" "APK output"
-create_directory "$(dirname "$AAB_OUTPUT_PATH")" "AAB output"
-
-# Update the build process to use error handling
-if ! setup_build_environment; then
-    handle_build_error "Failed to set up build environment" "Could not initialize build environment. Please check the build logs for details."
-fi
-
-if ! download_splash_assets; then
-    handle_build_error "Failed to download splash assets" "Could not download splash screen assets. Please check your internet connection and try again."
-fi
-
-if ! generate_launcher_icons; then
-    handle_build_error "Failed to generate launcher icons" "Could not generate app launcher icons. Please check the icon configuration and try again."
-fi
-
-if ! setup_keystore; then
-    handle_build_error "Failed to set up keystore" "Could not set up the keystore for signing. Please check your keystore configuration."
-fi
-
-if ! setup_firebase; then
-    handle_build_error "Failed to set up Firebase" "Could not configure Firebase. Please check your Firebase configuration."
-fi
-
-if ! build_android_app; then
-    handle_build_error "Failed to build Android app" "The Android build process failed. Please check the build logs for details."
-fi
-
-# If we reach here, the build was successful
-handle_build_success
-
-print_section "Android Build Process Completed"
+# Run the main process
+main
