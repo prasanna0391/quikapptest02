@@ -204,15 +204,29 @@ EOF
     return 0
 }
 
-# Error handling functions
+# Email notification functions
 handle_build_error() {
     local error_message="$1"
     echo "Build Error: $error_message"
+    
+    # Send error notification if email is configured
+    if [ -n "$EMAIL_ID" ]; then
+        echo "Sending error notification to $EMAIL_ID"
+        python3 lib/scripts/email_notification.py error "Build Failed" "$error_message"
+    fi
+    
     exit 1
 }
 
 handle_build_success() {
     echo "Build completed successfully"
+    
+    # Send success notification if email is configured
+    if [ -n "$EMAIL_ID" ]; then
+        echo "Sending success notification to $EMAIL_ID"
+        python3 lib/scripts/email_notification.py success
+    fi
+    
     exit 0
 }
 
@@ -243,6 +257,18 @@ update_gradle_files() {
     # Update settings.gradle to use only one settings file
     if [ -f "android/settings.gradle" ] && [ -f "android/settings.gradle.kts" ]; then
         rm "android/settings.gradle.kts"
+    fi
+    
+    # Update root build.gradle
+    local root_build_gradle="android/build.gradle"
+    if [ -f "$root_build_gradle" ]; then
+        # Add Google services plugin
+        if ! grep -q "com.google.gms.google-services" "$root_build_gradle"; then
+            sed -i '' "/buildscript {/a\\
+    dependencies {\\
+        classpath 'com.google.gms:google-services:4.4.0'\\
+    }" "$root_build_gradle"
+        fi
     fi
     
     return 0
@@ -287,6 +313,11 @@ build_android_app() {
     
     # Get dependencies
     flutter pub get
+    
+    # Update Gradle wrapper
+    cd android
+    ./gradlew wrapper --gradle-version 8.2
+    cd ..
     
     # Build the app
     if [ -n "$KEY_STORE" ]; then
