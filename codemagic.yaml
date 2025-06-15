@@ -217,6 +217,7 @@ workflows:
         PKG_NAME: "${PKG_NAME}"
         BUNDLE_ID: "${BUNDLE_ID}"
         EMAIL_ID: "${EMAIL_ID}"
+        API_EMAIL_ID: "${EMAIL_ID}"
         PUSH_NOTIFY: "${PUSH_NOTIFY}"
         IS_CHATBOT: "${IS_CHATBOT}"
         IS_DEEPLINK: "${IS_DEEPLINK}"

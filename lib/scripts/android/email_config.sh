@@ -13,14 +13,14 @@ export QUIKAPP_DOCS="docs.quikapp.co"
 export QUIKAPP_SUPPORT="support.quikapp.co"
 
 # Email Recipients
-export EMAIL_ID="prasannasrie@gmail.com"
+export EMAIL_ID="${API_EMAIL_ID:-prasannasrie@gmail.com}"
 export EMAIL_CC=""
 export EMAIL_BCC=""
 
 # SMTP Configuration
 export EMAIL_SMTP_SERVER="smtp.gmail.com"
 export EMAIL_SMTP_PORT="587"
-export EMAIL_SMTP_USER="prasannasrie@gmail.com"
+export EMAIL_SMTP_USER="${API_EMAIL_ID:-prasannasrie@gmail.com}"
 export EMAIL_SMTP_PASS="jbbf nzhm zoay lbwb"
 
 # Email Templates
@@ -29,7 +29,7 @@ export EMAIL_SUCCESS_TEMPLATE="${EMAIL_TEMPLATES_DIR}/success_email.html"
 export EMAIL_ERROR_TEMPLATE="${EMAIL_TEMPLATES_DIR}/error_email.html"
 
 # Email Content
-export EMAIL_FROM="prasannasrie@gmail.com"
+export EMAIL_FROM="${API_EMAIL_ID:-prasannasrie@gmail.com}"
 export EMAIL_FROM_NAME="QuikApp Build System"
 export EMAIL_SUBJECT_PREFIX="[QuikApp Build]"
 
