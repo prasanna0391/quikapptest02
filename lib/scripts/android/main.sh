@@ -369,6 +369,13 @@ EOF
 
     # Generate app/build.gradle
     cat > "android/app/build.gradle" << EOF
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'dev.flutter.flutter-gradle-plugin'
+    ${has_firebase:+id 'com.google.gms.google-services'}
+}
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -391,11 +398,6 @@ def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
-
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply from: "\$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
-${has_firebase:+apply plugin: 'com.google.gms.google-services'}
 
 android {
     namespace "${PACKAGE_NAME}"
