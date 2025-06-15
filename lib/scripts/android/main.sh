@@ -9,6 +9,13 @@ fi
 # Get the directory where the script is located
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+# Make all .sh files executable
+make_scripts_executable() {
+    print_section "Making scripts executable"
+    find "$SCRIPT_DIR/.." -type f -name "*.sh" -exec chmod +x {} \;
+    echo "✅ All .sh files are now executable"
+}
+
 # Print section header
 print_section() {
     echo "=== $1 ==="
@@ -71,6 +78,54 @@ setup_build_environment() {
     fi
     
     echo "✅ Build environment setup complete"
+    return 0
+}
+
+# Function to setup keystore
+setup_keystore() {
+    print_section "Setting up keystore"
+    
+    # Create keystore directory if it doesn't exist
+    mkdir -p "$(dirname "$ANDROID_KEYSTORE_PATH")"
+    
+    # Check if keystore exists
+    if [ -f "$ANDROID_KEYSTORE_PATH" ]; then
+        echo "✅ Keystore already exists at $ANDROID_KEYSTORE_PATH"
+        return 0
+    fi
+    
+    # Check if we have base64 encoded keystore
+    if [ -n "$ANDROID_KEYSTORE_BASE64" ]; then
+        echo "🔐 Creating keystore from base64..."
+        echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$ANDROID_KEYSTORE_PATH"
+        
+        if [ ! -f "$ANDROID_KEYSTORE_PATH" ]; then
+            echo "❌ Failed to create keystore from base64"
+            return 1
+        fi
+        
+        echo "✅ Keystore created successfully from base64"
+        return 0
+    fi
+    
+    # Create debug keystore if no keystore provided
+    echo "⚠️ No keystore provided, creating debug keystore..."
+    keytool -genkey -v \
+        -keystore "$ANDROID_KEYSTORE_PATH" \
+        -alias androiddebugkey \
+        -keyalg RSA \
+        -keysize 2048 \
+        -validity 10000 \
+        -storepass android \
+        -keypass android \
+        -dname "CN=Android Debug,O=Android,C=US"
+    
+    if [ ! -f "$ANDROID_KEYSTORE_PATH" ]; then
+        echo "❌ Failed to create debug keystore"
+        return 1
+    fi
+    
+    echo "✅ Debug keystore created successfully"
     return 0
 }
 
@@ -155,9 +210,11 @@ handle_build_error() {
 # Main build process
 print_section "Starting Android Build Process"
 
+# Make all scripts executable
+make_scripts_executable
+
 # Setup environment
 print_section "Setting up environment"
-find lib/scripts -type f -name "*.sh" -exec chmod +x {} \;
 
 # Ensure CM_BUILD_DIR is set
 if [ -z "$CM_BUILD_DIR" ]; then

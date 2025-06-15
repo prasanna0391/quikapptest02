@@ -203,21 +203,11 @@ scripts:
       echo "✅ Environment variables debug complete"
 
 workflows:
-  android-publish:
+  android-workflow:
     name: Android Build
-    max_build_duration: 120
+    max_build_duration: 60
     instance_type: mac_mini_m2
-#    integrations:
-#      app_store_connect: codemagic
     environment:
-      flutter: stable
-      xcode: latest
-      node: latest
-#      groups:
-#        - google_credentials
-#        - android_credentials
-#        - app_store_credentials
-#        - firebase_credentials
       vars:
         VERSION_NAME: "${VERSION_NAME}"
         VERSION_CODE: "${VERSION_CODE}"
@@ -263,52 +253,32 @@ workflows:
         BOTTOMMENU_VISIBLE_ON: "${BOTTOMMENU_VISIBLE_ON}"
         firebase_config_android: "${firebase_config_android}"
         firebase_config_ios: "${firebase_config_ios}"
-        APPLE_TEAM_ID: "${APPLE_TEAM_ID}"
-        APNS_KEY_ID: "${APNS_KEY_ID}"
-        APNS_AUTH_KEY_URL: "${APNS_AUTH_KEY_URL}"
-        CERT_PASSWORD: "${CERT_PASSWORD}"
-        PROFILE_URL: "${PROFILE_URL}"
-        CERT_CER_URL: "${CERT_CER_URL}"
-        CERT_KEY_URL: "${CERT_KEY_URL}"
-        APP_STORE_CONNECT_KEY_IDENTIFIER: "${APP_STORE_CONNECT_KEY_IDENTIFIER}"
         KEY_STORE: "${KEY_STORE}"
         CM_KEYSTORE_PASSWORD: "${CM_KEYSTORE_PASSWORD}"
         CM_KEY_ALIAS: "${CM_KEY_ALIAS}"
         CM_KEY_PASSWORD: "${CM_KEY_PASSWORD}"
     scripts:
+      - name: Get Flutter packages
+        script: |
+          flutter pub get
+      - name: Make scripts executable
+        script: |
+          find lib/scripts -type f -name "*.sh" -exec chmod +x {} \;
       - name: Load Admin Variables
         script: |
           source lib/scripts/android/admin_vars.sh
-      - name: Load Email Configuration
-        script: |
-          source lib/scripts/android/email_config.sh
       - name: Run Android Build
         script: |
           bash lib/scripts/android/main.sh
     artifacts:
-      - build/**/outputs/flutter-apk/*.apk
-      - build/**/outputs/bundle/release/*.aab
-#    publishing:
-#      email:
-#        recipients:
-#          - $EMAIL_ID
-#
+      - build/outputs/**/*.apk
+      - build/outputs/**/*.aab
 
   ios-publish:
     name: iOS Build
     max_build_duration: 120
     instance_type: mac_mini_m2
-#    integrations:
-#      app_store_connect: codemagic
     environment:
-      flutter: stable
-      xcode: latest
-      node: latest
-#      groups:
-#        - google_credentials
-#        - ios_credentials
-#        - app_store_credentials
-#        - firebase_credentials
       vars:
         VERSION_NAME: "${VERSION_NAME}"
         VERSION_CODE: "${VERSION_CODE}"
@@ -362,43 +332,27 @@ workflows:
         CERT_CER_URL: "${CERT_CER_URL}"
         CERT_KEY_URL: "${CERT_KEY_URL}"
         APP_STORE_CONNECT_KEY_IDENTIFIER: "${APP_STORE_CONNECT_KEY_IDENTIFIER}"
-        KEY_STORE: "${KEY_STORE}"
-        CM_KEYSTORE_PASSWORD: "${CM_KEYSTORE_PASSWORD}"
-        CM_KEY_ALIAS: "${CM_KEY_ALIAS}"
-        CM_KEY_PASSWORD: "${CM_KEY_PASSWORD}"
     scripts:
+      - name: Get Flutter packages
+        script: |
+          flutter pub get
+      - name: Make scripts executable
+        script: |
+          find lib/scripts -type f -name "*.sh" -exec chmod +x {} \;
       - name: Load Admin Variables
         script: |
           source lib/scripts/ios/admin_vars.sh
-      - name: Load Email Configuration
-        script: |
-          source lib/scripts/ios/email_config.sh
       - name: Run iOS Build
         script: |
           bash lib/scripts/ios/main.sh
     artifacts:
       - build/ios/ipa/*.ipa
-#    publishing:
-#      email:
-#        recipients:
-#          - $EMAIL_ID
 
   combined-workflow:
     name: Combined Build
     max_build_duration: 120
     instance_type: mac_mini_m2
-#    integrations:
-#      app_store_connect: codemagic
     environment:
-      flutter: stable
-      xcode: latest
-      node: latest
-#      groups:
-#        - google_credentials
-#        - android_credentials
-#        - ios_credentials
-#        - app_store_credentials
-#        - firebase_credentials
       vars:
         VERSION_NAME: "${VERSION_NAME}"
         VERSION_CODE: "${VERSION_CODE}"
@@ -457,12 +411,15 @@ workflows:
         CM_KEY_ALIAS: "${CM_KEY_ALIAS}"
         CM_KEY_PASSWORD: "${CM_KEY_PASSWORD}"
     scripts:
+      - name: Get Flutter packages
+        script: |
+          flutter pub get
+      - name: Make scripts executable
+        script: |
+          find lib/scripts -type f -name "*.sh" -exec chmod +x {} \;
       - name: Load Admin Variables
         script: |
           source lib/scripts/combined/admin_vars.sh
-      - name: Load Email Configuration
-        script: |
-          source lib/scripts/combined/email_config.sh
       - name: Run Combined Build
         script: |
           bash lib/scripts/combined/main.sh
@@ -470,7 +427,3 @@ workflows:
       - build/**/outputs/flutter-apk/*.apk
       - build/**/outputs/bundle/release/*.aab
       - build/ios/ipa/*.ipa
-#    publishing:
-#      email:
-#        recipients:
-#          - $EMAIL_ID
