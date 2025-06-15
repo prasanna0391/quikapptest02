@@ -398,8 +398,7 @@ update_gradle_files() {
     
     # Create settings.gradle.kts if it doesn't exist
     local settings_gradle_path="android/settings.gradle.kts"
-    if [ ! -f "$settings_gradle_path" ]; then
-        cat > "$settings_gradle_path" << EOF
+    cat > "$settings_gradle_path" << EOF
 pluginManagement {
     repositories {
         google()
@@ -409,17 +408,18 @@ pluginManagement {
 }
 
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
     repositories {
         google()
         mavenCentral()
     }
 }
 
-rootProject.name = "android"
 include(":app")
+
+// Flutter settings
+apply(from = "\${settingsDir.parentFile.toPath()}/.android/include_flutter.groovy")
 EOF
-    fi
     
     return 0
 }
