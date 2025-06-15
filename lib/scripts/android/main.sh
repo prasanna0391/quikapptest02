@@ -461,13 +461,6 @@ EOF
 
     # Generate app/build.gradle
     cat > "android/app/build.gradle" << EOF
-plugins {
-    id 'com.android.application'
-    id 'kotlin-android'
-    id 'dev.flutter.flutter-gradle-plugin'
-    ${has_firebase:+id 'com.google.gms.google-services'}
-}
-
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -490,6 +483,11 @@ def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply from: "\$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+${has_firebase:+apply plugin: 'com.google.gms.google-services'}
 
 android {
     namespace "${PACKAGE_NAME}"
@@ -568,28 +566,15 @@ dependencyResolutionManagement {
 
 include ':app'
 
-// Flutter settings
-def flutterProjectRoot = rootProject.projectDir.parentFile
-def pluginsFile = new File(flutterProjectRoot, '.flutter-plugins')
-if (pluginsFile.exists()) {
-    def plugins = new Properties()
-    pluginsFile.withInputStream { plugins.load(it) }
-    
-    plugins.each { name, path ->
-        def pluginDirectory = new File(new File(flutterProjectRoot, path), 'android')
-        if (pluginDirectory.exists()) {
-            include ":\${name}"
-            project(":\${name}").projectDir = pluginDirectory
-        }
-    }
-}
+def localPropertiesFile = new File(rootProject.projectDir, "local.properties")
+def properties = new Properties()
 
-// Include Flutter SDK
-def flutterSdkPath = System.getenv('FLUTTER_ROOT') ?: System.getProperty('user.home') + '/flutter'
-if (new File(flutterSdkPath).exists()) {
-    include ':flutter'
-    project(':flutter').projectDir = new File(flutterSdkPath)
-}
+assert localPropertiesFile.exists()
+localPropertiesFile.withReader("UTF-8") { reader -> properties.load(reader) }
+
+def flutterSdkPath = properties.getProperty("flutter.sdk")
+assert flutterSdkPath != null, "flutter.sdk not set in local.properties"
+apply from: "\$flutterSdkPath/packages/flutter_tools/gradle/app_plugin_loader.gradle"
 EOF
 
     # Create gradle.properties
