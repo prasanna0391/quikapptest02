@@ -93,21 +93,71 @@ setup_build_environment() {
 download_splash_assets() {
     echo "Downloading splash assets..."
     
-    # Download logo if provided
+    # Create assets directory if it doesn't exist
+    mkdir -p "${ASSETS_DIR}"
+    
+    # Function to download and verify asset
+    download_asset() {
+        local url="$1"
+        local output_path="$2"
+        local asset_name="$3"
+        
+        if [ -n "${url}" ]; then
+            echo "Downloading ${asset_name} from ${url}..."
+            
+            # Remove existing file if it exists
+            if [ -f "${output_path}" ]; then
+                echo "Removing existing ${asset_name}..."
+                rm -f "${output_path}"
+            fi
+            
+            # Download the asset
+            if curl -L "${url}" -o "${output_path}" --fail --silent --show-error; then
+                # Verify the downloaded file
+                if [ -f "${output_path}" ] && [ -s "${output_path}" ]; then
+                    echo "✅ ${asset_name} downloaded successfully"
+                    return 0
+                else
+                    echo "❌ Failed to download ${asset_name}: File is empty or missing"
+                    return 1
+                fi
+            else
+                echo "❌ Failed to download ${asset_name} from ${url}"
+                return 1
+            fi
+        else
+            echo "⚠️ ${asset_name} URL not provided, skipping..."
+            return 0
+        fi
+    }
+    
+    # Check and download logo
     if [ -n "${LOGO_URL:-}" ]; then
-        curl -L "${LOGO_URL}" -o "${ASSETS_DIR:-assets}/logo.png"
+        download_asset "${LOGO_URL}" "${ASSETS_DIR}/logo.png" "Logo"
+    else
+        echo "⚠️ LOGO_URL not set in environment variables"
     fi
     
-    # Download splash screen if provided
+    # Check and download splash screen
     if [ -n "${SPLASH:-}" ]; then
-        curl -L "${SPLASH}" -o "${ASSETS_DIR:-assets}/splash.png"
+        download_asset "${SPLASH}" "${ASSETS_DIR}/splash.png" "Splash Screen"
+    else
+        echo "⚠️ SPLASH not set in environment variables"
     fi
     
-    # Download splash background if provided
+    # Check and download splash background (optional)
     if [ -n "${SPLASH_BG:-}" ]; then
-        curl -L "${SPLASH_BG}" -o "${ASSETS_DIR:-assets}/splash_bg.png"
+        download_asset "${SPLASH_BG}" "${ASSETS_DIR}/splash_bg.png" "Splash Background"
+    else
+        echo "ℹ️ SPLASH_BG not set in environment variables (optional)"
     fi
     
+    # Verify at least one asset was downloaded
+    if [ ! -f "${ASSETS_DIR}/logo.png" ] && [ ! -f "${ASSETS_DIR}/splash.png" ]; then
+        echo "❌ No required assets were downloaded"
+    fi
+    
+    echo "✅ Asset download process completed"
     return 0
 }
 
